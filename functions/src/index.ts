@@ -1,9 +1,9 @@
-import * as functions from "firebase-functions";
+import { credential, initializeApp } from "firebase-admin";
 
-// // Start writing Firebase Functions
-// // https://firebase.google.com/docs/functions/typescript
-//
-// export const helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+initializeApp({
+  credential: credential.applicationDefault(),
+});
+
+exports.users = require("./users");
+exports.products = require("./products");
+exports.stores = require("./stores");
