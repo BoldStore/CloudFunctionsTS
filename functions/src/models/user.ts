@@ -5,6 +5,7 @@ class User {
   loginType: string;
   phone?: string;
   imgUrl?: string;
+  username?: string;
 
   constructor(
     name: string,
@@ -12,7 +13,8 @@ class User {
     password: string,
     loginType: string,
     phone?: string,
-    imgUrl?: string
+    imgUrl?: string,
+    username?: string
   ) {
     this.name = name;
     this.email = email;
@@ -20,6 +22,7 @@ class User {
     this.phone = phone;
     this.loginType = loginType;
     this.imgUrl = imgUrl;
+    this.username = username;
 
     return {
       name: this.name,
@@ -28,6 +31,7 @@ class User {
       phone: this.phone,
       loginType: this.loginType,
       imgUrl: this.imgUrl,
+      username: this.username,
     };
   }
 }
