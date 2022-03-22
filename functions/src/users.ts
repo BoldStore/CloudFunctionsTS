@@ -21,7 +21,7 @@ exports.createUser = https.onRequest(
       phone
     );
 
-    await firestoredb().collection("messages").add(user);
+    await firestoredb().collection("users").add(user);
 
     res.status(201).json({
       success: true,
@@ -33,9 +33,9 @@ exports.createUser = https.onRequest(
 exports.getUser = https.onRequest(async (req: Request, res: Response<any>) => {
   const id: string = req.query.id!.toString();
 
-  const user = await firestoredb().collection("messages").doc(id).get();
+  const user = await firestoredb().collection("users").doc(id).get();
 
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     user,
   });
@@ -50,7 +50,7 @@ exports.updateUser = https.onRequest(
     const insta_username = req.body.insta_username;
     const phone = req.body.phone;
 
-    const user = await firestoredb().collection("messages").doc(id).update({
+    const user = await firestoredb().collection("users").doc(id).update({
       name,
       birthday,
       sizePreference,
@@ -58,7 +58,7 @@ exports.updateUser = https.onRequest(
       phone,
     });
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       user,
     });
@@ -69,11 +69,11 @@ exports.deleteUser = https.onRequest(
   async (req: Request, res: Response<any>) => {
     const id: string = req.query.id!.toString();
 
-    const user = await firestoredb().collection("messages").doc(id).update({
+    const user = await firestoredb().collection("users").doc(id).update({
       deletedOn: new Date(),
     });
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       user,
     });
