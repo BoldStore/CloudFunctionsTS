@@ -5,7 +5,8 @@ class User {
   loginType: string;
   phone?: string;
   imgUrl?: string;
-  username?: string;
+  insta_username?: string;
+  deletedOn?: Date;
 
   constructor(
     name: string,
@@ -14,7 +15,8 @@ class User {
     loginType: string,
     phone?: string,
     imgUrl?: string,
-    username?: string
+    insta_username?: string,
+    deletedOn?: Date
   ) {
     this.name = name;
     this.email = email;
@@ -22,7 +24,8 @@ class User {
     this.phone = phone;
     this.loginType = loginType;
     this.imgUrl = imgUrl;
-    this.username = username;
+    this.insta_username = insta_username;
+    this.deletedOn = deletedOn;
 
     return {
       name: this.name,
@@ -31,7 +34,8 @@ class User {
       phone: this.phone,
       loginType: this.loginType,
       imgUrl: this.imgUrl,
-      username: this.username,
+      insta_username: this.insta_username,
+      deletedOn: this.deletedOn,
     };
   }
 }
