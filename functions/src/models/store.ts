@@ -6,6 +6,7 @@ class Store {
   followers?: string;
   following?: string;
   imgUrl?: string;
+  instagram_id?: string;
 
   constructor(
     name: string,
@@ -14,7 +15,8 @@ class Store {
     lastRefreshed: Date,
     followers?: string,
     following?: string,
-    imgUrl?: string
+    imgUrl?: string,
+    instagram_id?: string
   ) {
     this.name = name;
     this.username = username;
@@ -23,6 +25,7 @@ class Store {
     this.following = following;
     this.lastRefreshed = lastRefreshed;
     this.imgUrl = imgUrl;
+    this.instagram_id = instagram_id;
 
     return {
       name: this.name,
@@ -32,6 +35,7 @@ class Store {
       following: this.following,
       lastRefreshed: this.lastRefreshed,
       imgUrl: this.imgUrl,
+      instagram_id: this.instagram_id,
     };
   }
 }
