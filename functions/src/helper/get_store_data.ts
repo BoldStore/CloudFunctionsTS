@@ -4,6 +4,7 @@ import {
   INSTAGRAM_GRAPH_API_URL,
   MEDIA_FIELDS,
 } from "../constants";
+import { createProductTask } from "../tasks/products";
 
 export const getStoreData = async (
   user_id: string,
@@ -31,6 +32,8 @@ export const getStoreData = async (
     );
   }
 
+  await getStoreMedia(user_id, access_token, userId);
+
   return {
     store,
   };
@@ -50,7 +53,7 @@ export const getStoreMedia = async (
   }
 
   const storeMedia: Array<any> = response.data.data;
-  //   TODO: Schedule a job to save data to firestore
+  createProductTask(storeMedia, storeId);
 
   return true;
 };

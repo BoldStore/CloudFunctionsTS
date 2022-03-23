@@ -9,6 +9,8 @@ class Product {
   store: string;
   color?: string;
   soldOn?: Date;
+  filename?: string;
+  imgUrl?: string;
 
   constructor(
     name: string,
@@ -20,7 +22,9 @@ class Product {
     comments: string,
     store: string,
     color?: string,
-    soldOn?: Date
+    soldOn?: Date,
+    filename?: string,
+    imgUrl?: string
   ) {
     this.name = name;
     this.size = size;
@@ -32,6 +36,8 @@ class Product {
     this.color = color;
     this.postedOn = postedOn;
     this.soldOn = soldOn;
+    this.filename = filename;
+    this.imgUrl = imgUrl;
 
     return {
       name: name,
@@ -44,6 +50,8 @@ class Product {
       color: color,
       postedOn: postedOn,
       soldOn: soldOn,
+      filename: filename,
+      imgUrl: imgUrl,
     };
   }
 }

@@ -14,6 +14,7 @@
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@google-cloud/tasks": "^2.5.0",
     "@types/aws-cloudfront-function": "^1.0.1",
     "aws-cloudfront-sign": "^2.2.0",
     "aws-sdk": "^2.1098.0",
