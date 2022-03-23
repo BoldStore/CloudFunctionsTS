@@ -1,6 +1,6 @@
 import { Request, Response } from "firebase-functions/v1";
 import { firestore as firestoredb } from "firebase-admin";
-import { handler } from "./helper/file_upload_s3";
+import { handler } from "./file_upload_s3";
 
 exports.getProductData = async (req: Request, res: Response<any>) => {
   const storeId: string = req.query.storeId!.toString();
