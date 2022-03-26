@@ -25,7 +25,7 @@ exports.getProductData = async (req: Request, res: Response<any>) => {
       "",
       "",
       "",
-      new Date(),
+      post.timestamp,
       "",
       "",
       "",
