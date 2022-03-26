@@ -2,6 +2,8 @@ import { https, Request, Response } from "firebase-functions/v1";
 import { firestore as firestoredb, auth } from "firebase-admin";
 import { razorpayInstance } from ".";
 import { confirmOrder } from "./helper/order";
+import axios from "axios";
+import { SHIPROCKET_SERVICEABILITY } from "./constants";
 
 exports.createOrder = https.onRequest(
   async (req: Request, res: Response<any>) => {
@@ -143,6 +145,63 @@ exports.previousOrders = https.onRequest(
     res.status(200).json({
       success: true,
       orders,
+    });
+  }
+);
+
+exports.checkForDelivery = https.onRequest(
+  async (req: Request, res: Response<any>) => {
+    const delivery_postcode: string = req.body.postCode;
+    const productId: string = req.body.productId;
+
+    const product = (
+      await firestoredb().collection("products").doc(productId).get()
+    ).data();
+
+    if (!product) {
+      res.status(400).send({
+        message: "Product not found",
+      });
+    }
+    if (product!.sold) {
+      res.status(400).send({
+        message: "Product is sold out",
+      });
+    }
+
+    const seller_id = product!.user;
+
+    const address = (
+      await firestoredb()
+        .collection("addresses")
+        .where("user", "==", seller_id)
+        .get()
+    ).docs[0];
+
+    const pickup_postcode = address.data().pincode;
+
+    const response = await axios.get(SHIPROCKET_SERVICEABILITY, {
+      params: {
+        pickup_postcode,
+        delivery_postcode,
+        cod: 0,
+        weight: 0.5,
+      },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.DELIVERY_API_KEY}`,
+      },
+    });
+
+    if (response.status !== 200) {
+      res.status(500).send({
+        message: "Something went wrong",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: response.data.data,
     });
   }
 );
