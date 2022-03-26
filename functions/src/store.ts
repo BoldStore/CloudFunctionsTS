@@ -3,7 +3,7 @@ import { getAccessToken } from "./helper/get_access_token";
 import { firestore as firestoredb } from "firebase-admin";
 import { getStoreData, getStoreMedia } from "./helper/get_store_data";
 
-exports.getInstaCode = https.onRequest(
+exports.getInstagramData = https.onRequest(
   async (req: Request, res: Response<any>) => {
     const code: string = req.query.code!.toString();
     const userId: string = req.query.userId!.toString();

@@ -9,6 +9,33 @@ exports.createUser = auth.user().onCreate(async (user) => {
   await firestoredb().collection("users").doc(user.uid).set(user_model);
 });
 
+exports.addInstaUsername = https.onRequest(
+  async (req: Request, res: Response<any>) => {
+    const token = req.headers.authorization!;
+    const id: string = (await adminAuth().verifyIdToken(token)).uid;
+
+    if (!id) {
+      res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+      return;
+    }
+
+    const insta_username = req.body.insta_username!.toString();
+
+    const user = await firestoredb()
+      .collection("users")
+      .doc(id)
+      .set({ insta_username: insta_username }, { merge: true });
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  }
+);
+
 exports.getPersonalDetails = https.onRequest(
   async (req: Request, res: Response<any>) => {
     const token = req.headers.authorization!;
