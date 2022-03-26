@@ -5,5 +5,6 @@ initializeApp({
 });
 
 exports.users = require("./users");
+exports.users = require("./addresses");
 exports.products = require("./products");
 exports.stores = require("./stores");
