@@ -1,5 +1,6 @@
 import { auth, https, Request, Response } from "firebase-functions/v1";
 import { firestore as firestoredb, auth as adminAuth } from "firebase-admin";
+import { getInstaData } from "./helper/get_insta_data";
 
 exports.createUser = auth.user().onCreate(async (user) => {
   const email: string = user.email!.toString();
@@ -24,10 +25,19 @@ exports.addInstaUsername = https.onRequest(
 
     const insta_username = req.body.insta_username!.toString();
 
+    const data = await getInstaData(insta_username);
+
     const user = await firestoredb()
       .collection("users")
       .doc(id)
-      .set({ insta_username: insta_username }, { merge: true });
+      .set(
+        {
+          insta_username: insta_username,
+          name: data.full_name,
+          imgUrl: data.profile_pic,
+        },
+        { merge: true }
+      );
 
     res.status(200).json({
       success: true,

@@ -5,6 +5,7 @@ import {
   MEDIA_FIELDS,
 } from "../constants";
 import { createProductTask } from "../tasks/products";
+import { getInstaData } from "./get_insta_data";
 
 export const getStoreData = async (
   user_id: string,
@@ -20,14 +21,16 @@ export const getStoreData = async (
     const username: string = response.data.username;
     const id: string = response.data.id;
 
+    const data = await getInstaData(username);
+
     store = new Store(
-      username,
+      data.full_name,
       username,
       userId,
       new Date(),
-      undefined,
-      undefined,
-      undefined,
+      data.followers,
+      data.following,
+      data.profile_pic,
       id
     );
   }
