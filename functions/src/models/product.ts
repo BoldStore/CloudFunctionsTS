@@ -1,6 +1,5 @@
 class Product {
   name: string;
-  caption: string;
   size: string;
   sold: string;
   postedOn: Date;
@@ -15,7 +14,6 @@ class Product {
 
   constructor(
     name: string,
-    caption: string,
     size: string,
     sold: string,
     postedOn: Date,
@@ -29,7 +27,6 @@ class Product {
     imgUrl?: string
   ) {
     this.name = name;
-    this.caption = caption;
     this.size = size;
     this.sold = sold;
     this.amount = amount;
@@ -44,7 +41,6 @@ class Product {
 
     return {
       name: name,
-      caption: caption,
       size: size,
       sold: sold,
       amount: amount,

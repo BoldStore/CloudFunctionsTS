@@ -1,49 +1,49 @@
-import { https, Request, Response } from "firebase-functions/v1";
-import { firestore as firestoredb } from "firebase-admin";
+import { auth, https, Request, Response } from "firebase-functions/v1";
+import { firestore as firestoredb, auth as adminAuth } from "firebase-admin";
 
-exports.createUser = https.onRequest(
+exports.createUser = auth.user().onCreate(async (user) => {
+  const email: string = user.email!.toString();
+
+  const user_model = new User(email);
+
+  await firestoredb().collection("users").doc(user.uid).set(user_model);
+});
+
+exports.getPersonalDetails = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const name = req.body.name;
-    const email = req.body.email;
-    const birthday = req.body.birthday;
-    const sizePreference = req.body.sizePreference;
-    const insta_username = req.body.insta_username;
-    const loginType = "email";
-    const phone = req.body.phone;
+    const token = req.headers.authorization!;
+    const id: string = (await adminAuth().verifyIdToken(token)).uid;
 
-    const user = new User(
-      name,
-      email,
-      birthday,
-      sizePreference,
-      insta_username,
-      loginType,
-      phone
-    );
+    if (!id) {
+      res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+      return;
+    }
 
-    await firestoredb().collection("users").add(user);
+    const user = await firestoredb().collection("users").doc(id).get();
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       user,
     });
   }
 );
 
-exports.getUser = https.onRequest(async (req: Request, res: Response<any>) => {
-  const id: string = req.query.id!.toString();
-
-  const user = await firestoredb().collection("users").doc(id).get();
-
-  res.status(200).json({
-    success: true,
-    user,
-  });
-});
-
 exports.updateUser = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const id: string = req.query.id!.toString();
+    const token = req.headers.authorization!;
+    const id: string = (await adminAuth().verifyIdToken(token)).uid;
+
+    if (!id) {
+      res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+      return;
+    }
+
     const name = req.body.name;
     const birthday = req.body.birthday;
     const sizePreference = req.body.sizePreference;

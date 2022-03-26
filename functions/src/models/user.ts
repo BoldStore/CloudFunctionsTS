@@ -1,17 +1,33 @@
 class User {
-  user: string;
-  preference: string;
+  name?: string;
+  email: string;
+  phone?: string;
+  imgUrl?: string;
   insta_username?: string;
+  deletedOn?: Date;
 
-  constructor(user: string, preference: string, insta_username?: string) {
-    this.user = user;
-    this.preference = preference;
+  constructor(
+    email: string,
+    name?: string,
+    phone?: string,
+    imgUrl?: string,
+    insta_username?: string,
+    deletedOn?: Date
+  ) {
+    this.name = name;
+    this.email = email;
+    this.phone = phone;
+    this.imgUrl = imgUrl;
     this.insta_username = insta_username;
+    this.deletedOn = deletedOn;
 
     return {
-      user: this.user,
-      preference: this.preference,
+      name: this.name,
+      email: this.email,
+      phone: this.phone,
+      imgUrl: this.imgUrl,
       insta_username: this.insta_username,
+      deletedOn: this.deletedOn,
     };
   }
 }
