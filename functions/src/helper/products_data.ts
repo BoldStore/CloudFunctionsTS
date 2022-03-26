@@ -23,6 +23,7 @@ exports.getProductData = async (req: Request, res: Response<any>) => {
 
     const product = new Product(
       "",
+      post.caption,
       "",
       "",
       new Date(),
