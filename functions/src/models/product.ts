@@ -1,7 +1,7 @@
 class Product {
   name: string;
   size: string;
-  sold: string;
+  sold: boolean;
   postedOn: Date;
   amount: string;
   likes: string;
@@ -15,7 +15,7 @@ class Product {
   constructor(
     name: string,
     size: string,
-    sold: string,
+    sold: boolean,
     postedOn: Date,
     amount: string,
     likes: string,
