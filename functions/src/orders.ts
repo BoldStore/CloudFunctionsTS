@@ -4,6 +4,7 @@ import { razorpayInstance } from ".";
 import { confirmOrder } from "./helper/order";
 import axios from "axios";
 import { SHIPROCKET_SERVICEABILITY } from "./constants";
+import { sendMail } from "./mails";
 
 exports.createOrder = https.onRequest(
   async (req: Request, res: Response<any>) => {
@@ -65,6 +66,8 @@ exports.verifyOrder = https.onRequest(
     const token = req.headers.authorization!;
     const id: string = (await auth().verifyIdToken(token)).uid;
 
+    const user = (await firestoredb().collection("users").doc(id).get()).data();
+
     if (!id) {
       res.status(401).json({
         success: false,
@@ -81,6 +84,12 @@ exports.verifyOrder = https.onRequest(
     );
 
     if (response.success) {
+      sendMail(
+        user!.email,
+        "Product Bought",
+        "You just bought a product",
+        "./templates/product_bought.html"
+      );
       res.status(200).json({
         success: true,
         message: "Order confirmed",
@@ -100,6 +109,7 @@ exports.callback = https.onRequest(async (req: Request, res: Response<any>) => {
   const razorpaySignature = req.body.razorpay_signature;
 
   const id: string = req.query.id!.toString();
+  const user = (await firestoredb().collection("users").doc(id).get()).data();
 
   const response = await confirmOrder(
     paymentId,
@@ -109,6 +119,12 @@ exports.callback = https.onRequest(async (req: Request, res: Response<any>) => {
   );
 
   if (response.success) {
+    sendMail(
+      user!.email,
+      "Product Bought",
+      "You just bought a product",
+      "./templates/product_bought.html"
+    );
     res.status(200).json({
       success: true,
       message: "Order confirmed",

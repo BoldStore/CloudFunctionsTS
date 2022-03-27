@@ -1,6 +1,7 @@
 import { auth, https, Request, Response } from "firebase-functions/v1";
 import { firestore as firestoredb, auth as adminAuth } from "firebase-admin";
 import { getInstaData } from "./helper/get_insta_data";
+import { sendMail } from "./mails";
 
 exports.createUser = auth.user().onCreate(async (user) => {
   const email: string = user.email!.toString();
@@ -8,6 +9,13 @@ exports.createUser = auth.user().onCreate(async (user) => {
   const user_model = new User(email);
 
   await firestoredb().collection("users").doc(user.uid).set(user_model);
+
+  sendMail(
+    email,
+    "Welcome to Bold",
+    "Welcome to Bold",
+    "./templates/welcome_mail.html"
+  );
 });
 
 exports.addInstaUsername = https.onRequest(
@@ -27,17 +35,14 @@ exports.addInstaUsername = https.onRequest(
 
     const data = await getInstaData(insta_username);
 
-    const user = await firestoredb()
-      .collection("users")
-      .doc(id)
-      .set(
-        {
-          insta_username: insta_username,
-          name: data.full_name,
-          imgUrl: data.profile_pic,
-        },
-        { merge: true }
-      );
+    const user = await firestoredb().collection("users").doc(id).set(
+      {
+        insta_username: insta_username,
+        name: data.full_name,
+        imgUrl: data.profile_pic,
+      },
+      { merge: true }
+    );
 
     res.status(200).json({
       success: true,

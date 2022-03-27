@@ -2,6 +2,7 @@ import { https, Request, Response } from "firebase-functions/v1";
 import { getAccessToken } from "./helper/get_access_token";
 import { firestore as firestoredb } from "firebase-admin";
 import { getStoreData, getStoreMedia } from "./helper/get_store_data";
+import { sendMail } from "./mails";
 
 exports.getInstagramData = https.onRequest(
   async (req: Request, res: Response<any>) => {
@@ -11,6 +12,18 @@ exports.getInstagramData = https.onRequest(
     const token_response = await getAccessToken(code);
     const access_token = token_response.access_token;
     const insta_user_id = token_response.user_id;
+
+    const user = (
+      await firestoredb().collection("users").doc(userId).get()
+    ).data();
+
+    if (!user) {
+      res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+      return;
+    }
 
     const store = await getStoreData(insta_user_id, access_token, userId);
 
@@ -35,6 +48,13 @@ exports.getInstagramData = https.onRequest(
         message: "There was an error getting the media",
       });
     }
+
+    sendMail(
+      user!.email,
+      "Store Added",
+      "Store successfully connected",
+      "./templates/store_signup.html"
+    );
 
     res.status(200).json({
       success: true,
