@@ -13,3 +13,6 @@ export const SHIPROCKET_SERVICEABILITY =
 export const SHIPROCKET_LOGIN = SHIPROCKET_API_URL + "/external/auth/login";
 export const NEW_PICKUP =
   SHIPROCKET_API_URL + "/external/settings/company/addpickup";
+export const SHIPROCKET_CHANNELS = SHIPROCKET_API_URL + "/external/channels";
+export const CREATE_SHIPMENT =
+  SHIPROCKET_API_URL + "/external/shipments/create/forward-shipment";
