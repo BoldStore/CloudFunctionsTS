@@ -5,6 +5,7 @@ import { confirmOrder } from "./helper/order";
 import axios from "axios";
 import { SHIPROCKET_SERVICEABILITY } from "./constants";
 import { sendMail } from "./mails";
+import { createShipment } from "./helper/shipping";
 
 exports.createOrder = https.onRequest(
   async (req: Request, res: Response<any>) => {
@@ -48,7 +49,9 @@ exports.createOrder = https.onRequest(
           "",
           id,
           address_id,
-          currency
+          currency,
+          product.data()!.seller,
+          product.data()!.store
         );
 
         await firestoredb().collection("orders").add(order_obj);
@@ -84,6 +87,13 @@ exports.verifyOrder = https.onRequest(
     );
 
     if (response.success) {
+      await createShipment(
+        response.order!.data().address,
+        orderId,
+        response.order!.data().product,
+        response.order!.data().store,
+        user!
+      );
       sendMail(
         user!.email,
         "Product Bought",
@@ -119,6 +129,13 @@ exports.callback = https.onRequest(async (req: Request, res: Response<any>) => {
   );
 
   if (response.success) {
+    await createShipment(
+      response.order!.data().address,
+      orderId,
+      response.order!.data().product,
+      response.order!.data().store,
+      user!
+    );
     sendMail(
       user!.email,
       "Product Bought",

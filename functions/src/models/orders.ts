@@ -8,6 +8,8 @@ class Order {
   user: string;
   address: string;
   currency: string;
+  seller: string;
+  store: string;
 
   constructor(
     product: string,
@@ -18,7 +20,9 @@ class Order {
     paymentId: string,
     user: string,
     address: string,
-    currency: string
+    currency: string,
+    seller: string,
+    store: string
   ) {
     this.product = product;
     this.amount = amount;
@@ -29,6 +33,8 @@ class Order {
     this.user = user;
     this.address = address;
     this.currency = currency;
+    this.seller = seller;
+    this.store = store;
 
     return {
       product: this.product,
@@ -40,6 +46,8 @@ class Order {
       user: this.user,
       address: this.address,
       currency: this.currency,
+      seller: this.seller,
+      store: this.store,
     };
   }
 }

@@ -7,6 +7,7 @@ class Product {
   likes: string;
   comments: string;
   store: string;
+  seller: string;
   color?: string;
   soldOn?: Date;
   filename?: string;
@@ -21,6 +22,7 @@ class Product {
     likes: string,
     comments: string,
     store: string,
+    seller: string,
     color?: string,
     soldOn?: Date,
     filename?: string,
@@ -33,6 +35,7 @@ class Product {
     this.likes = likes;
     this.comments = comments;
     this.store = store;
+    this.seller = seller;
     this.color = color;
     this.postedOn = postedOn;
     this.soldOn = soldOn;
@@ -40,18 +43,19 @@ class Product {
     this.imgUrl = imgUrl;
 
     return {
-      name: name,
-      size: size,
-      sold: sold,
-      amount: amount,
-      likes: likes,
-      comments: comments,
-      store: store,
-      color: color,
-      postedOn: postedOn,
-      soldOn: soldOn,
-      filename: filename,
-      imgUrl: imgUrl,
+      name: this.name,
+      size: this.size,
+      sold: this.sold,
+      amount: this.amount,
+      likes: this.likes,
+      comments: this.comments,
+      store: this.store,
+      seller: this.seller,
+      color: this.color,
+      postedOn: this.postedOn,
+      soldOn: this.soldOn,
+      filename: this.filename,
+      imgUrl: this.imgUrl,
     };
   }
 }
@@ -69,4 +73,5 @@ type ProductType = {
   soldOn?: Date;
   filename?: string;
   imgUrl?: string;
+  seller: string;
 };

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { firestore } from "firebase-admin";
 import { NEW_PICKUP, SHIPROCKET_CHANNELS } from "../constants";
 
 export const addPickup = async (
@@ -47,19 +48,30 @@ export const getChannelId = async () => {
 };
 
 export const createShipment = async (
-  delivery_address: AddressType,
+  address_id: string,
   order_id: string,
   product_id: string,
   store_id: string,
-  channel_id: string,
-  user: UserType,
-  product: ProductType,
-  store_phone_number: string
+  user: firestore.DocumentData
 ) => {
+  const product = (
+    await firestore().collection("products").doc(product_id).get()
+  ).data();
+
+  const address = (
+    await firestore().collection("addresses").doc(address_id).get()
+  ).data();
+
+  const seller = (
+    await firestore().collection("users").doc(product!.seller).get()
+  ).data();
+
   const shiprocket_access_token = process.env.SHIPROCKET_ACCESS_TOKEN;
   const date = new Date();
   const formatted_date = date.toISOString().slice(0, 10);
   const formatted_time = `${date.getHours()}:${date.getMinutes()}`;
+
+  const channel_id = await getChannelId();
 
   const response = await axios.post(
     NEW_PICKUP,
@@ -69,24 +81,24 @@ export const createShipment = async (
       channel_id: channel_id,
       billing_customer_name: user.name,
       billing_last_name: user.name?.split(" ")[1] ?? "",
-      billing_address: delivery_address.addressL1,
-      billing_city: delivery_address.city,
-      billing_pincode: delivery_address.pincode,
-      billing_state: delivery_address.state,
+      billing_address: address!.addressL1,
+      billing_city: address!.city,
+      billing_pincode: address!.pincode,
+      billing_state: address!.state,
       billing_country: "India",
       billing_email: user.email,
       billing_phone: user.phone,
       shipping_is_billing: true,
       order_items: [
         {
-          name: product.name,
+          name: product!.name,
           sku: product_id,
           units: 1,
-          selling_price: product.amount,
+          selling_price: product!.amount,
         },
       ],
       payment_method: "Prepaid",
-      sub_total: product.amount,
+      sub_total: product!.amount,
       length: 100,
       breadth: 50,
       height: 10,
@@ -94,7 +106,7 @@ export const createShipment = async (
       pickup_location: `${store_id}_address_1`,
       vendor_details: {
         email: "boldstore@gmail.com",
-        phone: store_phone_number,
+        phone: seller!.phone,
         name: "Bold",
         address: "Bold Store",
         address_2: "Head Office",

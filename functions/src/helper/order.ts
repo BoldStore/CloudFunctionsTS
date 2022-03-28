@@ -62,5 +62,6 @@ export const confirmOrder = async (
   }
   return {
     success: true,
+    order,
   };
 };
