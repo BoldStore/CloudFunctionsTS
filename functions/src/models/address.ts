@@ -43,3 +43,15 @@ class Address {
     };
   }
 }
+
+type AddressType = {
+  address: string;
+  title: string;
+  addressL1: string;
+  addressL2: string;
+  city: string;
+  state: string;
+  pincode: number;
+  user: string;
+  notes?: string;
+};
