@@ -55,3 +55,18 @@ class Product {
     };
   }
 }
+
+type ProductType = {
+  name: string;
+  size: string;
+  sold: boolean;
+  postedOn: Date;
+  amount: string;
+  likes: string;
+  comments: string;
+  store: string;
+  color?: string;
+  soldOn?: Date;
+  filename?: string;
+  imgUrl?: string;
+};

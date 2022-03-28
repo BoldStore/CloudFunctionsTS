@@ -31,3 +31,12 @@ class User {
     };
   }
 }
+
+type UserType = {
+  name?: string;
+  email: string;
+  phone?: string;
+  imgUrl?: string;
+  insta_username?: string;
+  deletedOn?: Date;
+};
