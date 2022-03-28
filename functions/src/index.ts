@@ -18,3 +18,4 @@ exports.users = require("./addresses");
 exports.products = require("./products");
 exports.stores = require("./stores");
 exports.orders = require("./orders");
+exports.shipping = require("./shipping");
