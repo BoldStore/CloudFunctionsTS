@@ -10,3 +10,4 @@ export const MEDIA_FIELDS =
 export const SHIPROCKET_API_URL = "https://apiv2.shiprocket.in/v1/";
 export const SHIPROCKET_SERVICEABILITY =
   SHIPROCKET_API_URL + "/external/courier/serviceability/";
+export const SHIPROCKET_LOGIN = SHIPROCKET_API_URL + "/external/auth/login";
