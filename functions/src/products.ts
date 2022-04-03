@@ -31,6 +31,7 @@ exports.getProductData = async (req: Request, res: Response<any>) => {
       "",
       storeId,
       "",
+      "",
       new Date(),
       file_name,
       post_url
@@ -65,6 +66,7 @@ exports.updateProductData = async (req: Request, res: Response<any>) => {
       "",
       "",
       product_obj.data().store,
+      "",
       "",
       new Date(),
       product_obj.data().file_name,
