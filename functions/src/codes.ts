@@ -1,5 +1,6 @@
 import { auth, firestore } from "firebase-admin";
 import { https, Request, Response } from "firebase-functions/v1";
+import { generateCode } from "./helper/generateCode";
 
 exports.addInviteToken = https.onRequest(
   async (req: Request, res: Response<any>) => {
@@ -56,19 +57,3 @@ exports.addInviteToken = https.onRequest(
     });
   }
 );
-
-const generateCode = async () => {
-  // Generate invite token (6 digit random number)
-  const inviteCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-  // Check if already exists
-  const tokenInDb = await firestore()
-    .collection("codes")
-    .where("code", "==", inviteCode)
-    .get();
-
-  if (tokenInDb.docs.length > 0) {
-    generateCode();
-  }
-  return inviteCode;
-};
