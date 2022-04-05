@@ -14,8 +14,9 @@ initializeApp({
 });
 
 exports.users = require("./users");
-exports.users = require("./addresses");
+exports.addresses = require("./addresses");
 exports.products = require("./products");
 exports.stores = require("./stores");
 exports.orders = require("./orders");
 exports.shipping = require("./shipping");
+exports.codes = require("./codes");
