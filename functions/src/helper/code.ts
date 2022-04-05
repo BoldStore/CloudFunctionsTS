@@ -4,14 +4,26 @@ export const generateCode = async () => {
   // Generate invite token (6 digit random number)
   const inviteCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-  // Check if already exists
-  const tokenInDb = await firestore()
-    .collection("codes")
-    .where("code", "==", inviteCode)
-    .get();
+  const exists: boolean = await checkCodeValidation(inviteCode);
 
-  if (tokenInDb.docs.length > 0) {
+  if (exists) {
     generateCode();
   }
   return inviteCode;
+};
+
+export const checkCodeValidation = async (code: string) => {
+  var exists: boolean = false;
+
+  // Check if already exists
+  const tokenInDb = await firestore()
+    .collection("codes")
+    .where("code", "==", code)
+    .get();
+
+  if (tokenInDb.docs.length > 0) {
+    exists = true;
+  }
+
+  return exists;
 };
