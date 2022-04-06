@@ -1,5 +1,6 @@
 import { https, Request, Response } from "firebase-functions/v1";
 import { firestore, auth } from "firebase-admin";
+import { refresh_store_data } from "./helper/store";
 
 exports.updateStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
@@ -44,6 +45,8 @@ exports.updateStore = https.onRequest(
       },
       { merge: true }
     );
+
+    refresh_store_data(id, insta_username);
 
     res.status(200).json({
       success: true,

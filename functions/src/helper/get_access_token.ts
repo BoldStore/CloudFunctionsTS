@@ -1,7 +1,7 @@
 import axios from "axios";
 import { INSTAGRAM_ACCESS_TOKEN } from "../constants";
 
-export const getAccessToken = async (code: string) => {
+export const getAccessToken = async () => {
   var access_token: string = "";
   var user_id: string = "";
   const response = await axios.post(INSTAGRAM_ACCESS_TOKEN, {
