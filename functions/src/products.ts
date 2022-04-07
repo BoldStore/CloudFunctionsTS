@@ -54,6 +54,8 @@ exports.updateProductData = async (req: Request, res: Response<any>) => {
     await firestoredb().collection("products").where("sold", "==", false).get()
   ).docs;
 
+  // TODO: Get product data from insta
+
   for (var i = 0; i < products.length; i++) {
     let product_obj = products[i];
 
