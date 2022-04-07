@@ -10,7 +10,7 @@ import { getInstaData } from "./get_insta_data";
 export const getStoreData = async (
   user_id: string,
   access_token: string,
-  userId: string
+  storeId: string
 ) => {
   var store: Store | null = null;
   const response = await axios.get(
@@ -26,16 +26,17 @@ export const getStoreData = async (
     store = new Store(
       data.full_name,
       username,
-      userId,
+      storeId,
       new Date(),
       data.followers,
       data.following,
       data.profile_pic,
-      id
+      id,
+      data.bio
     );
   }
 
-  await getStoreMedia(user_id, access_token, userId);
+  await getStoreMedia(user_id, access_token, storeId);
 
   return {
     store,

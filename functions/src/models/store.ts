@@ -1,41 +1,45 @@
 class Store {
-  name: string;
+  full_name: string;
   username: string;
-  user: string;
+  id: string;
   lastRefreshed: Date;
   followers?: string;
   following?: string;
-  imgUrl?: string;
+  profile_pic?: string;
   instagram_id?: string;
+  bio?: string;
 
   constructor(
-    name: string,
+    full_name: string,
     username: string,
-    user: string,
+    id: string,
     lastRefreshed: Date,
     followers?: string,
     following?: string,
-    imgUrl?: string,
-    instagram_id?: string
+    profile_pic?: string,
+    instagram_id?: string,
+    bio?: string
   ) {
-    this.name = name;
+    this.full_name = full_name;
     this.username = username;
-    this.user = user;
+    this.id = id;
     this.followers = followers;
     this.following = following;
     this.lastRefreshed = lastRefreshed;
-    this.imgUrl = imgUrl;
+    this.profile_pic = profile_pic;
     this.instagram_id = instagram_id;
+    this.bio = bio;
 
     return {
-      name: this.name,
+      full_name: this.full_name,
       username: this.username,
-      user: this.user,
+      id: this.id,
       followers: this.followers,
       following: this.following,
       lastRefreshed: this.lastRefreshed,
-      imgUrl: this.imgUrl,
+      profile_pic: this.profile_pic,
       instagram_id: this.instagram_id,
+      bio: this.bio,
     };
   }
 }

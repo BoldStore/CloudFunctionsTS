@@ -25,28 +25,22 @@ exports.updateStore = https.onRequest(
       return;
     }
 
-    const insta_username = req.body.insta_username;
     const upi_id = req.body.upi_id;
     const phone_number = req.body.phone_number;
 
-    // Payment Details
-    await firestore().collection("paymentDetails").doc(id).set(
-      {
-        upi_id,
-      },
-      { merge: true }
-    );
+    if (upi_id) {
+      // Payment Details
+      await firestore().collection("paymentDetails").doc(id).set(
+        {
+          upi_id,
+        },
+        { merge: true }
+      );
+    }
 
-    // Store Details
-    await firestore().collection("stores").doc(id).set(
-      {
-        insta_username,
-        phone_number,
-      },
-      { merge: true }
-    );
-
-    refresh_store_data(id, insta_username);
+    if (phone_number) {
+      refresh_store_data(id, phone_number);
+    }
 
     res.status(200).json({
       success: true,
