@@ -1,4 +1,5 @@
 import { v2beta3 } from "@google-cloud/tasks";
+import { firestore } from "firebase-admin";
 
 export const createProductTask = async (
   posts: Array<any> = [],
@@ -22,7 +23,15 @@ export const createProductTask = async (
   const convertedPayload = JSON.stringify(payload);
   const body = Buffer.from(convertedPayload).toString("base64");
 
-  const url = process.env.PRODUCT_DATA_URL!.toString() + "?storeId=" + storeId;
+  const store = await firestore().collection("stores").doc(storeId).get();
+
+  var url: string = "";
+
+  if (!store.exists) {
+    url = process.env.PRODUCT_DATA_URL!.toString() + "?storeId=" + storeId;
+  } else {
+    url = process.env.PRODUCT_DATA_URL!.toString() + "?storeId=" + storeId;
+  }
 
   const task: any = {
     httpRequest: {
