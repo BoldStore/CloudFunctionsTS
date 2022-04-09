@@ -8,11 +8,7 @@ exports.homePage = https.onRequest(async (req: Request, res: Response<any>) => {
     .limit(15)
     .get();
 
-  const stores = await firestore()
-    .collection("stores")
-    .where("sold", "!=", true)
-    .limit(15)
-    .get();
+  const stores = await firestore().collection("stores").limit(15).get();
 
   res.status(200).json({
     success: true,
