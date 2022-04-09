@@ -6,9 +6,9 @@ import { sendMail } from "./mails";
 exports.createUser = auth.user().onCreate(async (user) => {
   const email: string = user.email!.toString();
 
-  const user_model = new User(email);
+  // const user_model = new User(email);
 
-  await firestoredb().collection("users").doc(user.uid).set(user_model);
+  // await firestoredb().collection("users").doc(user.uid).set(user_model);
 
   sendMail(
     email,
