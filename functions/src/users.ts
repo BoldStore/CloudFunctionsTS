@@ -50,7 +50,7 @@ exports.userToDb = https.onRequest(async (req: Request, res: Response<any>) => {
     return;
   }
 
-  await firestoredb().collection("stores").doc(id).set({
+  await firestoredb().collection("users").doc(id).set({
     email,
   });
 });
