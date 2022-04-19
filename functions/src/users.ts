@@ -130,14 +130,14 @@ exports.updateUser = https.onRequest(
     const name = req.body.name;
     const birthday = req.body.birthday;
     const sizePreference = req.body.sizePreference;
-    const insta_username = req.body.insta_username;
+    // const insta_username = req.body.insta_username;
     const phone = req.body.phone;
 
     const user = await firestoredb().collection("users").doc(id).update({
       name,
       birthday,
       sizePreference,
-      insta_username,
+      // insta_username,
       phone,
     });
 
