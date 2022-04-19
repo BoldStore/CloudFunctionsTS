@@ -53,6 +53,10 @@ exports.userToDb = https.onRequest(async (req: Request, res: Response<any>) => {
   await firestoredb().collection("users").doc(id).set({
     email,
   });
+
+  res.status(201).json({
+    success: true,
+  });
 });
 
 exports.addInstaUsername = https.onRequest(
