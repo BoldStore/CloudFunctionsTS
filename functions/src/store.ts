@@ -38,6 +38,10 @@ exports.createStore = https.onRequest(
     await firestore().collection("stores").doc(id).set({
       email,
     });
+
+    res.status(201).json({
+      success: true,
+    });
   }
 );
 
