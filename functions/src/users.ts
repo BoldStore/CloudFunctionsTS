@@ -150,7 +150,16 @@ exports.updateUser = https.onRequest(
 
 exports.deleteUser = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const id: string = req.query.id!.toString();
+    const token = req.headers.authorization!;
+    const id: string = (await adminAuth().verifyIdToken(token)).uid;
+
+    if (!id) {
+      res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+      return;
+    }
 
     const user = await firestoredb().collection("users").doc(id).update({
       deletedOn: new Date(),
