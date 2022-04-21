@@ -73,7 +73,7 @@ exports.getUserAddresses = https.onRequest(
 
 exports.updateAddress = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const id: string = req.query.id!.toString();
+    const id: string = req.body.id!.toString();
     const token = req.headers.authorization!;
     const userId: string = (await auth().verifyIdToken(token)).uid;
 
@@ -120,7 +120,7 @@ exports.updateAddress = https.onRequest(
 
 exports.deleteAddress = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const id: string = req.query.id!.toString();
+    const id: string = req.body.id!.toString();
     const token = req.headers.authorization!;
     const userId: string = (await auth().verifyIdToken(token)).uid;
 
