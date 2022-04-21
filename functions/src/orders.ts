@@ -55,7 +55,7 @@ exports.createOrder = https.onRequest(
         );
 
         await firestoredb().collection("orders").add(order_obj);
-        res.status(201).send({ success: true, order_obj });
+        res.status(201).send({ success: true, order: order_obj });
       });
   }
 );
@@ -167,17 +167,18 @@ exports.previousOrders = https.onRequest(
       return;
     }
 
-    const orders = (
-      await firestoredb()
-        .collection("orders")
-        .where("user", "==", id)
-        .limit(10)
-        .get()
-    ).docs;
+    const orders = await firestoredb()
+      .collection("orders")
+      .where("user", "==", id)
+      .limit(10)
+      .get();
 
     res.status(200).json({
       success: true,
-      orders,
+      orders: orders.docs.map((order) => ({
+        ...order.data(),
+        id: order.id,
+      })),
     });
   }
 );
