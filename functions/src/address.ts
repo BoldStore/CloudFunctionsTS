@@ -41,7 +41,10 @@ exports.addAddress = https.onRequest(
 
     res.status(201).json({
       success: true,
-      address,
+      address: {
+        ...address_model,
+        id: address.id,
+      },
     });
   }
 );
