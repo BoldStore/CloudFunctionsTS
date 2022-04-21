@@ -55,7 +55,7 @@ exports.createOrder = https.onRequest(
         );
 
         await firestoredb().collection("orders").add(order_obj);
-        res.status(200).send({ success: true, order_obj });
+        res.status(201).send({ success: true, order_obj });
       });
   }
 );
