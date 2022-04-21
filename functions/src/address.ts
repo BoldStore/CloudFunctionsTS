@@ -112,14 +112,22 @@ exports.updateAddress = https.onRequest(
       notes
     );
 
-    const address = await firestoredb()
+    await firestoredb()
       .collection("addresses")
       .doc(id)
       .set(address_model, { merge: true });
 
+    const addresses = await firestoredb()
+      .collection("addresses")
+      .where("user", "==", userId)
+      .get();
+
     res.status(200).json({
       success: true,
-      address,
+      addresses: addresses.docs.map((address) => ({
+        id: address.id,
+        ...address.data(),
+      })),
     });
   }
 );
@@ -138,14 +146,19 @@ exports.deleteAddress = https.onRequest(
       return;
     }
 
-    const address = await firestoredb()
+    await firestoredb().collection("addresses").doc(id).delete();
+
+    const addresses = await firestoredb()
       .collection("addresses")
-      .doc(id)
-      .delete();
+      .where("user", "==", userId)
+      .get();
 
     res.status(200).json({
       success: true,
-      address,
+      addresses: addresses.docs.map((address) => ({
+        id: address.id,
+        ...address.data(),
+      })),
     });
   }
 );
