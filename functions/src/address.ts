@@ -66,7 +66,10 @@ exports.getUserAddresses = https.onRequest(
 
     res.status(200).json({
       success: true,
-      addresses,
+      addresses: addresses.docs.map((address) => ({
+        id: address.id,
+        ...address.data(),
+      })),
     });
   }
 );
