@@ -1,14 +1,19 @@
 // @ts-ignore
 import awsCloudFront from "aws-cloudfront-sign";
+import {
+  CLOUDFRONT_ACCESS_KEY_ID,
+  CLOUDFRONT_PRIVATE_KEY_PATH,
+  CLOUDFRONT_URL,
+} from "../secrets";
 
 export function getFileLink(filename: string) {
   return new Promise(function (resolve, reject) {
     var options = {
-      keypairId: process.env.CLOUDFRONT_ACCESS_KEY_ID,
-      privateKeyPath: process.env.CLOUDFRONT_PRIVATE_KEY_PATH,
+      keypairId: CLOUDFRONT_ACCESS_KEY_ID,
+      privateKeyPath: CLOUDFRONT_PRIVATE_KEY_PATH,
     };
     var signedUrl = awsCloudFront.getSignedUrl(
-      process.env.CLOUDFRONT_URL + filename,
+      CLOUDFRONT_URL + filename,
       options
     );
     resolve(signedUrl);

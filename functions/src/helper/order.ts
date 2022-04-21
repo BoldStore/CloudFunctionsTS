@@ -1,5 +1,6 @@
 import { createHmac } from "crypto";
 import { firestore } from "firebase-admin";
+import { RAZORPAY_SECRET } from "../secrets";
 
 export const confirmOrder = async (
   paymentId: string,
@@ -7,7 +8,7 @@ export const confirmOrder = async (
   razorpaySignature: string,
   userId: string
 ) => {
-  const keySecret: string = process.env.RAZORPAY_SECRET!.toString();
+  const keySecret: string = RAZORPAY_SECRET!.toString();
 
   const order = await firestore()
     .collection("orders")

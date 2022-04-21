@@ -1,5 +1,11 @@
 import { v2beta3 } from "@google-cloud/tasks";
 import { firestore } from "firebase-admin";
+import {
+  GCP_LOCATION,
+  GCP_PROJECT_NAME,
+  PRODUCT_DATA_URL,
+  SERVICE_ACCOUNT_EMAIL,
+} from "../secrets";
 
 export const createProductTask = async (
   posts: Array<any> = [],
@@ -10,8 +16,8 @@ export const createProductTask = async (
   const queueName = "product-queue-" + storeId;
 
   const parent = client.queuePath(
-    process.env.GCP_PROJECT_NAME!.toString(),
-    process.env.GCP_LOCATION!.toString(),
+    GCP_PROJECT_NAME!.toString(),
+    GCP_LOCATION!.toString(),
     queueName
   );
 
@@ -28,9 +34,9 @@ export const createProductTask = async (
   var url: string = "";
 
   if (!store.exists) {
-    url = process.env.PRODUCT_DATA_URL!.toString() + "?storeId=" + storeId;
+    url = PRODUCT_DATA_URL!.toString() + "?storeId=" + storeId;
   } else {
-    url = process.env.PRODUCT_DATA_URL!.toString() + "?storeId=" + storeId;
+    url = PRODUCT_DATA_URL!.toString() + "?storeId=" + storeId;
   }
 
   const task: any = {
@@ -38,7 +44,7 @@ export const createProductTask = async (
       httpMethod: "POST",
       url,
       oidcToken: {
-        serviceAccountEmail: process.env.SERVICE_ACCOUNT_EMAIL!.toString(),
+        serviceAccountEmail: SERVICE_ACCOUNT_EMAIL!.toString(),
         audience: new URL(url).origin,
       },
       headers: {

@@ -6,6 +6,7 @@ import axios from "axios";
 import { SHIPROCKET_SERVICEABILITY } from "./constants";
 import { sendMail } from "./mails";
 import { createShipment } from "./helper/shipping";
+import { DELIVERY_API_KEY } from "./secrets";
 
 exports.createOrder = https.onRequest(
   async (req: Request, res: Response<any>) => {
@@ -223,7 +224,7 @@ exports.checkForDelivery = https.onRequest(
       },
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.DELIVERY_API_KEY}`,
+        Authorization: `Bearer ${DELIVERY_API_KEY}`,
       },
     });
 

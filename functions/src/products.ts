@@ -1,6 +1,7 @@
 import { Request, Response } from "firebase-functions/v1";
 import { firestore as firestoredb } from "firebase-admin";
 import { handler } from "./helper/file_upload_s3";
+import { S3_BUCKET_NAME } from "./secrets";
 
 exports.getProductData = async (req: Request, res: Response<any>) => {
   const storeId: string = req.query.storeId!.toString();
@@ -16,7 +17,7 @@ exports.getProductData = async (req: Request, res: Response<any>) => {
     const post_url = await handler({
       fileUrl: post.media_url,
       fileName: file_name,
-      bucket: process.env.S3_BUCKET_NAME,
+      bucket: S3_BUCKET_NAME,
     });
 
     //   TODO: Analyze the post and get the data

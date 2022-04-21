@@ -1,6 +1,7 @@
 import axios from "axios";
 import { firestore } from "firebase-admin";
 import { NEW_PICKUP, SHIPROCKET_CHANNELS } from "../constants";
+import { SHIPROCKET_ACCESS_TOKEN } from "../secrets";
 
 export const addPickup = async (
   name: string,
@@ -10,7 +11,7 @@ export const addPickup = async (
   store_id: string,
   index: number
 ) => {
-  const shiprocket_access_token = process.env.SHIPROCKET_ACCESS_TOKEN;
+  const shiprocket_access_token = SHIPROCKET_ACCESS_TOKEN;
 
   await axios.post(
     NEW_PICKUP,
@@ -35,7 +36,7 @@ export const addPickup = async (
 };
 
 export const getChannelId = async () => {
-  const shiprocket_access_token = process.env.SHIPROCKET_ACCESS_TOKEN;
+  const shiprocket_access_token = SHIPROCKET_ACCESS_TOKEN;
 
   const response = await axios.get(SHIPROCKET_CHANNELS, {
     headers: {
@@ -66,7 +67,7 @@ export const createShipment = async (
     await firestore().collection("users").doc(product!.seller).get()
   ).data();
 
-  const shiprocket_access_token = process.env.SHIPROCKET_ACCESS_TOKEN;
+  const shiprocket_access_token = SHIPROCKET_ACCESS_TOKEN;
   const date = new Date();
   const formatted_date = date.toISOString().slice(0, 10);
   const formatted_time = `${date.getHours()}:${date.getMinutes()}`;

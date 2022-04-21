@@ -10,3 +10,5 @@ node_modules/
 
 # Cloudfront private key
 *.pem
+
+secrets.ts
