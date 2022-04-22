@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 class User {
   name?: string;
   email: string;

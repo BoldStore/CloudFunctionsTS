@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 class Product {
   name: string;
   size: string;

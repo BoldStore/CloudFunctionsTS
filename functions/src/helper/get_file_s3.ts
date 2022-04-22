@@ -1,3 +1,5 @@
+/* eslint-disable require-jsdoc */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import awsCloudFront from "aws-cloudfront-sign";
 import {
@@ -7,12 +9,12 @@ import {
 } from "../secrets";
 
 export function getFileLink(filename: string) {
-  return new Promise(function (resolve, reject) {
-    var options = {
+  return new Promise(function(resolve, reject) {
+    const options = {
       keypairId: CLOUDFRONT_ACCESS_KEY_ID,
       privateKeyPath: CLOUDFRONT_PRIVATE_KEY_PATH,
     };
-    var signedUrl = awsCloudFront.getSignedUrl(
+    const signedUrl = awsCloudFront.getSignedUrl(
       CLOUDFRONT_URL + filename,
       options
     );

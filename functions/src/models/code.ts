@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 class Code {
   code: string;
   createdBy: string;

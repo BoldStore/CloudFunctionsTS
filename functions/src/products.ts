@@ -8,8 +8,8 @@ exports.getProductData = async (req: Request, res: Response<any>) => {
 
   const posts = req.body.posts;
 
-  for (var i = 0; i < posts.length; i++) {
-    let post = posts[i];
+  for (let i = 0; i < posts.length; i++) {
+    const post = posts[i];
     const file_name = (
       post.id + new Date().getUTCMilliseconds().toString()
     ).toString();
@@ -57,8 +57,8 @@ exports.updateProductData = async (req: Request, res: Response<any>) => {
 
   // TODO: Get product data from insta
 
-  for (var i = 0; i < products.length; i++) {
-    let product_obj = products[i];
+  for (let i = 0; i < products.length; i++) {
+    const product_obj = products[i];
 
     const product = new Product(
       "",

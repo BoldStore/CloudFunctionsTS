@@ -28,6 +28,8 @@ module.exports = {
     "import/no-unresolved": 0,
     "object-curly-spacing": [2, "always"],
     indent: "off",
-    camelcase: ["allow"],
+    camelcase: [0],
+    "@typescript-eslint/ban-ts-ignore": "off",
+    "max-len": ["error", { code: 300 }],
   },
 };

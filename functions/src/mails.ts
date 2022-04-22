@@ -19,7 +19,7 @@ export const sendMail = async (
   text: string,
   htmlPath: string
 ) => {
-  var html: string | undefined = undefined;
+  let html: string | undefined = undefined;
   readFile(htmlPath, "utf8", (err, data) => {
     if (err) {
       console.log(err);

@@ -19,7 +19,7 @@ exports.homePage = https.onRequest(async (req: Request, res: Response<any>) => {
 
 exports.explorePage = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    var stores: Array<any> = [];
+    let stores: Array<any> = [];
     const products = await firestore()
       .collection("products")
       .where("sold", "!=", true)
@@ -27,19 +27,19 @@ exports.explorePage = https.onRequest(
       .limit(100)
       .get();
 
-    var storeIds = products.docs.map((doc) => doc.data().store);
+    let storeIds = products.docs.map((doc) => doc.data().store);
 
     for (let i = 0; i < storeIds.length; i++) {
-      var id = storeIds[i];
-      var store = await firestore().collection("stores").doc(id).get();
+      let id = storeIds[i];
+      let store = await firestore().collection("stores").doc(id).get();
 
-      var store_products = await firestore()
+      let store_products = await firestore()
         .collection("products")
         .where("store", "==", id)
         .orderBy("likes")
         .limit(5)
         .get();
-      var store_products_data = store_products.docs.map((doc) => doc.data());
+      let store_products_data = store_products.docs.map((doc) => doc.data());
 
       stores.push({
         store: store.data(),

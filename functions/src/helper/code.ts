@@ -13,7 +13,7 @@ export const generateCode = async () => {
 };
 
 export const checkCodeValidation = async (code: string) => {
-  var exists: boolean = false;
+  let exists = false;
 
   // Check if already exists
   const tokenInDb = await firestore()

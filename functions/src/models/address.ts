@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 class Address {
   address: string;
   title: string;

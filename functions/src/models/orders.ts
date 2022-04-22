@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 class Order {
   product: string;
   amount: string;

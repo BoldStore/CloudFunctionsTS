@@ -12,7 +12,7 @@ export const getStoreData = async (
   access_token: string,
   storeId: string
 ) => {
-  var store: Store | null = null;
+  let store: Store | null = null;
   const response = await axios.get(
     `${INSTAGRAM_GRAPH_API_URL}/${user_id}?access_token=${access_token}&fields=${BASIC_FIELDS}`
   );

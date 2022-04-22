@@ -31,7 +31,7 @@ export const createProductTask = async (
 
   const store = await firestore().collection("stores").doc(storeId).get();
 
-  var url: string = "";
+  let url = "";
 
   if (!store.exists) {
     url = PRODUCT_DATA_URL!.toString() + "?storeId=" + storeId;

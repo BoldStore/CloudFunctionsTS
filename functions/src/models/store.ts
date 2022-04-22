@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 class Store {
   full_name: string;
   username: string;
