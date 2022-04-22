@@ -1,18 +1,10 @@
 import { https, Request, Response } from "firebase-functions/v1";
 import { firestore as firestoredb, auth } from "firebase-admin";
+import { checkAuth } from "./helper/check_auth";
 
 exports.addAddress = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const token = req.headers.authorization!;
-    const userId: string = (await auth().verifyIdToken(token)).uid;
-
-    if (!userId) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-      return;
-    }
+    const userId = (await checkAuth(req, res))!;
 
     const title = req.body.title;
     const address_string = req.body.address;
@@ -51,16 +43,7 @@ exports.addAddress = https.onRequest(
 
 exports.getUserAddresses = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const token = req.headers.authorization!;
-    const userId: string = (await auth().verifyIdToken(token)).uid;
-
-    if (!userId) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-      return;
-    }
+    const userId = (await checkAuth(req, res))!;
 
     const addresses = await firestoredb()
       .collection("addresses")
@@ -80,16 +63,7 @@ exports.getUserAddresses = https.onRequest(
 exports.updateAddress = https.onRequest(
   async (req: Request, res: Response<any>) => {
     const id: string = req.body.id!.toString();
-    const token = req.headers.authorization!;
-    const userId: string = (await auth().verifyIdToken(token)).uid;
-
-    if (!userId) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-      return;
-    }
+    const userId = (await checkAuth(req, res))!;
 
     const title = req.body.title;
     const address_string = req.body.address;
@@ -135,16 +109,7 @@ exports.updateAddress = https.onRequest(
 exports.deleteAddress = https.onRequest(
   async (req: Request, res: Response<any>) => {
     const id: string = req.body.id!.toString();
-    const token = req.headers.authorization!;
-    const userId: string = (await auth().verifyIdToken(token)).uid;
-
-    if (!userId) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-      return;
-    }
+    const userId = (await checkAuth(req, res))!;
 
     await firestoredb().collection("addresses").doc(id).delete();
 

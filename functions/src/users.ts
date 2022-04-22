@@ -1,7 +1,8 @@
 import { auth, https, Request, Response } from "firebase-functions/v1";
-import { firestore as firestoredb, auth as adminAuth } from "firebase-admin";
+import { firestore as firestoredb } from "firebase-admin";
 import { getInstaData } from "./helper/get_insta_data";
 import { sendMail } from "./mails";
+import { checkAuth } from "./helper/check_auth";
 
 exports.createUser = auth.user().onCreate(async (user) => {
   const email: string = user.email!.toString();
@@ -19,17 +20,8 @@ exports.createUser = auth.user().onCreate(async (user) => {
 });
 
 exports.userToDb = https.onRequest(async (req: Request, res: Response<any>) => {
-  const token = req.headers.authorization!;
-  const id: string = (await adminAuth().verifyIdToken(token)).uid;
+  const id = (await checkAuth(req, res))!;
   const email = req.body.email;
-
-  if (!id) {
-    res.status(401).json({
-      success: false,
-      message: "Unauthorized",
-    });
-    return;
-  }
 
   const user = await firestoredb().collection("users").doc(id).get();
   const store = await firestoredb().collection("stores").doc(id).get();
@@ -61,16 +53,7 @@ exports.userToDb = https.onRequest(async (req: Request, res: Response<any>) => {
 
 exports.addInstaUsername = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const token = req.headers.authorization!;
-    const id: string = (await adminAuth().verifyIdToken(token)).uid;
-
-    if (!id) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-      return;
-    }
+    const id = (await checkAuth(req, res))!;
 
     const insta_username = req.body.insta_username!.toString();
 
@@ -94,16 +77,7 @@ exports.addInstaUsername = https.onRequest(
 
 exports.getPersonalDetails = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const token = req.headers.authorization!;
-    const id: string = (await adminAuth().verifyIdToken(token)).uid;
-
-    if (!id) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-      return;
-    }
+    const id = (await checkAuth(req, res))!;
 
     const user = await firestoredb().collection("users").doc(id).get();
 
@@ -116,16 +90,7 @@ exports.getPersonalDetails = https.onRequest(
 
 exports.updateUser = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const token = req.headers.authorization!;
-    const id: string = (await adminAuth().verifyIdToken(token)).uid;
-
-    if (!id) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-      return;
-    }
+    const id = (await checkAuth(req, res))!;
 
     const name = req.body.name;
     const birthday = req.body.birthday;
@@ -150,16 +115,7 @@ exports.updateUser = https.onRequest(
 
 exports.deleteUser = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const token = req.headers.authorization!;
-    const id: string = (await adminAuth().verifyIdToken(token)).uid;
-
-    if (!id) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-      return;
-    }
+    const id = (await checkAuth(req, res))!;
 
     const user = await firestoredb().collection("users").doc(id).update({
       deletedOn: new Date(),

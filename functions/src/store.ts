@@ -1,20 +1,12 @@
 import { https, Request, Response } from "firebase-functions/v1";
-import { firestore, auth } from "firebase-admin";
+import { firestore } from "firebase-admin";
 import { refresh_store_data } from "./helper/store";
+import { checkAuth } from "./helper/check_auth";
 
 exports.createStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const token = req.headers.authorization!;
-    const id: string = (await auth().verifyIdToken(token)).uid;
+    const id = (await checkAuth(req, res))!;
     const email = req.body.email;
-
-    if (!id) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-      return;
-    }
 
     const user = await firestore().collection("users").doc(id).get();
     const store = await firestore().collection("stores").doc(id).get();
@@ -47,16 +39,7 @@ exports.createStore = https.onRequest(
 
 exports.updateStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const token = req.headers.authorization!;
-    const id: string = (await auth().verifyIdToken(token)).uid;
-
-    if (!id) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-      return;
-    }
+    const id = (await checkAuth(req, res))!;
 
     const user = await firestore().collection("users").doc(id).get();
 

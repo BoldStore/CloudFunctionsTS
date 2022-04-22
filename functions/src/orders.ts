@@ -1,5 +1,5 @@
 import { https, Request, Response } from "firebase-functions/v1";
-import { firestore as firestoredb, auth } from "firebase-admin";
+import { firestore as firestoredb } from "firebase-admin";
 import { razorpayInstance } from ".";
 import { confirmOrder } from "./helper/order";
 import axios from "axios";
@@ -7,22 +7,14 @@ import { SHIPROCKET_SERVICEABILITY } from "./constants";
 import { sendMail } from "./mails";
 import { createShipment } from "./helper/shipping";
 import { DELIVERY_API_KEY } from "./secrets";
+import { checkAuth } from "./helper/check_auth";
 
 exports.createOrder = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const token = req.headers.authorization!;
     const product_id: string = req.body.product_id;
     const address_id: string = req.body.address_id;
     const currency = "INR";
-    const id: string = (await auth().verifyIdToken(token)).uid;
-
-    if (!id) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-      return;
-    }
+    const id = (await checkAuth(req, res))!;
 
     const product = await firestoredb()
       .collection("products")
@@ -67,18 +59,8 @@ exports.verifyOrder = https.onRequest(
     const orderId = req.body.razorpay_order_id;
     const razorpaySignature = req.body.razorpay_signature;
 
-    const token = req.headers.authorization!;
-    const id: string = (await auth().verifyIdToken(token)).uid;
-
+    const id = (await checkAuth(req, res))!;
     const user = (await firestoredb().collection("users").doc(id).get()).data();
-
-    if (!id) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-      return;
-    }
 
     const response = await confirmOrder(
       paymentId,
@@ -157,16 +139,7 @@ exports.callback = https.onRequest(async (req: Request, res: Response<any>) => {
 
 exports.previousOrders = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const token = req.headers.authorization!;
-    const id: string = (await auth().verifyIdToken(token)).uid;
-
-    if (!id) {
-      res.status(401).json({
-        success: false,
-        message: "Unauthorized",
-      });
-      return;
-    }
+    const id = (await checkAuth(req, res))!;
 
     const orders = await firestoredb()
       .collection("orders")
