@@ -1,5 +1,5 @@
 import { https, Request, Response } from "firebase-functions/v1";
-import { firestore as firestoredb, auth } from "firebase-admin";
+import { firestore as firestoredb } from "firebase-admin";
 import { checkAuth } from "./helper/check_auth";
 
 exports.addAddress = https.onRequest(
