@@ -19,6 +19,8 @@ export const getInstaData = async (username: string) => {
 
   const data = response.data;
 
+  console.log("Data>>>", data);
+
   const profile_pic = data?.graphql?.user?.profile_pic_url_hd;
   const full_name = data?.graphql?.user?.full_name;
   const bio = data?.graphql?.user?.biography;

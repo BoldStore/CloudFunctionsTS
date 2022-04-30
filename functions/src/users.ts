@@ -79,7 +79,7 @@ exports.getPersonalDetails = https.onRequest(
   async (req: Request, res: Response<any>) => {
     const id = (await checkAuth(req, res))!;
 
-    const user = await firestoredb().collection("users").doc(id).get();
+    const user = (await firestoredb().collection("users").doc(id).get()).data();
 
     res.status(200).json({
       success: true,
