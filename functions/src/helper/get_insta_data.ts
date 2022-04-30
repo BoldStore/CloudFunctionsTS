@@ -19,11 +19,11 @@ export const getInstaData = async (username: string) => {
 
   const data = response.data;
 
-  const profile_pic = data.graphql.user.profile_pic_url_hd;
-  const full_name = data.graphql.user.full_name;
-  const bio = data.graphql.user.biography;
-  const followers = data.graphql.user.edge_followed_by.count;
-  const following = data.graphql.user.edge_follow.count;
+  const profile_pic = data?.graphql?.user?.profile_pic_url_hd;
+  const full_name = data?.graphql?.user?.full_name;
+  const bio = data?.graphql?.user?.biography;
+  const followers = data?.graphql?.user?.edge_followed_by.count;
+  const following = data?.graphql?.user?.edge_follow.count;
 
   return {
     profile_pic,

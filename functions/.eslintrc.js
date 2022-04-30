@@ -30,6 +30,6 @@ module.exports = {
     indent: "off",
     camelcase: [0],
     "@typescript-eslint/ban-ts-ignore": "off",
-    "max-len": ["error", { code: 300 }],
+    "max-len": ["error", { code: 1000 }],
   },
 };
