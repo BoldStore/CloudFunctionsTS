@@ -26,26 +26,24 @@ export const sendMail = async (
   let html: string | undefined = undefined;
 
   try {
-    readFile("src" + htmlPath, "utf8", (err, data) => {
+    readFile("src" + htmlPath, "utf8", async (err, data) => {
       if (err) {
         console.log("File error", err);
         return null;
       } else {
-        console.log(data);
         html = data;
+        const mailOptions = {
+          from: `${APP_NAME} <noreply@boldstore.com>`,
+          to: email,
+          subject: subject,
+          html: html,
+          text: text,
+        };
+
+        await transporter.sendMail(mailOptions);
         return;
       }
     });
-
-    const mailOptions = {
-      from: `${APP_NAME} <noreply@boldstore.com>`,
-      to: email,
-      subject: subject,
-      text: text,
-      html: html,
-    };
-
-    await transporter.sendMail(mailOptions);
   } catch (e) {
     console.log("Error>>>>", e);
   }

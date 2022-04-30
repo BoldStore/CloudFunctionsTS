@@ -81,7 +81,7 @@ exports.verifyOrder = https.onRequest(
         user!.email,
         "Product Bought",
         "You just bought a product",
-        "./templates/product_bought.html"
+        "/templates/product_bought.html"
       );
       res.status(200).json({
         success: true,
@@ -123,7 +123,7 @@ exports.callback = https.onRequest(async (req: Request, res: Response<any>) => {
       user!.email,
       "Product Bought",
       "You just bought a product",
-      "./templates/product_bought.html"
+      "/templates/product_bought.html"
     );
     res.status(200).json({
       success: true,

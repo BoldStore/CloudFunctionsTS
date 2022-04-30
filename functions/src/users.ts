@@ -15,7 +15,7 @@ exports.createUser = auth.user().onCreate(async (user) => {
     email,
     "Welcome to Bold",
     "Welcome to Bold",
-    "./templates/welcome_mail.html"
+    "/templates/welcome_mail.html"
   );
 });
 
