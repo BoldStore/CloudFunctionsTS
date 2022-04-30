@@ -11,15 +11,25 @@ export const checkAuth = async (req: Request, res: Response) => {
     });
     return;
   }
-  const userId: string = (await auth().verifyIdToken(token)).uid;
 
-  if (!userId) {
+  try {
+    const userId: string = (await auth().verifyIdToken(token)).uid;
+
+    if (!userId) {
+      res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+      return;
+    } else {
+      return userId;
+    }
+  } catch (e) {
+    console.log(e);
     res.status(401).json({
       success: false,
-      message: "Unauthorized",
+      message: "There was an error: " + e,
     });
     return;
-  } else {
-    return userId;
   }
 };

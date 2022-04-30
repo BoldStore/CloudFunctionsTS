@@ -26,6 +26,7 @@ exports.checkLogin = https.onRequest(
         success: false,
         message: "Not logged in",
       });
+      return;
     }
 
     const user = (await firestoredb().collection("users").doc(id).get()).data();
