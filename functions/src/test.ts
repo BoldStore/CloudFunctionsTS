@@ -8,13 +8,11 @@ import { checkAuth } from "./helper/check_auth";
 exports.newUser = auth.user().onCreate(async (user) => {
   const email: string = user.email!.toString();
 
-  console.log("USER>>>>", email);
-
   sendMail(
     email,
     "Welcome to Bold",
     "Welcome to Bold",
-    "./templates/welcome_mail.html"
+    "/templates/welcome_mail.html"
   );
 });
 

@@ -1,5 +1,5 @@
 import { createTransport } from "nodemailer";
-// import { readFile } from "fs";
+import { readFile } from "fs";
 import { EMAIL, PASSWORD } from "./secrets";
 
 const email = EMAIL;
@@ -23,25 +23,26 @@ export const sendMail = async (
   text: string,
   htmlPath: string
 ) => {
-  // let html: string | undefined = undefined;
+  let html: string | undefined = undefined;
 
   try {
-    // readFile(htmlPath, "utf8", (err, data) => {
-    //   if (err) {
-    //     console.log(err);
-    //     return null;
-    //   } else {
-    //     // html = data;
-    //     return;
-    //   }
-    // });
+    readFile("src" + htmlPath, "utf8", (err, data) => {
+      if (err) {
+        console.log("File error", err);
+        return null;
+      } else {
+        console.log(data);
+        html = data;
+        return;
+      }
+    });
 
     const mailOptions = {
       from: `${APP_NAME} <noreply@boldstore.com>`,
       to: email,
       subject: subject,
       text: text,
-      html: `<h1>Hello</h1>`,
+      html: html,
     };
 
     await transporter.sendMail(mailOptions);
