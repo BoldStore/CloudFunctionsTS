@@ -63,7 +63,7 @@ exports.getUserAddresses = https.onRequest(
 
     const addresses = await firestoredb()
       .collection("addresses")
-      .where("user", "==", userId)
+      .where("userId", "==", userId)
       .get();
 
     res.status(200).json({
