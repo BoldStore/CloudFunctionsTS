@@ -15,7 +15,19 @@ exports.addAddress = https.onRequest(
     const pincode = req.body.pincode;
     const notes = req.body.notes;
 
-    const address_model = new Address(
+    // const address_model = new Address(
+    //   address_string,
+    //   title,
+    //   addressL1,
+    //   addressL2,
+    //   city,
+    //   state,
+    //   pincode,
+    //   userId,
+    //   notes
+    // );
+
+    const address = await firestoredb().collection("addresses").add({
       address_string,
       title,
       addressL1,
@@ -24,17 +36,21 @@ exports.addAddress = https.onRequest(
       state,
       pincode,
       userId,
-      notes
-    );
-
-    const address = await firestoredb()
-      .collection("addresses")
-      .add(address_model);
+      notes,
+    });
 
     res.status(201).json({
       success: true,
       address: {
-        ...address_model,
+        address_string,
+        title,
+        addressL1,
+        addressL2,
+        city,
+        state,
+        pincode,
+        userId,
+        notes,
         id: address.id,
       },
     });
