@@ -22,3 +22,4 @@ exports.orders = require("./orders");
 exports.shipping = require("./shipping");
 exports.codes = require("./codes");
 exports.pages = require("./pages");
+exports.pages = require("./pages");

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { INSTA_COOKIE } from "../secrets";
 
 export const getInstaData = async (username: string) => {
   const response = await axios.get(
@@ -11,6 +12,7 @@ export const getInstaData = async (username: string) => {
         "Accept-Language": "en-US,en;q=0.9",
         "X-Requested-With": "XMLHttpRequest",
         Connection: "keep-alive",
+        cookie: INSTA_COOKIE,
       },
     }
   );
