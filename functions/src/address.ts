@@ -90,22 +90,32 @@ exports.updateAddress = https.onRequest(
     const pincode = req.body.pincode;
     const notes = req.body.notes;
 
-    const address_model = new Address(
-      address_string,
-      title,
-      addressL1,
-      addressL2,
-      city,
-      state,
-      pincode,
-      userId,
-      notes
-    );
+    // const address_model = new Address(
+    //   address_string,
+    //   title,
+    //   addressL1,
+    //   addressL2,
+    //   city,
+    //   state,
+    //   pincode,
+    //   userId,
+    //   notes
+    // );
 
-    await firestoredb()
-      .collection("addresses")
-      .doc(id)
-      .set(address_model, { merge: true });
+    await firestoredb().collection("addresses").doc(id).set(
+      {
+        address_string,
+        title,
+        addressL1,
+        addressL2,
+        city,
+        state,
+        pincode,
+        userId,
+        notes,
+      },
+      { merge: true }
+    );
 
     const addresses = await firestoredb()
       .collection("addresses")
