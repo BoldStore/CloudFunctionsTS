@@ -1,10 +1,14 @@
 import { createTransport } from "nodemailer";
-import { readFile } from "fs";
+// import { readFile } from "fs";
+import { EMAIL, PASSWORD } from "./secrets";
 
-const email = "";
-const password = "";
+const email = EMAIL;
+const password = PASSWORD;
+
 const transporter = createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: email,
     pass: password,
@@ -19,24 +23,29 @@ export const sendMail = async (
   text: string,
   htmlPath: string
 ) => {
-  let html: string | undefined = undefined;
-  readFile(htmlPath, "utf8", (err, data) => {
-    if (err) {
-      console.log(err);
-      return null;
-    } else {
-      html = data;
-      return;
-    }
-  });
+  // let html: string | undefined = undefined;
 
-  const mailOptions = {
-    from: `${APP_NAME} <noreply@boldstore.com>`,
-    to: email,
-    subject: subject,
-    text: text,
-    html: html,
-  };
+  try {
+    // readFile(htmlPath, "utf8", (err, data) => {
+    //   if (err) {
+    //     console.log(err);
+    //     return null;
+    //   } else {
+    //     // html = data;
+    //     return;
+    //   }
+    // });
 
-  await transporter.sendMail(mailOptions);
+    const mailOptions = {
+      from: `${APP_NAME} <noreply@boldstore.com>`,
+      to: email,
+      subject: subject,
+      text: text,
+      html: `<h1>Hello</h1>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+  } catch (e) {
+    console.log("Error>>>>", e);
+  }
 };
