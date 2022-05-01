@@ -29,7 +29,7 @@ exports.explorePage = https.onRequest(
     const products = await firestore()
       .collection("products")
       .where("sold", "!=", true)
-      .orderBy("likes")
+      // .orderBy("likes")
       .limit(100)
       .get();
 
