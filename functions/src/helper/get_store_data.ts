@@ -4,7 +4,7 @@ import {
   INSTAGRAM_GRAPH_API_URL,
   MEDIA_FIELDS,
 } from "../constants";
-import { createProductTask } from "../tasks/products";
+// import { createProductTask } from "../tasks/products";
 import { getInstaData } from "./get_insta_data";
 
 export const getStoreData = async (

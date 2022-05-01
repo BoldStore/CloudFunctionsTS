@@ -39,38 +39,53 @@ exports.createStore = https.onRequest(
   }
 );
 
-exports.saveStoredata = https.onRequest(
+exports.saveStoreData = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const id = (await checkAuth(req, res))!;
-    const insta_code = req.body.code;
+    try {
+      const id = (await checkAuth(req, res))!;
+      const insta_code = req.body.code;
 
-    const store = await firestore().collection("stores").doc(id).get();
+      console.log("CODE>>>>>", insta_code);
+      console.log("ID>>>>>", id);
 
-    if (!store.exists) {
+      const store = await firestore().collection("stores").doc(id).get();
+
+      if (!store.exists) {
+        res.status(400).json({
+          success: false,
+          message: "Store does not exist",
+        });
+        return;
+      }
+
+      // Get Insta access Token
+      const auth_data = await getAccessToken(insta_code);
+
+      console.log("AUTH DATA>>>>", auth_data);
+
+      // TODO: Get long lived access token
+
+      // Get store data
+      const data = (
+        await getStoreData(auth_data.user_id, auth_data.access_token, store.id)
+      ).store;
+
+      console.log("DATA WOHO", data);
+
+      // Save to db
+      await firestore().collection("stores").doc(id).set(data, { merge: true });
+
+      res.status(200).json({
+        success: true,
+        store: data,
+      });
+    } catch (e) {
+      console.log(e);
       res.status(400).json({
         success: false,
-        message: "Store does not exist",
+        message: "There was an error: " + e,
       });
-      return;
     }
-
-    // Get Insta access Token
-    const auth_data = await getAccessToken(insta_code);
-
-    // TODO: Get long lived access token
-
-    // Get store data
-    const data = (
-      await getStoreData(auth_data.user_id, auth_data.access_token, store.id)
-    ).store;
-
-    // Save to db
-    await firestore().collection("stores").doc(id).set(data, { merge: true });
-
-    res.status(200).json({
-      success: true,
-      store: data,
-    });
   }
 );
 
