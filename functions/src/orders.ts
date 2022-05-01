@@ -33,19 +33,18 @@ exports.createOrder = https.onRequest(
     await razorpayInstance.orders
       .create({ amount: product.data()!.price, currency })
       .then(async (order) => {
-        const order_obj = new Order(
-          product.id,
-          product.data()!.price,
-          new Date(),
-          false,
-          order.id,
-          "",
-          id,
-          address_id,
+        const order_obj = {
+          product: product.id,
+          amount: product.data()!.price,
+          createdAt: new Date(),
+          confirmed: false,
+          orderId: order.id,
+          user: id,
+          address: address_id,
           currency,
-          product.data()!.seller,
-          product.data()!.store
-        );
+          seller: product.data()!.seller,
+          store: product.data()!.store,
+        };
 
         await firestoredb().collection("orders").add(order_obj);
         res.status(201).send({ success: true, order: order_obj });
