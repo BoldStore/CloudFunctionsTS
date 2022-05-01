@@ -2,6 +2,8 @@ import { https, Request, Response } from "firebase-functions/v1";
 import { firestore } from "firebase-admin";
 import { refresh_store_data } from "./helper/store";
 import { checkAuth } from "./helper/check_auth";
+import { getAccessToken } from "./helper/get_access_token";
+import { getStoreData } from "./helper/get_store_data";
 
 exports.createStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
@@ -33,6 +35,41 @@ exports.createStore = https.onRequest(
 
     res.status(201).json({
       success: true,
+    });
+  }
+);
+
+exports.saveStoredata = https.onRequest(
+  async (req: Request, res: Response<any>) => {
+    const id = (await checkAuth(req, res))!;
+    const insta_code = req.body.code;
+
+    const store = await firestore().collection("stores").doc(id).get();
+
+    if (!store.exists) {
+      res.status(400).json({
+        success: false,
+        message: "Store does not exist",
+      });
+      return;
+    }
+
+    // Get Insta access Token
+    const auth_data = await getAccessToken(insta_code);
+
+    // TODO: Get long lived access token
+
+    // Get store data
+    const data = (
+      await getStoreData(auth_data.user_id, auth_data.access_token, store.id)
+    ).store;
+
+    // Save to db
+    await firestore().collection("stores").doc(id).set(data, { merge: true });
+
+    res.status(200).json({
+      success: true,
+      store: data,
     });
   }
 );

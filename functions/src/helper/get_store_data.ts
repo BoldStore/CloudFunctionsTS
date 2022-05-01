@@ -12,7 +12,7 @@ export const getStoreData = async (
   access_token: string,
   storeId: string
 ) => {
-  let store: Store | null = null;
+  let store: any = null;
   const response = await axios.get(
     `${INSTAGRAM_GRAPH_API_URL}/${user_id}?access_token=${access_token}&fields=${BASIC_FIELDS}`
   );
@@ -23,20 +23,33 @@ export const getStoreData = async (
 
     const data = await getInstaData(username);
 
-    store = new Store(
-      data.full_name,
-      username,
-      storeId,
-      new Date(),
-      data.followers,
-      data.following,
-      data.profile_pic,
-      id,
-      data.bio
-    );
+    store = {
+      full_name: data.full_name,
+      username: username,
+      id: storeId,
+      lastRefreshed: new Date(),
+      followers: data.followers,
+      following: data.following,
+      profile_pic: data.profile_pic,
+      instagram_id: id,
+      bio: data.bio,
+      access_token,
+    };
+
+    // new Store(
+    //   data.full_name,
+    //   username,
+    //   storeId,
+    //   new Date(),
+    //   data.followers,
+    //   data.following,
+    //   data.profile_pic,
+    //   id,
+    //   data.bio
+    // );
   }
 
-  await getStoreMedia(user_id, access_token, storeId);
+  getStoreMedia(user_id, access_token, storeId);
 
   return {
     store,
