@@ -70,7 +70,8 @@ export const getStoreMedia = async (
   }
 
   const storeMedia: Array<any> = response.data.data;
-  createProductTask(storeMedia, storeId);
+  console.log("MEDIAAAAA", storeMedia);
+  // createProductTask(storeMedia, storeId);
 
   return true;
 };
