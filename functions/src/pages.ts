@@ -12,8 +12,14 @@ exports.homePage = https.onRequest(async (req: Request, res: Response<any>) => {
 
   res.status(200).json({
     success: true,
-    products,
-    stores,
+    products: products.docs.map((product) => ({
+      id: product.id,
+      ...product.data(),
+    })),
+    stores: stores.docs.map((store) => ({
+      id: store.id,
+      ...store.data(),
+    })),
   });
 });
 
@@ -68,6 +74,9 @@ exports.store = https.onRequest(async (req: Request, res: Response<any>) => {
   res.status(200).json({
     success: true,
     store: store.data(),
-    products: products.docs.map((product) => product.data()),
+    products: products.docs.map((product) => ({
+      id: product.id,
+      ...product.data(),
+    })),
   });
 });

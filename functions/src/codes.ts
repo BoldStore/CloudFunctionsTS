@@ -38,14 +38,24 @@ exports.addInviteToken = https.onRequest(
 
     const inviteCode = await generateCode();
 
-    const code = new Code(inviteCode, userId, new Date(), true);
+    // const code = new Code(inviteCode, userId, new Date(), true);
 
     // Add to db
-    await firestore().collection("codes").add(code);
+    await firestore().collection("codes").add({
+      code: inviteCode,
+      createdBy: userId,
+      createdAt: new Date(),
+      isActive: true,
+    });
 
     res.status(201).json({
       success: true,
-      code,
+      code: {
+        code: inviteCode,
+        createdBy: userId,
+        createdAt: new Date(),
+        isActive: true,
+      },
     });
   }
 );
