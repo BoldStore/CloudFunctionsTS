@@ -31,8 +31,6 @@ export const getAccessToken = async (code?: string) => {
     );
   }
 
-  console.log("USERIDDD", user_id);
-
   return {
     access_token,
     user_id,

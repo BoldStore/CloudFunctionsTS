@@ -2,6 +2,7 @@ import axios from "axios";
 import { INSTA_COOKIE } from "../secrets";
 
 export const getInstaData = async (username: string) => {
+  console.log("WOHOOOOOOO");
   const response = await axios.get(
     `https://www.instagram.com/${username}/?__a=1`,
     {

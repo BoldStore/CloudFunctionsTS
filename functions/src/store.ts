@@ -45,9 +45,6 @@ exports.saveStoreData = https.onRequest(
       const id = (await checkAuth(req, res))!;
       const insta_code = req.body.code;
 
-      console.log("CODE>>>>>", insta_code);
-      console.log("ID>>>>>", id);
-
       const store = await firestore().collection("stores").doc(id).get();
 
       if (!store.exists) {
@@ -61,16 +58,12 @@ exports.saveStoreData = https.onRequest(
       // Get Insta access Token
       const auth_data = await getAccessToken(insta_code);
 
-      console.log("AUTH DATA>>>>", auth_data);
-
       // TODO: Get long lived access token
 
       // Get store data
       const data = (
         await getStoreData(auth_data.user_id, auth_data.access_token, store.id)
       ).store;
-
-      console.log("DATA WOHO", data);
 
       // Save to db
       await firestore().collection("stores").doc(id).set(data, { merge: true });
