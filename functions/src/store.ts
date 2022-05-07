@@ -3,7 +3,7 @@ import { firestore } from "firebase-admin";
 import { refresh_store_data } from "./helper/store";
 import { checkAuth } from "./helper/check_auth";
 import { getAccessToken } from "./helper/get_access_token";
-import { getStoreData } from "./helper/get_store_data";
+import { getStoreData, getStoreMedia } from "./helper/get_store_data";
 
 exports.createStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
@@ -71,6 +71,40 @@ exports.saveStoreData = https.onRequest(
       res.status(200).json({
         success: true,
         store: data,
+      });
+    } catch (e) {
+      console.log(e);
+      res.status(400).json({
+        success: false,
+        message: "There was an error: " + e,
+      });
+    }
+  }
+);
+
+exports.updateStoreProducts = https.onRequest(
+  async (req: Request, res: Response<any>) => {
+    try {
+      const id = (await checkAuth(req, res))!;
+
+      const store = await firestore().collection("stores").doc(id).get();
+
+      if (!store.exists) {
+        res.status(400).json({
+          success: false,
+          message: "Store does not exist",
+        });
+        return;
+      }
+
+      const success = getStoreMedia(
+        store.data()!.user_id,
+        store.data()!.access_token,
+        store.id
+      );
+
+      res.status(200).json({
+        success,
       });
     } catch (e) {
       console.log(e);
