@@ -23,14 +23,12 @@ export const getAccessToken = async (code?: string) => {
 
   if (response.status === 200) {
     access_token = response.data.access_token;
-    let user_id_res: string = response.data.user_id.toString();
-    user_id_res = user_id_res.replace(
-      user_id_res.slice(-1),
-      (parseInt(user_id_res.slice(-1), 10) + 1).toString()
+
+    const user_id_res = response.data.user_id.toString();
+    user_id = user_id.concat(
+      user_id_res.slice(0, -1),
+      (parseInt(user_id_res.slice(-1)) + 1).toString()
     );
-    console.log("RES>>", user_id_res);
-    user_id = user_id_res;
-    // user_id = (parseInt(response.data.user_id) + 1).toString();
   }
 
   console.log("USERIDDD", user_id);
