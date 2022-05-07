@@ -62,17 +62,22 @@ export const getStoreMedia = async (
   access_token: string,
   storeId: string
 ) => {
-  const response = await axios.get(
-    `${INSTAGRAM_GRAPH_API_URL}/${user_id}/media?access_token=${access_token}&fields=${MEDIA_FIELDS}`
-  );
+  try {
+    const response = await axios.get(
+      `${INSTAGRAM_GRAPH_API_URL}/${user_id}/media?access_token=${access_token}&fields=${MEDIA_FIELDS}`
+    );
 
-  if (response.status !== 200) {
+    if (response.status !== 200) {
+      return false;
+    }
+
+    const storeMedia: Array<any> = response.data.data;
+    console.log("MEDIAAAAA", storeMedia);
+    createProductTask(storeMedia, storeId);
+
+    return true;
+  } catch (e) {
+    console.log("There was an error>>>>: ", e);
     return false;
   }
-
-  const storeMedia: Array<any> = response.data.data;
-  console.log("MEDIAAAAA", storeMedia);
-  createProductTask(storeMedia, storeId);
-
-  return true;
 };

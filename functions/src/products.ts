@@ -6,7 +6,11 @@ import { S3_BUCKET_NAME } from "./secrets";
 exports.getProductData = async (req: Request, res: Response<any>) => {
   const storeId: string = req.query.storeId!.toString();
 
+  console.log("STOREID>>>", storeId);
+
   const posts = req.body.posts;
+
+  console.log("POSTS", posts.length);
 
   for (let i = 0; i < posts.length; i++) {
     const post = posts[i];
