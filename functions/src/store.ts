@@ -97,7 +97,7 @@ exports.updateStoreProducts = https.onRequest(
         return;
       }
 
-      const success = getStoreMedia(
+      const success = await getStoreMedia(
         store.data()!.user_id,
         store.data()!.access_token,
         store.id
