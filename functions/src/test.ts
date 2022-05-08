@@ -112,10 +112,10 @@ const createTask = async () => {
   const task: any = {
     httpRequest: {
       httpMethod: "POST",
-      CLOUD_TASK_TEST,
+      url: CLOUD_TASK_TEST,
       oidcToken: {
         serviceAccountEmail: SERVICE_ACCOUNT_EMAIL,
-        audience: new URL(CLOUD_TASK_TEST).origin,
+        // audience: new URL(CLOUD_TASK_TEST).origin,
       },
       headers: {
         "Content-Type": "application/json",
@@ -134,7 +134,7 @@ const createTask = async () => {
     const date_diff_in_seconds =
       (convertedDate.valueOf() - currentDate.valueOf()) / 1000;
     // Construct future date in Unix time.
-    const date_in_seconds = date_diff_in_seconds + Date.now() / 1000;
+    const date_in_seconds = (date_diff_in_seconds + Date.now()) / 1000;
     // Add schedule time to request in Unix time using Timestamp structure.
     // https://googleapis.dev/nodejs/tasks/latest/google.protobuf.html#.Timestamp
     task.scheduleTime = {
