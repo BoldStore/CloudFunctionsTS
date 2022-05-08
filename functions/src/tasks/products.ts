@@ -14,7 +14,7 @@ export const createProductTask = async (
   console.log("TASK START");
   const client = new v2beta3.CloudTasksClient();
 
-  const queueName = "product-queue-" + storeId;
+  const queueName = "product-queue";
 
   const parent = client.queuePath(
     GCP_PROJECT_NAME!.toString(),
@@ -27,8 +27,8 @@ export const createProductTask = async (
   };
 
   // Convert message to buffer.
-  const convertedPayload = JSON.stringify(payload);
-  const body = Buffer.from(convertedPayload).toString("base64");
+  // const convertedPayload = JSON.stringify(payload);
+  // const body = Buffer.from(convertedPayload).toString("base64");
 
   // const store = await firestore().collection("stores").doc(storeId).get();
 
@@ -50,10 +50,10 @@ export const createProductTask = async (
         serviceAccountEmail: SERVICE_ACCOUNT_EMAIL!.toString(),
         audience: new URL(url).origin,
       },
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body,
+      // headers: {
+      //   "Content-Type": "application/json",
+      // },
+      payload,
     },
   };
 
