@@ -22,9 +22,9 @@ export const createProductTask = async (
     queueName
   );
 
-  const payload = {
-    posts,
-  };
+  // const payload = {
+  //   posts,
+  // };
 
   // Convert message to buffer.
   // const convertedPayload = JSON.stringify(payload);
@@ -53,7 +53,7 @@ export const createProductTask = async (
       // headers: {
       //   "Content-Type": "application/json",
       // },
-      payload,
+      posts,
     },
   };
 

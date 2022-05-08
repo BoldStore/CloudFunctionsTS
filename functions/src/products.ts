@@ -9,11 +9,13 @@ exports.getProductData = https.onRequest(
 
     console.log("STOREID>>>", storeId);
 
+    console.log("BODY>>>>>", req.body);
+
     const posts = req.body.posts;
 
-    console.log("POSTS", posts.length);
+    console.log("POSTS", posts?.length);
 
-    for (let i = 0; i < posts.length; i++) {
+    for (let i = 0; i < posts?.length; i++) {
       const post = posts[i];
       const file_name = (
         post.id + new Date().getUTCMilliseconds().toString()
