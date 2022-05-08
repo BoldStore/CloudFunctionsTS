@@ -21,13 +21,13 @@ export const createProductTask = async (
     queueName
   );
 
-  // const payload = {
-  //   posts,
-  // };
+  const payload = {
+    posts,
+  };
 
   // Convert message to buffer.
-  // const convertedPayload = JSON.stringify(payload);
-  // const body = Buffer.from(convertedPayload).toString("base64");
+  const convertedPayload = JSON.stringify(payload);
+  const body = Buffer.from(convertedPayload).toString("base64");
 
   // const store = await firestore().collection("stores").doc(storeId).get();
 
@@ -41,16 +41,16 @@ export const createProductTask = async (
 
   const task: any = {
     httpRequest: {
-      httpMethod: "POST",
+      httpMethod: "post",
       url,
       oidcToken: {
         serviceAccountEmail: SERVICE_ACCOUNT_EMAIL!.toString(),
         audience: new URL(url).origin,
       },
-      headers: {
-        "Content-Type": "application/json",
-      },
-      posts,
+      // headers: {
+      //   "Content-Type": "application/json",
+      // },
+      body,
     },
   };
 
