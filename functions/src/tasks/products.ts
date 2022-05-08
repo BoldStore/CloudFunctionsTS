@@ -11,7 +11,6 @@ export const createProductTask = async (
   posts: Array<any> = [],
   storeId: string
 ) => {
-  console.log("TASK START");
   const client = new v2beta3.CloudTasksClient();
 
   const queueName = "product-queue";
@@ -40,8 +39,6 @@ export const createProductTask = async (
   // }
   url = PRODUCT_DATA_URL!.toString() + "?storeId=" + storeId;
 
-  console.log("STORE URL", url);
-
   const task: any = {
     httpRequest: {
       httpMethod: "POST",
@@ -50,9 +47,9 @@ export const createProductTask = async (
         serviceAccountEmail: SERVICE_ACCOUNT_EMAIL!.toString(),
         audience: new URL(url).origin,
       },
-      // headers: {
-      //   "Content-Type": "application/json",
-      // },
+      headers: {
+        "Content-Type": "application/json",
+      },
       posts,
     },
   };
@@ -60,8 +57,6 @@ export const createProductTask = async (
   const date = new Date();
   const convertedDate = new Date(date);
   const currentDate = new Date();
-
-  console.log("DATE", convertedDate);
 
   // Schedule time can not be in the past.
   if (convertedDate < currentDate) {
@@ -80,7 +75,6 @@ export const createProductTask = async (
 
   try {
     // Send create task request.
-    console.log("REQUESTTTTT");
     const [response] = await client.createTask({ parent, task });
     console.log(`Created task ${response.name}`);
     return response.name;
