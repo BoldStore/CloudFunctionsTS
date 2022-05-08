@@ -151,4 +151,6 @@ const createTask = async () => {
     // Construct error for Stackdriver Error Reporting
     console.log(error);
   }
+
+  return;
 };
