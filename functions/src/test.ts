@@ -115,32 +115,35 @@ const createTask = async () => {
       url: CLOUD_TASK_TEST,
       oidcToken: {
         serviceAccountEmail: SERVICE_ACCOUNT_EMAIL,
-        // audience: new URL(CLOUD_TASK_TEST).origin,
+        audience: new URL(CLOUD_TASK_TEST).origin,
       },
       headers: {
         "Content-Type": "application/json",
       },
       body,
     },
+    scheduleTime: {
+      seconds: Date.now() / 1000,
+    },
   };
 
-  const convertedDate = new Date(new Date());
-  const currentDate = new Date();
+  // const convertedDate = new Date(new Date());
+  // const currentDate = new Date();
 
   // Schedule time can not be in the past.
-  if (convertedDate < currentDate) {
-    console.error("Scheduled date in the past.");
-  } else if (convertedDate > currentDate) {
-    const date_diff_in_seconds =
-      (convertedDate.valueOf() - currentDate.valueOf()) / 1000;
-    // Construct future date in Unix time.
-    const date_in_seconds = (date_diff_in_seconds + Date.now()) / 1000;
-    // Add schedule time to request in Unix time using Timestamp structure.
-    // https://googleapis.dev/nodejs/tasks/latest/google.protobuf.html#.Timestamp
-    task.scheduleTime = {
-      seconds: date_in_seconds,
-    };
-  }
+  // if (convertedDate < currentDate) {
+  //   console.error("Scheduled date in the past.");
+  // } else if (convertedDate > currentDate) {
+  //   const date_diff_in_seconds =
+  //     (convertedDate.valueOf() - currentDate.valueOf()) / 1000;
+  //   // Construct future date in Unix time.
+  //   const date_in_seconds = (date_diff_in_seconds + Date.now()) / 1000;
+  // Add schedule time to request in Unix time using Timestamp structure.
+  // https://googleapis.dev/nodejs/tasks/latest/google.protobuf.html#.Timestamp
+  // task.scheduleTime = {
+  //   seconds: date_in_seconds,
+  // };
+  // }
 
   try {
     // Send create task request.
