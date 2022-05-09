@@ -21,11 +21,14 @@ exports.createOrder = https.onRequest(
       .doc(product_id)
       .get();
 
-    if (!product) {
+    if (!product.exists) {
       res.status(400).send({
         message: "Product not found",
       });
+      return;
     }
+
+    console.log("PRODUCT>", product);
 
     // TODO: Check if product is available
 
