@@ -29,8 +29,6 @@ exports.createOrder = https.onRequest(
         return;
       }
 
-      console.log("PRODUCT>", product.data());
-
       // TODO: Check if product is available
 
       // Add to razorpay
@@ -118,7 +116,6 @@ exports.verifyOrder = https.onRequest(
 
 exports.callback = https.onRequest(async (req: Request, res: Response<any>) => {
   try {
-    console.log("BODYYYYY", req.body);
     const paymentId = req.body.razorpay_payment_id;
     const orderId = req.body.razorpay_order_id;
     const razorpaySignature = req.body.razorpay_signature;

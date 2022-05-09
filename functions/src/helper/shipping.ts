@@ -55,7 +55,6 @@ export const createShipment = async (
   store_id: string,
   user: firestore.DocumentData
 ) => {
-  console.log("SHIPMENT");
   const product = (
     await firestore().collection("products").doc(product_id).get()
   ).data();
@@ -65,7 +64,7 @@ export const createShipment = async (
   ).data();
 
   const seller = (
-    await firestore().collection("users").doc(product!.store).get()
+    await firestore().collection("stores").doc(product!.store).get()
   ).data();
 
   const shiprocket_access_token = SHIPROCKET_ACCESS_TOKEN;
@@ -82,7 +81,8 @@ export const createShipment = async (
       order_date: `${formatted_date} ${formatted_time}`,
       channel_id: channel_id,
       billing_customer_name: user.name,
-      billing_last_name: user.name?.split(" ")[1] ?? "",
+      billing_last_name:
+        user.name?.split(" ").length >= 1 ? user.name?.split(" ")[1] : "",
       billing_address: address!.addressL1,
       billing_city: address!.city,
       billing_pincode: address!.pincode,
@@ -93,10 +93,10 @@ export const createShipment = async (
       shipping_is_billing: true,
       order_items: [
         {
-          name: product!.name,
+          name: product!.name ?? `Product by ${seller!.full_name}`,
           sku: product_id,
           units: 1,
-          selling_price: product!.amount,
+          selling_price: product!.amount ?? 1000,
         },
       ],
       payment_method: "Prepaid",
@@ -125,6 +125,9 @@ export const createShipment = async (
       },
     }
   );
+
+  console.log("STATUS REQ WOHO>>", response.status);
+  console.log("DATA>>>", response.data);
 
   return response.status === 200;
 };
