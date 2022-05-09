@@ -100,24 +100,32 @@ export const createShipment = async (
         },
       ],
       payment_method: "Prepaid",
-      sub_total: product!.amount,
+      sub_total: product!.amount ?? 1000,
       length: 100,
       breadth: 50,
       height: 10,
       weight: 0.5,
-      pickup_location: `${store_id}_address_1`,
+      pickup_location: `${store_id}_address`,
       vendor_details: {
         email: "boldstore@gmail.com",
         phone: seller!.phone,
         name: "Bold",
-        address: "Bold Store",
+        address: "Bold Store, Flat number 8",
         address_2: "Head Office",
         city: "Delhi",
         state: "New Delhi",
         country: "India",
         pin_code: "110024",
-        pickup_location: `${store_id}_address_1`,
+        pickup_location: `${store_id}_address`,
       },
+      phone: seller!.phone,
+      name: "Bold",
+      address: "Bold Store, Flat number 8",
+      address_2: "Head Office",
+      city: "Delhi",
+      state: "New Delhi",
+      country: "India",
+      pin_code: "110024",
     },
     {
       headers: {
@@ -125,9 +133,6 @@ export const createShipment = async (
       },
     }
   );
-
-  console.log("STATUS REQ WOHO>>", response.status);
-  console.log("DATA>>>", response.data);
 
   return response.status === 200;
 };
