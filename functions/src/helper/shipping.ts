@@ -65,7 +65,7 @@ export const createShipment = async (
   ).data();
 
   const seller = (
-    await firestore().collection("users").doc(product!.seller).get()
+    await firestore().collection("users").doc(product!.store).get()
   ).data();
 
   const shiprocket_access_token = SHIPROCKET_ACCESS_TOKEN;
