@@ -120,12 +120,13 @@ export const createShipment = async (
       },
       phone: seller!.phone,
       name: "Bold",
-      address: "Bold Store, Flat number 8",
+      address: "Bold Store, Road no. 8",
       address_2: "Head Office",
       city: "Delhi",
       state: "New Delhi",
       country: "India",
       pin_code: "110024",
+      email: "boldstore@gmail.com",
     },
     {
       headers: {
