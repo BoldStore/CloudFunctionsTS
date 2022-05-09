@@ -46,7 +46,7 @@ exports.createOrder = https.onRequest(
             user: id,
             address: address_id,
             currency,
-            seller: product.data()!.seller,
+            // seller: product.data()!.seller,
             store: product.data()!.store,
           };
 
