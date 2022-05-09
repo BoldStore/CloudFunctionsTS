@@ -85,21 +85,38 @@ exports.updateProductData = async (req: Request, res: Response<any>) => {
   for (let i = 0; i < products.length; i++) {
     const product_obj = products[i];
 
-    const product = new Product(
-      "",
-      "",
-      false,
-      product_obj.data().postedOn,
-      "",
-      "",
-      "",
-      product_obj.data().store,
-      "",
-      "",
-      new Date(),
-      product_obj.data().file_name,
-      product_obj.data().imgUrl
-    );
+    // const product = new Product(
+    //   "",
+    //   "",
+    //   false,
+    //   product_obj.data().postedOn,
+    //   "",
+    //   "",
+    //   "",
+    //   product_obj.data().store,
+    //   "",
+    //   "",
+    //   new Date(),
+    //   product_obj.data().file_name,
+    //   product_obj.data().imgUrl
+    // );
+
+    const product = {
+      name: "",
+      size: "",
+      sold: false,
+      postedOn: product_obj.data().postedOn,
+      amount: "",
+      likes: "",
+      comments: "",
+      store: product_obj.data().store,
+      color: "",
+      soldOn: null,
+      file_name: product_obj.data().file_name,
+      imgUrl: product_obj.data().imgUrl,
+      caption: product_obj.data()?.caption,
+      permalink: product_obj.data()?.permalink,
+    };
 
     //   Add to firebase
     await firestoredb()
