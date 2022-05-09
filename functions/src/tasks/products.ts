@@ -47,10 +47,10 @@ export const createProductTask = async (
         serviceAccountEmail: SERVICE_ACCOUNT_EMAIL!.toString(),
         audience: new URL(url).origin,
       },
-      // headers: {
-      //   "Content-Type": "application/json",
-      // },
-      body,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: body,
     },
   };
 

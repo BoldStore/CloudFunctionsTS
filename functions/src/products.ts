@@ -29,21 +29,38 @@ exports.getProductData = https.onRequest(
 
       //   TODO: Analyze the post and get the data
 
-      const product = new Product(
-        "",
-        "",
-        false,
-        post.timestamp,
-        "",
-        "",
-        "",
-        storeId,
-        "",
-        "",
-        new Date(),
-        file_name,
-        post_url
-      );
+      // const product = new Product(
+      //   "",
+      //   "",
+      //   false,
+      //   post.timestamp,
+      //   "",
+      //   "",
+      //   "",
+      //   storeId,
+      //   "",
+      //   "",
+      //   new Date(),
+      //   file_name,
+      //   post_url
+      // );
+
+      const product = {
+        name: "",
+        size: "",
+        sold: false,
+        postedOn: post.timestamp,
+        amount: "",
+        likes: "",
+        comments: "",
+        store: storeId,
+        color: "",
+        soldOn: null,
+        file_name: file_name,
+        imgUrl: post_url,
+        caption: post?.caption,
+        permalink: post.permalink,
+      };
 
       //   Add to firebase
       await firestoredb()
