@@ -53,7 +53,7 @@ exports.getProductData = https.onRequest(
           soldOn: null,
           file_name: file_name,
           imgUrl: post_url,
-          caption: post?.caption,
+          caption: post?.caption ?? null,
           permalink: post.permalink,
           id: post.id,
         };
