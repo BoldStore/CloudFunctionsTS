@@ -11,47 +11,55 @@ import { checkAuth } from "./helper/check_auth";
 
 exports.createOrder = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const product_id: string = req.body.product_id;
-    const address_id: string = req.body.address_id;
-    const currency = "INR";
-    const id = (await checkAuth(req, res))!;
+    try {
+      const product_id: string = req.body.product_id;
+      const address_id: string = req.body.address_id;
+      const currency = "INR";
+      const id = (await checkAuth(req, res))!;
 
-    const product = await firestoredb()
-      .collection("products")
-      .doc(product_id)
-      .get();
+      const product = await firestoredb()
+        .collection("products")
+        .doc(product_id)
+        .get();
 
-    if (!product.exists) {
-      res.status(400).send({
-        message: "Product not found",
+      if (!product.exists) {
+        res.status(400).send({
+          message: "Product not found",
+        });
+        return;
+      }
+
+      console.log("PRODUCT>", product.data());
+
+      // TODO: Check if product is available
+
+      // Add to razorpay
+      await razorpayInstance.orders
+        .create({ amount: product.data()!.price ?? 1000, currency: currency })
+        .then(async (order) => {
+          const order_obj = {
+            product: product.id,
+            amount: product.data()!.price,
+            createdAt: new Date(),
+            confirmed: false,
+            orderId: order.id,
+            user: id,
+            address: address_id,
+            currency,
+            seller: product.data()!.seller,
+            store: product.data()!.store,
+          };
+
+          await firestoredb().collection("orders").add(order_obj);
+          res.status(201).send({ success: true, order: order_obj });
+        });
+    } catch (e) {
+      console.log("ERROR>", e);
+      res.status(500).send({
+        success: false,
+        error: e,
       });
-      return;
     }
-
-    console.log("PRODUCT>", product.data());
-
-    // TODO: Check if product is available
-
-    // Add to razorpay
-    await razorpayInstance.orders
-      .create({ amount: product.data()!.price ?? 1000, currency })
-      .then(async (order) => {
-        const order_obj = {
-          product: product.id,
-          amount: product.data()!.price,
-          createdAt: new Date(),
-          confirmed: false,
-          orderId: order.id,
-          user: id,
-          address: address_id,
-          currency,
-          seller: product.data()!.seller,
-          store: product.data()!.store,
-        };
-
-        await firestoredb().collection("orders").add(order_obj);
-        res.status(201).send({ success: true, order: order_obj });
-      });
   }
 );
 
