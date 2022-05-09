@@ -65,11 +65,65 @@ exports.createOrder = https.onRequest(
 
 exports.verifyOrder = https.onRequest(
   async (req: Request, res: Response<any>) => {
+    try {
+      const paymentId = req.body.razorpay_payment_id;
+      const orderId = req.body.razorpay_order_id;
+      const razorpaySignature = req.body.razorpay_signature;
+
+      const id = (await checkAuth(req, res))!;
+      const user = (
+        await firestoredb().collection("users").doc(id).get()
+      ).data();
+
+      const response = await confirmOrder(
+        paymentId,
+        orderId,
+        razorpaySignature,
+        id
+      );
+
+      if (response.success) {
+        await createShipment(
+          response.order!.data().address,
+          orderId,
+          response.order!.data().product,
+          response.order!.data().store,
+          user!
+        );
+        sendMail(
+          user!.email,
+          "Product Bought",
+          "You just bought a product",
+          "/templates/product_bought.html"
+        );
+        res.status(200).json({
+          success: true,
+          message: "Order confirmed",
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: response.message,
+        });
+      }
+    } catch (e) {
+      console.log("ERROR>", e);
+      res.status(500).send({
+        success: false,
+        error: `There was an error: ${e}`,
+      });
+    }
+  }
+);
+
+exports.callback = https.onRequest(async (req: Request, res: Response<any>) => {
+  try {
+    console.log("BODYYYYY", req.body);
     const paymentId = req.body.razorpay_payment_id;
     const orderId = req.body.razorpay_order_id;
     const razorpaySignature = req.body.razorpay_signature;
 
-    const id = (await checkAuth(req, res))!;
+    const id = req.query.id!.toString();
     const user = (await firestoredb().collection("users").doc(id).get()).data();
 
     const response = await confirmOrder(
@@ -103,46 +157,11 @@ exports.verifyOrder = https.onRequest(
         message: response.message,
       });
     }
-  }
-);
-
-exports.callback = https.onRequest(async (req: Request, res: Response<any>) => {
-  const paymentId = req.body.razorpay_payment_id;
-  const orderId = req.body.razorpay_order_id;
-  const razorpaySignature = req.body.razorpay_signature;
-
-  const id: string = req.query.id!.toString();
-  const user = (await firestoredb().collection("users").doc(id).get()).data();
-
-  const response = await confirmOrder(
-    paymentId,
-    orderId,
-    razorpaySignature,
-    id
-  );
-
-  if (response.success) {
-    await createShipment(
-      response.order!.data().address,
-      orderId,
-      response.order!.data().product,
-      response.order!.data().store,
-      user!
-    );
-    sendMail(
-      user!.email,
-      "Product Bought",
-      "You just bought a product",
-      "/templates/product_bought.html"
-    );
-    res.status(200).json({
-      success: true,
-      message: "Order confirmed",
-    });
-  } else {
-    res.status(400).json({
+  } catch (e) {
+    console.log("ERROR>", e);
+    res.status(500).send({
       success: false,
-      message: response.message,
+      message: `There was an error: ${e}`,
     });
   }
 });

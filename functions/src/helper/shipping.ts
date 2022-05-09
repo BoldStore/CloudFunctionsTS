@@ -55,6 +55,7 @@ export const createShipment = async (
   store_id: string,
   user: firestore.DocumentData
 ) => {
+  console.log("SHIPMENT");
   const product = (
     await firestore().collection("products").doc(product_id).get()
   ).data();
