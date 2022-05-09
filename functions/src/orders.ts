@@ -28,13 +28,13 @@ exports.createOrder = https.onRequest(
       return;
     }
 
-    console.log("PRODUCT>", product);
+    console.log("PRODUCT>", product.data());
 
     // TODO: Check if product is available
 
     // Add to razorpay
     await razorpayInstance.orders
-      .create({ amount: product.data()!.price, currency })
+      .create({ amount: product.data()!.price ?? 1000, currency })
       .then(async (order) => {
         const order_obj = {
           product: product.id,
