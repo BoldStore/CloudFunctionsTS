@@ -39,7 +39,7 @@ exports.createOrder = https.onRequest(
         .then(async (order) => {
           const order_obj = {
             product: product.id,
-            amount: product.data()!.price,
+            amount: product.data()!.price ?? 1000,
             createdAt: new Date(),
             confirmed: false,
             orderId: order.id,
