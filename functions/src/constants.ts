@@ -16,3 +16,6 @@ export const NEW_PICKUP =
 export const SHIPROCKET_CHANNELS = SHIPROCKET_API_URL + "/external/channels";
 export const CREATE_SHIPMENT =
   SHIPROCKET_API_URL + "/external/shipments/create/forward-shipment";
+
+export const SHIPROCKET_ADDRESSES =
+  SHIPROCKET_API_URL + "/external/settings/company/pickup";

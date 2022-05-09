@@ -1,6 +1,6 @@
 import { https, Request, Response } from "firebase-functions/v1";
 import axios from "axios";
-import { NEW_PICKUP, SHIPROCKET_LOGIN } from "./constants";
+import { SHIPROCKET_ADDRESSES, SHIPROCKET_LOGIN } from "./constants";
 import {
   SHIPROCKET_ACCESS_TOKEN,
   SHIPROCKET_EMAIL,
@@ -29,7 +29,7 @@ exports.getShiprocketAccessToken = https.onRequest(
 exports.getShiprocketAddresses = https.onRequest(
   async (req: Request, res: Response<any>) => {
     const access_token = SHIPROCKET_ACCESS_TOKEN;
-    const response = await axios.get(NEW_PICKUP, {
+    const response = await axios.get(SHIPROCKET_ADDRESSES, {
       headers: {
         Authorization: "Bearer " + access_token,
       },
