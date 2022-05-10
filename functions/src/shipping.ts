@@ -9,35 +9,55 @@ import {
 
 exports.getShiprocketAccessToken = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const email = SHIPROCKET_EMAIL;
-    const password = SHIPROCKET_PASSWORD;
+    try {
+      const email = SHIPROCKET_EMAIL;
+      const password = SHIPROCKET_PASSWORD;
 
-    const response = await axios.post(SHIPROCKET_LOGIN, {
-      email: email,
-      password: password,
-    });
+      // TODO: Save to DB
 
-    const access_token = response.data.token;
+      const response = await axios.post(SHIPROCKET_LOGIN, {
+        email: email,
+        password: password,
+      });
 
-    res.status(200).json({
-      success: true,
-      access_token,
-    });
+      const access_token = response.data.token;
+
+      res.status(200).json({
+        success: true,
+        access_token,
+      });
+    } catch (e) {
+      console.log("There was an error geting shiprocket token", e);
+      res.status(500).json({
+        success: false,
+        message: "Could not get shiprocket token",
+        error: e,
+      });
+    }
   }
 );
 
 exports.getShiprocketAddresses = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const access_token = SHIPROCKET_ACCESS_TOKEN;
-    const response = await axios.get(SHIPROCKET_ADDRESSES, {
-      headers: {
-        Authorization: "Bearer " + access_token,
-      },
-    });
+    try {
+      const access_token = SHIPROCKET_ACCESS_TOKEN;
+      const response = await axios.get(SHIPROCKET_ADDRESSES, {
+        headers: {
+          Authorization: "Bearer " + access_token,
+        },
+      });
 
-    res.status(200).json({
-      success: true,
-      addresses: response.data.shipping_addresses,
-    });
+      res.status(200).json({
+        success: true,
+        addresses: response.data.shipping_addresses,
+      });
+    } catch (e) {
+      console.log("Shiprocket addresses error", e);
+      res.status(500).json({
+        success: false,
+        message: "Could not get shiprocket addresses",
+        error: e,
+      });
+    }
   }
 );
