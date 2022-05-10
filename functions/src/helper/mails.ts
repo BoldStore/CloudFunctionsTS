@@ -1,6 +1,6 @@
 import { createTransport } from "nodemailer";
 import { readFile } from "fs";
-import { EMAIL, PASSWORD } from "./secrets";
+import { EMAIL, PASSWORD } from "../secrets";
 
 const email = EMAIL;
 const password = PASSWORD;
@@ -45,6 +45,6 @@ export const sendMail = async (
       }
     });
   } catch (e) {
-    console.log("Error>>>>", e);
+    console.log("Error sending mail>>", e);
   }
 };

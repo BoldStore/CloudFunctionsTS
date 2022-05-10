@@ -1,7 +1,7 @@
 import { auth, https, Request, Response } from "firebase-functions/v1";
 import { firestore as firestoredb } from "firebase-admin";
 import { getInstaData } from "./helper/get_insta_data";
-import { sendMail } from "./mails";
+import { sendMail } from "./helper/mails";
 import { checkAuth } from "./helper/check_auth";
 import { v2beta3 } from "@google-cloud/tasks";
 import {
