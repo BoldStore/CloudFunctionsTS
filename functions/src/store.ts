@@ -1,9 +1,9 @@
 import { https, Request, Response } from "firebase-functions/v1";
 import { firestore } from "firebase-admin";
-import { refresh_store_data } from "./helper/store";
+// import { refresh_store_data } from "./helper/store";
 import { checkAuth } from "./helper/check_auth";
 import { getAccessToken } from "./helper/get_access_token";
-import { getStoreData, getStoreMedia } from "./helper/get_store_data";
+import { getStoreData } from "./helper/get_store_data";
 
 exports.createStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
