@@ -69,74 +69,78 @@ exports.getProductData = https.onRequest(
       console.log("There was an error>>>", e);
       res.status(500).json({
         success: false,
+        message: "Could not get Store posts",
         error: e,
       });
     }
   }
 );
 
-exports.updateProductData = async (req: Request, res: Response<any>) => {
-  try {
-    const products = (
-      await firestoredb()
-        .collection("products")
-        .where("sold", "==", false)
-        .get()
-    ).docs;
+// exports.updateProductData = https.onRequest(
+//   async (req: Request, res: Response<any>) => {
+//     try {
+//       const products = (
+//         await firestoredb()
+//           .collection("products")
+//           .where("sold", "==", false)
+//           .get()
+//       ).docs;
 
-    // TODO: Get product data from insta
+//       // TODO: Get product data from insta
 
-    for (let i = 0; i < products.length; i++) {
-      const product_obj = products[i];
+//       for (let i = 0; i < products.length; i++) {
+//         const product_obj = products[i];
 
-      // const product = new Product(
-      //   "",
-      //   "",
-      //   false,
-      //   product_obj.data().postedOn,
-      //   "",
-      //   "",
-      //   "",
-      //   product_obj.data().store,
-      //   "",
-      //   "",
-      //   new Date(),
-      //   product_obj.data().file_name,
-      //   product_obj.data().imgUrl
-      // );
+//         // const product = new Product(
+//         //   "",
+//         //   "",
+//         //   false,
+//         //   product_obj.data().postedOn,
+//         //   "",
+//         //   "",
+//         //   "",
+//         //   product_obj.data().store,
+//         //   "",
+//         //   "",
+//         //   new Date(),
+//         //   product_obj.data().file_name,
+//         //   product_obj.data().imgUrl
+//         // );
 
-      const product = {
-        name: "",
-        size: "",
-        sold: false,
-        postedOn: product_obj.data().postedOn,
-        amount: "",
-        likes: "",
-        comments: "",
-        store: product_obj.data().store,
-        color: "",
-        soldOn: null,
-        file_name: product_obj.data().file_name,
-        imgUrl: product_obj.data().imgUrl,
-        caption: product_obj.data()?.caption,
-        permalink: product_obj.data()?.permalink,
-      };
+//         const product = {
+//           name: "",
+//           size: "",
+//           sold: false,
+//           postedOn: product_obj.data().postedOn,
+//           amount: "",
+//           likes: "",
+//           comments: "",
+//           store: product_obj.data().store,
+//           color: "",
+//           soldOn: null,
+//           file_name: product_obj.data().file_name,
+//           imgUrl: product_obj.data().imgUrl,
+//           caption: product_obj.data()?.caption,
+//           permalink: product_obj.data()?.permalink,
+//         };
 
-      //   Add to firebase
-      await firestoredb()
-        .collection("products")
-        .doc(product_obj.id.toString())
-        .set(product, { merge: true });
-    }
+//         //   Add to firebase
+//         await firestoredb()
+//           .collection("products")
+//           .doc(product_obj.id.toString())
+//           .set(product, { merge: true });
+//       }
 
-    res.status(200).json({
-      success: true,
-    });
-  } catch (e) {
-    console.log("There was an error>>>", e);
-    res.status(500).json({
-      success: false,
-      error: e,
-    });
-  }
-};
+//       res.status(200).json({
+//         success: true,
+//       });
+//     } catch (e) {
+//       console.log("Error updating products>>", e);
+//       res.status(500).json({
+//         success: false,
+//         message: "Error Updating Products",
+//         error: e,
+//       });
+//     }
+//   }
+// );
