@@ -6,7 +6,7 @@ import axios from "axios";
 import { SHIPROCKET_SERVICEABILITY } from "./constants";
 import { sendMail } from "./helper/mails";
 import { createShipment } from "./helper/shipping";
-import { DELIVERY_API_KEY } from "./secrets";
+import { SHIPROCKET_ACCESS_TOKEN } from "./secrets";
 import { checkAuth } from "./helper/check_auth";
 
 exports.createOrder = https.onRequest(
@@ -23,13 +23,33 @@ exports.createOrder = https.onRequest(
         .get();
 
       if (!product.exists) {
-        res.status(400).send({
+        res.status(400).json({
           message: "Product not found",
         });
         return;
       }
 
-      // TODO: Check if product is available
+      if (product.data() && !product.data()!.sold) {
+        res.status(400).json({
+          sucsess: false,
+          message: "Product is sold out",
+        });
+        return;
+      }
+
+      if (product.data() && product.data()!.available) {
+        res.status(400).json({
+          sucsess: false,
+          message: "Product is not available",
+        });
+        return;
+      }
+      // TODO: Check if product is available on insta
+
+      // Make the product unavailable
+      await firestoredb().collection("products").doc(product.id).update({
+        available: false,
+      });
 
       // Add to razorpay
       await razorpayInstance.orders
@@ -49,12 +69,13 @@ exports.createOrder = https.onRequest(
           };
 
           await firestoredb().collection("orders").add(order_obj);
-          res.status(201).send({ success: true, order: order_obj });
+          res.status(201).json({ success: true, order: order_obj });
         });
     } catch (e) {
       console.log("ERROR>", e);
-      res.status(500).send({
+      res.status(500).json({
         success: false,
+        message: "Could not create the order",
         error: e,
       });
     }
@@ -81,6 +102,14 @@ exports.verifyOrder = https.onRequest(
       );
 
       if (response.success) {
+        // Set Product to sold
+        await firestoredb()
+          .collection("products")
+          .doc(response.order!.data().product)
+          .update({
+            sold: true,
+          });
+
         await createShipment(
           response.order!.data().address,
           orderId,
@@ -106,9 +135,10 @@ exports.verifyOrder = https.onRequest(
       }
     } catch (e) {
       console.log("ERROR>", e);
-      res.status(500).send({
+      res.status(500).json({
         success: false,
-        error: `There was an error: ${e}`,
+        message: "Could not verify the order",
+        error: e,
       });
     }
   }
@@ -131,6 +161,14 @@ exports.callback = https.onRequest(async (req: Request, res: Response<any>) => {
     );
 
     if (response.success) {
+      // Set Product to sold
+      await firestoredb()
+        .collection("products")
+        .doc(response.order!.data().product)
+        .update({
+          sold: true,
+        });
+
       await createShipment(
         response.order!.data().address,
         orderId,
@@ -156,86 +194,121 @@ exports.callback = https.onRequest(async (req: Request, res: Response<any>) => {
     }
   } catch (e) {
     console.log("ERROR>", e);
-    res.status(500).send({
+    res.status(500).json({
       success: false,
-      message: `There was an error: ${e}`,
+      message: `Callback Verification Failed`,
+      error: e,
     });
   }
 });
 
 exports.previousOrders = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const id = (await checkAuth(req, res))!;
+    try {
+      const id = (await checkAuth(req, res))!;
 
-    const orders = await firestoredb()
-      .collection("orders")
-      .where("user", "==", id)
-      .limit(10)
-      .get();
+      const orders = await firestoredb()
+        .collection("orders")
+        .where("user", "==", id)
+        .limit(10)
+        .get();
 
-    res.status(200).json({
-      success: true,
-      orders: orders.docs.map((order) => ({
-        ...order.data(),
-        id: order.id,
-      })),
-    });
+      res.status(200).json({
+        success: true,
+        orders: orders.docs.map((order) => ({
+          ...order.data(),
+          id: order.id,
+        })),
+      });
+    } catch (e) {
+      console.log("Error getting previous orders>>", e);
+      res.status(500).json({
+        success: false,
+        message: "Could not get previous orders",
+        error: e,
+      });
+    }
   }
 );
 
 exports.checkForDelivery = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const delivery_postcode: string = req.body.postCode;
-    const productId: string = req.body.productId;
+    try {
+      const delivery_postcode: string = req.body.postCode;
+      const productId: string = req.body.productId;
 
-    const product = (
-      await firestoredb().collection("products").doc(productId).get()
-    ).data();
+      const product = (
+        await firestoredb().collection("products").doc(productId).get()
+      ).data();
 
-    if (!product) {
-      res.status(400).send({
-        message: "Product not found",
+      if (!product) {
+        res.status(400).json({
+          success: false,
+          message: "Product not found",
+        });
+        return;
+      }
+
+      if (!product!.available) {
+        res.status(400).json({
+          success: false,
+          message: "Product is sold out",
+        });
+        return;
+      }
+
+      if (product!.sold) {
+        res.status(400).json({
+          success: false,
+          message: "Product is sold out",
+        });
+        return;
+      }
+
+      const seller_id = product!.store;
+
+      const address = (
+        await firestoredb()
+          .collection("addresses")
+          .where("user", "==", seller_id)
+          .get()
+      ).docs[0];
+
+      const pickup_postcode = address.data().pincode;
+
+      const response = await axios.get(SHIPROCKET_SERVICEABILITY, {
+        params: {
+          pickup_postcode,
+          delivery_postcode,
+          cod: 0,
+          weight: 1,
+        },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${SHIPROCKET_ACCESS_TOKEN}`,
+        },
+      });
+
+      if (response.status !== 200) {
+        res.status(500).json({
+          success: false,
+          message: "Something went wrong",
+          error: response.data,
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        data: response.data.data,
+      });
+    } catch (e) {
+      console.log("Getting delivery status failed>>", e);
+      res.status(500).json({
+        success: false,
+        message: "Could not get delivery status",
+        error: e,
       });
     }
-    if (product!.sold) {
-      res.status(400).send({
-        message: "Product is sold out",
-      });
-    }
-
-    const seller_id = product!.user;
-
-    const address = (
-      await firestoredb()
-        .collection("addresses")
-        .where("user", "==", seller_id)
-        .get()
-    ).docs[0];
-
-    const pickup_postcode = address.data().pincode;
-
-    const response = await axios.get(SHIPROCKET_SERVICEABILITY, {
-      params: {
-        pickup_postcode,
-        delivery_postcode,
-        cod: 0,
-        weight: 0.5,
-      },
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${DELIVERY_API_KEY}`,
-      },
-    });
-
-    if (response.status !== 200) {
-      res.status(500).send({
-        message: "Something went wrong",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      data: response.data.data,
-    });
   }
 );

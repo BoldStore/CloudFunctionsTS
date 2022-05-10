@@ -31,8 +31,9 @@ export const confirmOrder = async (
 
     if (order!.data().confirmed) {
       return {
-        success: false,
+        success: true,
         message: "Order already confirmed",
+        order,
       };
     }
 
