@@ -47,7 +47,7 @@ exports.sendMail = https.onRequest(async (req: Request, res: Response) => {
 // Check if user is logged in
 exports.checkLogin = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const id = (await checkAuth(req, res))!;
+    const id = (await checkAuth(req, res))!.userId!;
 
     if (!id) {
       res.status(403).json({

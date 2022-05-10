@@ -7,8 +7,9 @@ import { getStoreData, getStoreMedia } from "./helper/get_store_data";
 
 exports.createStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const id = (await checkAuth(req, res))!;
-    const email = req.body.email;
+    const authUser = await checkAuth(req, res);
+    const id = authUser!.userId!;
+    const email = authUser!.email;
 
     const user = await firestore().collection("users").doc(id).get();
     const store = await firestore().collection("stores").doc(id).get();
@@ -42,7 +43,7 @@ exports.createStore = https.onRequest(
 exports.saveStoreData = https.onRequest(
   async (req: Request, res: Response<any>) => {
     try {
-      const id = (await checkAuth(req, res))!;
+      const id = (await checkAuth(req, res))!.userId!;
       const insta_code = req.body.code;
 
       const store = await firestore().collection("stores").doc(id).get();
@@ -85,7 +86,7 @@ exports.saveStoreData = https.onRequest(
 exports.updateStoreProducts = https.onRequest(
   async (req: Request, res: Response<any>) => {
     try {
-      const id = (await checkAuth(req, res))!;
+      const id = (await checkAuth(req, res))!.userId!;
 
       const store = await firestore().collection("stores").doc(id).get();
 
@@ -118,7 +119,7 @@ exports.updateStoreProducts = https.onRequest(
 
 exports.updateStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const id = (await checkAuth(req, res))!;
+    const id = (await checkAuth(req, res))!.userId!;
 
     const user = await firestore().collection("users").doc(id).get();
 

@@ -13,7 +13,10 @@ export const checkAuth = async (req: Request, res: Response) => {
   }
 
   try {
-    const userId: string = (await auth().verifyIdToken(token)).uid;
+    const user = await auth().verifyIdToken(token);
+
+    const userId = user.uid;
+    const email = user.email;
 
     if (!userId) {
       res.status(401).json({
@@ -22,7 +25,10 @@ export const checkAuth = async (req: Request, res: Response) => {
       });
       return;
     } else {
-      return userId;
+      return {
+        userId,
+        email,
+      };
     }
   } catch (e) {
     console.log(e);

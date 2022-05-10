@@ -15,7 +15,7 @@ exports.createOrder = https.onRequest(
       const product_id: string = req.body.product_id;
       const address_id: string = req.body.address_id;
       const currency = "INR";
-      const id = (await checkAuth(req, res))!;
+      const id = (await checkAuth(req, res))!.userId!;
 
       const product = await firestoredb()
         .collection("products")
@@ -89,7 +89,7 @@ exports.verifyOrder = https.onRequest(
       const orderId = req.body.razorpay_order_id;
       const razorpaySignature = req.body.razorpay_signature;
 
-      const id = (await checkAuth(req, res))!;
+      const id = (await checkAuth(req, res))!.userId!;
       const user = (
         await firestoredb().collection("users").doc(id).get()
       ).data();
@@ -205,7 +205,7 @@ exports.callback = https.onRequest(async (req: Request, res: Response<any>) => {
 exports.previousOrders = https.onRequest(
   async (req: Request, res: Response<any>) => {
     try {
-      const id = (await checkAuth(req, res))!;
+      const id = (await checkAuth(req, res))!.userId!;
 
       const orders = await firestoredb()
         .collection("orders")

@@ -5,7 +5,7 @@ import { checkAuth } from "./helper/check_auth";
 exports.addAddress = https.onRequest(
   async (req: Request, res: Response<any>) => {
     try {
-      const userId = (await checkAuth(req, res))!;
+      const userId = (await checkAuth(req, res))!.userId!;
 
       const title = req.body.title;
       const address_string = req.body.address;
@@ -69,7 +69,7 @@ exports.addAddress = https.onRequest(
 exports.getUserAddresses = https.onRequest(
   async (req: Request, res: Response<any>) => {
     try {
-      const userId = (await checkAuth(req, res))!;
+      const userId = (await checkAuth(req, res))!.userId!;
 
       const addresses = await firestoredb()
         .collection("addresses")
@@ -98,7 +98,7 @@ exports.updateAddress = https.onRequest(
   async (req: Request, res: Response<any>) => {
     try {
       const id: string = req.body.id!.toString();
-      const userId = (await checkAuth(req, res))!;
+      const userId = (await checkAuth(req, res))!.userId!;
 
       const title = req.body.title;
       const address_string = req.body.address;
@@ -163,7 +163,7 @@ exports.deleteAddress = https.onRequest(
   async (req: Request, res: Response<any>) => {
     try {
       const id: string = req.body.id!.toString();
-      const userId = (await checkAuth(req, res))!;
+      const userId = (await checkAuth(req, res))!.userId!;
 
       await firestoredb().collection("addresses").doc(id).delete();
 

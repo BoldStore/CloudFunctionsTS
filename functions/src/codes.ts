@@ -6,7 +6,7 @@ import { generateCode } from "./helper/code";
 exports.addInviteToken = https.onRequest(
   async (req: Request, res: Response<any>) => {
     try {
-      const userId = (await checkAuth(req, res))!;
+      const userId = (await checkAuth(req, res))!.userId!;
 
       const store = await firestore().collection("stores").doc(userId).get();
 

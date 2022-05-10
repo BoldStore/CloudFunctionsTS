@@ -20,7 +20,7 @@ exports.createUser = auth.user().onCreate(async (user) => {
 });
 
 exports.userToDb = https.onRequest(async (req: Request, res: Response<any>) => {
-  const id = (await checkAuth(req, res))!;
+  const id = (await checkAuth(req, res))!.userId!;
   const email = req.body.email;
 
   const user = await firestoredb().collection("users").doc(id).get();
@@ -53,7 +53,7 @@ exports.userToDb = https.onRequest(async (req: Request, res: Response<any>) => {
 
 exports.addInstaUsername = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const id = (await checkAuth(req, res))!;
+    const id = (await checkAuth(req, res))!.userId!;
 
     const insta_username = req.body.insta_username!.toString();
 
@@ -77,7 +77,7 @@ exports.addInstaUsername = https.onRequest(
 
 exports.getPersonalDetails = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const id = (await checkAuth(req, res))!;
+    const id = (await checkAuth(req, res))!.userId!;
 
     const user = (await firestoredb().collection("users").doc(id).get()).data();
 
@@ -90,7 +90,7 @@ exports.getPersonalDetails = https.onRequest(
 
 exports.updateUser = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const id = (await checkAuth(req, res))!;
+    const id = (await checkAuth(req, res))!.userId!;
 
     const name = req.body.name;
     const birthday = req.body.birthday;
@@ -115,7 +115,7 @@ exports.updateUser = https.onRequest(
 
 exports.deleteUser = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const id = (await checkAuth(req, res))!;
+    const id = (await checkAuth(req, res))!.userId!;
 
     const user = await firestoredb().collection("users").doc(id).update({
       deletedOn: new Date(),
