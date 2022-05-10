@@ -7,36 +7,45 @@ import { getStoreData, getStoreMedia } from "./helper/get_store_data";
 
 exports.createStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const authUser = await checkAuth(req, res);
-    const id = authUser!.userId!;
-    const email = authUser!.email;
+    try {
+      const authUser = await checkAuth(req, res);
+      const id = authUser!.userId!;
+      const email = authUser!.email;
 
-    const user = await firestore().collection("users").doc(id).get();
-    const store = await firestore().collection("stores").doc(id).get();
+      const user = await firestore().collection("users").doc(id).get();
+      const store = await firestore().collection("stores").doc(id).get();
 
-    if (user.exists) {
-      res.status(400).json({
-        success: false,
-        message: "User already exists",
+      if (user.exists) {
+        res.status(400).json({
+          success: false,
+          message: "User already exists",
+        });
+        return;
+      }
+
+      if (store.exists) {
+        res.status(400).json({
+          success: false,
+          message: "Store already exists",
+        });
+        return;
+      }
+
+      await firestore().collection("stores").doc(id).set({
+        email,
       });
-      return;
-    }
 
-    if (store.exists) {
-      res.status(400).json({
-        success: false,
-        message: "Store already exists",
+      res.status(201).json({
+        success: true,
       });
-      return;
+    } catch (e) {
+      console.log("Error in creating store", e);
+      res.status(500).json({
+        success: false,
+        message: "Error in creating store",
+        error: e,
+      });
     }
-
-    await firestore().collection("stores").doc(id).set({
-      email,
-    });
-
-    res.status(201).json({
-      success: true,
-    });
   }
 );
 
@@ -74,10 +83,11 @@ exports.saveStoreData = https.onRequest(
         store: data,
       });
     } catch (e) {
-      console.log(e);
+      console.log("Error in saving store data", e);
       res.status(400).json({
         success: false,
-        message: "There was an error: " + e,
+        message: "Could not store save store data",
+        error: e,
       });
     }
   }
@@ -98,20 +108,21 @@ exports.updateStoreProducts = https.onRequest(
         return;
       }
 
-      const success = await getStoreMedia(
-        store.data()!.user_id,
-        store.data()!.access_token,
-        store.id
-      );
+      // const success = await getStoreMedia(
+      //   store.data()!.user_id,
+      //   store.data()!.access_token,
+      //   store.id
+      // );
 
       res.status(200).json({
-        success,
+        success: true,
       });
     } catch (e) {
-      console.log(e);
+      console.log("Error in updating store products", e);
       res.status(400).json({
         success: false,
-        message: "There was an error: " + e,
+        message: "Could not update store products",
+        error: e,
       });
     }
   }
@@ -119,37 +130,47 @@ exports.updateStoreProducts = https.onRequest(
 
 exports.updateStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
-    const id = (await checkAuth(req, res))!.userId!;
+    try {
+      const id = (await checkAuth(req, res))!.userId!;
 
-    const user = await firestore().collection("users").doc(id).get();
+      const user = await firestore().collection("users").doc(id).get();
 
-    if (user.exists) {
-      res.status(400).json({
-        success: false,
-        message: "User already exists",
-      });
-      return;
-    }
+      if (user.exists) {
+        res.status(400).json({
+          success: false,
+          message: "User already exists",
+        });
+        return;
+      }
 
-    const upi_id = req.body.upi_id;
-    const phone_number = req.body.phone_number;
+      const upi_id = req.body.upi_id;
+      const phone_number = req.body.phone_number;
 
-    if (upi_id) {
+      // if (upi_id) {
       // Payment Details
       await firestore().collection("paymentDetails").doc(id).set(
         {
           upi_id,
+          phone: phone_number,
         },
         { merge: true }
       );
-    }
+      // }
 
-    if (phone_number) {
-      refresh_store_data(id, phone_number);
-    }
+      if (phone_number) {
+        // refresh_store_data(id, phone_number);
+      }
 
-    res.status(200).json({
-      success: true,
-    });
+      res.status(200).json({
+        success: true,
+      });
+    } catch (e) {
+      console.log("Error in updating store", e);
+      res.status(400).json({
+        success: false,
+        message: "Could not update store",
+        error: e,
+      });
+    }
   }
 );
