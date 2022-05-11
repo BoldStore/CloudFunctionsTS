@@ -8,9 +8,27 @@ import { getStoreData } from "./helper/get_store_data";
 exports.createStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
     try {
+      const inviteCode = req.body.inviteCode;
+
+      if (!inviteCode) {
+        res.status(400).send({
+          success: false,
+          message: "Invite code is required",
+        });
+        return;
+      }
+
       const authUser = await checkAuth(req, res);
       const id = authUser!.userId!;
       const email = authUser!.email;
+
+      const code = await firestore().collection("codes").doc(inviteCode).get();
+      if (!code.exists || !code.data()!.isActive) {
+        res.status(400).send({
+          success: false,
+          message: "Invite code is not valid",
+        });
+      }
 
       const user = await firestore().collection("users").doc(id).get();
       const store = await firestore().collection("stores").doc(id).get();
@@ -30,6 +48,12 @@ exports.createStore = https.onRequest(
         });
         return;
       }
+
+      // Set code to used
+      await firestore().collection("codes").doc(code.id).update({
+        isActive: false,
+        store: id,
+      });
 
       await firestore().collection("stores").doc(id).set({
         email,
