@@ -18,11 +18,18 @@ exports.createStore = https.onRequest(
         return;
       }
 
+      console.log("CODE>>>>>", inviteCode);
+
       const authUser = await checkAuth(req, res);
       const id = authUser!.userId!;
       const email = authUser!.email;
 
-      const code = await firestore().collection("codes").doc(inviteCode).get();
+      const code = (
+        await firestore()
+          .collection("codes")
+          .where("code", "==", inviteCode)
+          .get()
+      ).docs[0];
       if (!code.exists || !code.data()!.isActive) {
         res.status(400).send({
           success: false,

@@ -1,5 +1,7 @@
 export const INSTAGRAM_API_URL = "https://api.instagram.com";
 export const INSTAGRAM_GRAPH_API_URL = "https://graph.instagram.com/v13.0";
+export const INSTAGRAM_BASE_URL = "https://instagram.com";
+export const INSTAGRAM_LOGIN = INSTAGRAM_BASE_URL + "/accounts/login/ajax/";
 
 export const INSTAGRAM_ACCESS_TOKEN = INSTAGRAM_API_URL + "/oauth/access_token";
 

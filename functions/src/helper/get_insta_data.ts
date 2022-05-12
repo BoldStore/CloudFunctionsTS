@@ -1,5 +1,6 @@
 import axios from "axios";
 import { firestore } from "firebase-admin";
+import { INSTAGRAM_LOGIN } from "../constants";
 // import { INSTA_COOKIE } from "../secrets";
 
 export const getInstaData = async (username: string) => {
@@ -7,13 +8,18 @@ export const getInstaData = async (username: string) => {
 
   const configs = await firestore().collection("config").get();
 
-  const insta_cookie = configs.docs[0].data().insta_cookie;
+  const configData = configs.docs[0].data();
+
+  const insta_cookie = configData.insta_cookie;
 
   console.log("INSTA_COOKIE", insta_cookie);
 
-  console.log("DATA>>>", configs.docs[0].data());
+  console.log("DATA>>>", configData);
   const cookie = insta_cookie?.toString();
   console.log("COOKIE>>>", cookie);
+
+  const insta_username = configData.username;
+  const enc_password = configData.enc_password;
 
   const instance = axios.create({
     timeout: 15000,
@@ -34,7 +40,7 @@ export const getInstaData = async (username: string) => {
         return response;
       } else {
         // Retry
-        loginInsta();
+        loginInsta(insta_username, enc_password);
         return instance(originalRequest);
       }
     },
@@ -84,6 +90,12 @@ export const getInstaData = async (username: string) => {
   };
 };
 
-const loginInsta = async () => {
-  // get email password
+const loginInsta = async (username: string, enc_password: string) => {
+  const response = await axios.post(INSTAGRAM_LOGIN, {
+    username,
+    enc_password,
+  });
+
+  console.log(response.data);
+  console.log(response.status);
 };
