@@ -4,6 +4,7 @@ import { firestore } from "firebase-admin";
 import { checkAuth } from "./helper/check_auth";
 import { getAccessToken } from "./helper/get_access_token";
 import { getStoreData } from "./helper/get_store_data";
+import { getInstaData } from "./helper/get_insta_data";
 
 exports.createStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
@@ -200,6 +201,49 @@ exports.updateStore = https.onRequest(
       res.status(400).json({
         success: false,
         message: "Could not update store",
+        error: e,
+      });
+    }
+  }
+);
+
+exports.addPotentialStore = https.onRequest(
+  async (req: Request, res: Response<any>) => {
+    try {
+      const insta_username = req.body.insta_username;
+      const email = req.body.email;
+
+      if (!insta_username) {
+        res.status(400).json({
+          success: false,
+          message: "Insta username is required",
+        });
+        return;
+      }
+
+      if (!email) {
+        res.status(400).json({
+          success: false,
+          message: "Email is required",
+        });
+        return;
+      }
+
+      // Save data
+      await firestore().collection("potentialStores").add({
+        insta_username,
+        email,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: "Your data has been saved",
+      });
+    } catch (e) {
+      console.log("Error in saving data", e);
+      res.status(400).json({
+        success: false,
+        message: "There was an error saving data",
         error: e,
       });
     }

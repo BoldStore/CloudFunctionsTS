@@ -11,12 +11,7 @@ export const getInstaData = async (username: string) => {
   const configData = configs.docs[0].data();
 
   const insta_cookie = configData.insta_cookie;
-
-  console.log("INSTA_COOKIE", insta_cookie);
-
-  console.log("DATA>>>", configData);
   const cookie = insta_cookie?.toString();
-  console.log("COOKIE>>>", cookie);
 
   const insta_username = configData.username;
   const enc_password = configData.enc_password;
@@ -34,7 +29,6 @@ export const getInstaData = async (username: string) => {
       const originalRequest = response.config;
       console.log("RESPONSE", originalRequest);
       console.log("Status>", response.status);
-      console.log("Data>", response.data);
       if (response.data.graphql?.user?.full_name) {
         // Exists and worked
         return response;
@@ -46,9 +40,7 @@ export const getInstaData = async (username: string) => {
     },
     // eslint-disable-next-line space-before-function-paren
     async function (error) {
-      console.log(error);
-
-      console.log("CONFIG>>", error.config);
+      console.log("Error>", error);
     }
   );
 
@@ -73,8 +65,6 @@ export const getInstaData = async (username: string) => {
 
   const data = response.data;
 
-  console.log("Data>>>", data);
-
   const profile_pic = data?.graphql?.user?.profile_pic_url_hd;
   const full_name = data?.graphql?.user?.full_name;
   const bio = data?.graphql?.user?.biography;
@@ -96,6 +86,6 @@ const loginInsta = async (username: string, enc_password: string) => {
     enc_password,
   });
 
-  console.log(response.data);
+  console.log("response.data");
   console.log(response.status);
 };
