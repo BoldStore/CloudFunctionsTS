@@ -6,6 +6,8 @@ import { getAccessToken } from "./helper/get_access_token";
 import { getStoreData } from "./helper/get_store_data";
 
 import cors = require("cors");
+import { APP_NAME, transporter } from "./helper/mails";
+import { AVI_MAIL, JAYESH_MAIL } from "./secrets";
 
 exports.createStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
@@ -267,6 +269,33 @@ exports.addPotentialStore = https.onRequest(
           insta_username,
           email,
         });
+
+        const emails = `${JAYESH_MAIL}, ${AVI_MAIL}`;
+
+        // Send mail to founders
+        const mailOptions = {
+          from: `${APP_NAME} <noreply@boldstore.com>`,
+          to: emails,
+          subject: "Boldstore - Potential Store",
+          html: `
+          <h1>Boldstore - Potential Store</h1>
+          <p>
+          Someone just submitted a potential store.
+          </p>
+          <p>
+          Insta username: ${insta_username}
+          Email: ${email}
+          </p>
+          `,
+          text: `
+          BoldStore - Potential Store
+          Someone just submitted a potential store.
+          Insta username: ${insta_username}
+          Email: ${email}
+          `,
+        };
+
+        await transporter.sendMail(mailOptions);
 
         res.status(200).json({
           success: true,

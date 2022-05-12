@@ -5,7 +5,7 @@ import { EMAIL, PASSWORD } from "../secrets";
 const email = EMAIL;
 const password = PASSWORD;
 
-const transporter = createTransport({
+export const transporter = createTransport({
   host: "smtp.gmail.com",
   port: 465,
   secure: true,
@@ -15,7 +15,7 @@ const transporter = createTransport({
   },
 });
 
-const APP_NAME = "Bold";
+export const APP_NAME = "Bold";
 
 export const sendMail = async (
   email: string,
