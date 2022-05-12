@@ -228,6 +228,35 @@ exports.addPotentialStore = https.onRequest(
         return;
       }
 
+      const insta_stores = (
+        await firestore()
+          .collection("potentialStores")
+          .where("insta_username", "==", insta_username)
+          .get()
+      ).docs;
+      const email_stores = (
+        await firestore()
+          .collection("potentialStores")
+          .where("email", "==", email)
+          .get()
+      ).docs;
+
+      if (insta_stores.length > 0) {
+        res.status(400).json({
+          success: false,
+          message: "Insta username already exists",
+        });
+        return;
+      }
+
+      if (email_stores.length > 0) {
+        res.status(400).json({
+          success: false,
+          message: "Email already exists",
+        });
+        return;
+      }
+
       // Save data
       await firestore().collection("potentialStores").add({
         insta_username,
