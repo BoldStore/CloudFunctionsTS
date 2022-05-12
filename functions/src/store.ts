@@ -5,6 +5,8 @@ import { checkAuth } from "./helper/check_auth";
 import { getAccessToken } from "./helper/get_access_token";
 import { getStoreData } from "./helper/get_store_data";
 
+import cors = require("cors");
+
 exports.createStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
     try {
@@ -208,6 +210,11 @@ exports.updateStore = https.onRequest(
 
 exports.addPotentialStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
+    cors({
+      origin: true,
+    })(req, res, () => {
+      // your function body here - use the provided req and res from cors
+    });
     try {
       const insta_username = req.body.insta_username;
       const email = req.body.email;
