@@ -212,75 +212,74 @@ exports.addPotentialStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
     cors({
       origin: true,
-    })(req, res, () => {
-      // your function body here - use the provided req and res from cors
+    })(req, res, async () => {
+      try {
+        const insta_username = req.body.insta_username;
+        const email = req.body.email;
+
+        if (!insta_username) {
+          res.status(400).json({
+            success: false,
+            message: "Insta username is required",
+          });
+          return;
+        }
+
+        if (!email) {
+          res.status(400).json({
+            success: false,
+            message: "Email is required",
+          });
+          return;
+        }
+
+        const insta_stores = (
+          await firestore()
+            .collection("potentialStores")
+            .where("insta_username", "==", insta_username)
+            .get()
+        ).docs;
+        const email_stores = (
+          await firestore()
+            .collection("potentialStores")
+            .where("email", "==", email)
+            .get()
+        ).docs;
+
+        if (insta_stores.length > 0) {
+          res.status(400).json({
+            success: false,
+            message: "Insta username already exists",
+          });
+          return;
+        }
+
+        if (email_stores.length > 0) {
+          res.status(400).json({
+            success: false,
+            message: "Email already exists",
+          });
+          return;
+        }
+
+        // Save data
+        await firestore().collection("potentialStores").add({
+          insta_username,
+          email,
+        });
+
+        res.status(200).json({
+          success: true,
+          message: "Your data has been saved",
+        });
+      } catch (e) {
+        console.log("Error in saving data", e);
+        res.status(400).json({
+          success: false,
+          message: "There was an error saving data",
+          error: e,
+        });
+      }
     });
-    try {
-      const insta_username = req.body.insta_username;
-      const email = req.body.email;
-
-      if (!insta_username) {
-        res.status(400).json({
-          success: false,
-          message: "Insta username is required",
-        });
-        return;
-      }
-
-      if (!email) {
-        res.status(400).json({
-          success: false,
-          message: "Email is required",
-        });
-        return;
-      }
-
-      const insta_stores = (
-        await firestore()
-          .collection("potentialStores")
-          .where("insta_username", "==", insta_username)
-          .get()
-      ).docs;
-      const email_stores = (
-        await firestore()
-          .collection("potentialStores")
-          .where("email", "==", email)
-          .get()
-      ).docs;
-
-      if (insta_stores.length > 0) {
-        res.status(400).json({
-          success: false,
-          message: "Insta username already exists",
-        });
-        return;
-      }
-
-      if (email_stores.length > 0) {
-        res.status(400).json({
-          success: false,
-          message: "Email already exists",
-        });
-        return;
-      }
-
-      // Save data
-      await firestore().collection("potentialStores").add({
-        insta_username,
-        email,
-      });
-
-      res.status(200).json({
-        success: true,
-        message: "Your data has been saved",
-      });
-    } catch (e) {
-      console.log("Error in saving data", e);
-      res.status(400).json({
-        success: false,
-        message: "There was an error saving data",
-        error: e,
-      });
-    }
   }
 );
