@@ -4,7 +4,6 @@ import { firestore } from "firebase-admin";
 import { checkAuth } from "./helper/check_auth";
 import { getAccessToken } from "./helper/get_access_token";
 import { getStoreData } from "./helper/get_store_data";
-import { getInstaData } from "./helper/get_insta_data";
 
 exports.createStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
