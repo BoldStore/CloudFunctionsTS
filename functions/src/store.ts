@@ -2,7 +2,10 @@ import { https, Request, Response } from "firebase-functions/v1";
 import { firestore } from "firebase-admin";
 // import { refresh_store_data } from "./helper/store";
 import { checkAuth } from "./helper/check_auth";
-import { getAccessToken } from "./helper/get_access_token";
+import {
+  getAccessToken,
+  getLongLivedAccessToken,
+} from "./helper/get_access_token";
 import { getStoreData } from "./helper/get_store_data";
 
 import cors = require("cors");
@@ -104,12 +107,31 @@ exports.saveStoreData = https.onRequest(
       // Get Insta access Token
       const auth_data = await getAccessToken(insta_code);
 
-      // TODO: Get long lived access token
+      const access_token_data = await getLongLivedAccessToken(
+        auth_data.access_token
+      );
 
-      // Get store data
-      const data = (
-        await getStoreData(auth_data.user_id, auth_data.access_token, store.id)
-      ).store;
+      let data = {};
+
+      if (access_token_data.error) {
+        // Get store data
+        data = (
+          await getStoreData(
+            auth_data.user_id,
+            auth_data.access_token,
+            store.id
+          )
+        ).store;
+      } else {
+        data = (
+          await getStoreData(
+            auth_data.user_id,
+            access_token_data.access_token,
+            store.id,
+            access_token_data.expires_in
+          )
+        ).store;
+      }
 
       // Save to db
       await firestore().collection("stores").doc(id).set(data, { merge: true });

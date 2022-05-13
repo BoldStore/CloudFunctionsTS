@@ -10,7 +10,8 @@ import { getInstaData } from "./get_insta_data";
 export const getStoreData = async (
   user_id: string,
   access_token: string,
-  storeId: string
+  storeId: string,
+  expires_in = 3600
 ) => {
   let store: any = null;
   const response = await axios.get(
@@ -35,6 +36,7 @@ export const getStoreData = async (
       bio: data.bio,
       access_token,
       user_id,
+      expires_in,
     };
 
     // new Store(

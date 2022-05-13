@@ -1,5 +1,5 @@
 import axios from "axios";
-import { INSTAGRAM_ACCESS_TOKEN } from "../constants";
+import { INSTAGRAM_ACCESS_TOKEN, INSTAGRAM_GRAPH_API_URL } from "../constants";
 import { INSTA_APP_ID, INSTA_CLIENT_SECRET } from "../secrets";
 import { stringify } from "qs";
 
@@ -34,5 +34,30 @@ export const getAccessToken = async (code?: string) => {
   return {
     access_token,
     user_id,
+  };
+};
+
+export const getLongLivedAccessToken = async (access_token: string) => {
+  const url = `https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${INSTA_CLIENT_SECRET}&access_token=${access_token}`;
+  let long_access_token = null;
+  let error = null;
+  let expires_in = null;
+
+  try {
+    const response = await axios.get(url);
+
+    if (response.status == 200) {
+      long_access_token = response.data.access_token;
+      expires_in = response.data.expires_in;
+    }
+  } catch (e) {
+    console.log("Long Lived token error>>", e);
+    error = e;
+  }
+
+  return {
+    access_token: long_access_token,
+    expires_in: expires_in,
+    error,
   };
 };
