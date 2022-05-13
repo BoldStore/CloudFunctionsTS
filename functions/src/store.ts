@@ -8,6 +8,7 @@ import { getStoreData } from "./helper/get_store_data";
 import cors = require("cors");
 import { APP_NAME, transporter } from "./helper/mails";
 import { AVI_MAIL, JAYESH_MAIL } from "./secrets";
+import { refresh_store_products } from "./helper/store";
 
 exports.createStore = https.onRequest(
   async (req: Request, res: Response<any>) => {
@@ -143,14 +144,10 @@ exports.updateStoreProducts = https.onRequest(
         return;
       }
 
-      // const success = await getStoreMedia(
-      //   store.data()!.user_id,
-      //   store.data()!.access_token,
-      //   store.id
-      // );
+      const data = await refresh_store_products(store.id, store.data());
 
       res.status(200).json({
-        success: true,
+        data,
       });
     } catch (e) {
       console.log("Error in updating store products", e);
@@ -284,7 +281,7 @@ exports.addPotentialStore = https.onRequest(
           </p>
           <p>
           Insta username: ${insta_username}
-          Email: ${email}
+          <br>Email: ${email}
           </p>
           `,
           text: `

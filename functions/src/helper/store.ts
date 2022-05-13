@@ -62,73 +62,94 @@ export const refresh_store_products: any = async (
   storeId: string,
   storeFromDb: FirebaseFirestore.DocumentData | undefined = undefined
 ) => {
-  let store: FirebaseFirestore.DocumentData;
-  // Get insta access token
-  if (!storeFromDb) {
-    store = (await firestore().collection("stores").doc(storeId).get()).data()!;
-  } else {
-    store = storeFromDb.data();
-  }
+  try {
+    let store: FirebaseFirestore.DocumentData;
+    // Get insta access token
+    if (!storeFromDb) {
+      store = (
+        await firestore().collection("stores").doc(storeId).get()
+      ).data()!;
+    } else {
+      store = storeFromDb.data();
+    }
 
-  const access_token = store!.access_token;
+    const access_token = store!.access_token;
 
-  const username = store!.insta_username;
+    const username = store!.insta_username;
 
-  const data = await getInstaData(username);
+    const data = await getInstaData(username);
 
-  await firestore().collection("stores").doc(storeId).set(
-    {
-      profile_pic: data.profile_pic,
-      full_name: data.full_name,
-      bio: data.bio,
-      followers: data.followers,
-      following: data.following,
-    },
-    { merge: true }
-  );
+    await firestore().collection("stores").doc(storeId).set(
+      {
+        profile_pic: data.profile_pic,
+        full_name: data.full_name,
+        bio: data.bio,
+        followers: data.followers,
+        following: data.following,
+      },
+      { merge: true }
+    );
 
-  const storeData = await getMedia(store, access_token);
-  const media = storeData.media;
-  const products = await firestore()
-    .collection("products")
-    .where("storeId", "==", storeId)
-    .where("sold", "==", false)
-    .get();
+    const storeData = await getMedia(store, access_token);
+    const media = storeData.media;
+    const products = await firestore()
+      .collection("products")
+      .where("storeId", "==", storeId)
+      .where("sold", "==", false)
+      .get();
 
-  for (let i = 0; i < media.length; i++) {
-    const post = media[i];
-    for (let j = 0; j < products.docs.length; j++) {
-      const product = products.docs[j];
-      if (product.data().id === post.id) {
-        // TODO: Maybe check if product is sold and ONLY update that
-        // TODO: Or just do this, con: more writes, more money
-        const updatedProduct = {
-          name: "",
-          size: "",
-          sold: false,
-          amount: "",
-          likes: "",
-          comments: "",
-          color: "",
-          caption: post?.caption ?? null,
-          permalink: post.permalink,
-        };
-        await firestore()
-          .collection("products")
-          .doc(product.id)
-          .update(updatedProduct);
+    for (let i = 0; i < media.length; i++) {
+      const post = media[i];
+      for (let j = 0; j < products.docs.length; j++) {
+        const product = products.docs[j];
+        if (product.data().id === post.id) {
+          // TODO: Maybe check if product is sold and ONLY update that
+          // TODO: Or just do this, con: more writes, more money
+          const updatedProduct = {
+            name: "",
+            size: "",
+            sold: false,
+            amount: "",
+            likes: "",
+            comments: "",
+            color: "",
+            caption: post?.caption ?? null,
+            permalink: post.permalink,
+          };
+          await firestore()
+            .collection("products")
+            .doc(product.id)
+            .update(updatedProduct);
+        }
       }
     }
-  }
 
-  return;
+    return {
+      success: true,
+      error: null,
+      message: "Store products refreshed",
+    };
+  } catch (e) {
+    console.log("Refresh products error: ", e);
+    return {
+      success: false,
+      error: e,
+      message: "There was an error refreshing the store's products",
+    };
+  }
 };
 
 export const refresh_all_products = async () => {
-  const stores = (await firestore().collection("stores").get()).docs;
+  try {
+    const stores = (await firestore().collection("stores").get()).docs;
 
-  for (let i = 0; i < stores.length; i++) {
-    const store = stores[i];
-    refresh_store_products(store.id, store.data());
+    for (let i = 0; i < stores.length; i++) {
+      const store = stores[i];
+      await refresh_store_products(store.id, store.data());
+    }
+    return;
+  } catch (e) {
+    console.log("Updating all products error: ", e);
+    return;
   }
 };
