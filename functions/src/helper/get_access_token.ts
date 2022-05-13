@@ -1,5 +1,5 @@
 import axios from "axios";
-import { INSTAGRAM_ACCESS_TOKEN, INSTAGRAM_GRAPH_API_URL } from "../constants";
+import { INSTAGRAM_ACCESS_TOKEN } from "../constants";
 import { INSTA_APP_ID, INSTA_CLIENT_SECRET } from "../secrets";
 import { stringify } from "qs";
 
