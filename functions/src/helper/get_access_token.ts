@@ -61,3 +61,28 @@ export const getLongLivedAccessToken = async (access_token: string) => {
     error,
   };
 };
+
+export const refreshToken = async (access_token: string) => {
+  const url = `https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${access_token}`;
+  let long_access_token = null;
+  let error = null;
+  let expires_in = null;
+
+  try {
+    const response = await axios.get(url);
+
+    if (response.status == 200) {
+      long_access_token = response.data.access_token;
+      expires_in = response.data.expires_in;
+    }
+  } catch (e) {
+    console.log("Long Lived token error>>", e);
+    error = e;
+  }
+
+  return {
+    access_token: long_access_token,
+    expires_in: expires_in,
+    error,
+  };
+};
