@@ -58,11 +58,17 @@ export const getMedia = async (store: any, access_token: string) => {
   };
 };
 
-export const refresh_store_products = async (storeId: string) => {
+export const refresh_store_products: any = async (
+  storeId: string,
+  storeFromDb: FirebaseFirestore.DocumentData | undefined = undefined
+) => {
+  let store: FirebaseFirestore.DocumentData;
   // Get insta access token
-  const store = (
-    await firestore().collection("stores").doc(storeId).get()
-  ).data();
+  if (!storeFromDb) {
+    store = (await firestore().collection("stores").doc(storeId).get()).data()!;
+  } else {
+    store = storeFromDb.data();
+  }
 
   const access_token = store!.access_token;
 
@@ -113,5 +119,16 @@ export const refresh_store_products = async (storeId: string) => {
           .update(updatedProduct);
       }
     }
+  }
+
+  return;
+};
+
+export const refresh_all_products = async () => {
+  const stores = (await firestore().collection("stores").get()).docs;
+
+  for (let i = 0; i < stores.length; i++) {
+    const store = stores[i];
+    refresh_store_products(store.id, store.data());
   }
 };
