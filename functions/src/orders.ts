@@ -88,6 +88,8 @@ exports.verifyOrder = https.onRequest(
       const orderId = req.body.razorpay_order_id;
       const razorpaySignature = req.body.razorpay_signature;
 
+      console.log("RESPONSE>>", req.body);
+
       const id = (await checkAuth(req, res))!.userId!;
       const user = (
         await firestoredb().collection("users").doc(id).get()
@@ -148,6 +150,8 @@ exports.callback = https.onRequest(async (req: Request, res: Response<any>) => {
     const paymentId = req.body.razorpay_payment_id;
     const orderId = req.body.razorpay_order_id;
     const razorpaySignature = req.body.razorpay_signature;
+
+    console.log("RESPONSE>>", req.body);
 
     const id = req.query.id!.toString();
     const user = (await firestoredb().collection("users").doc(id).get()).data();
