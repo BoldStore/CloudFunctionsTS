@@ -1,15 +1,17 @@
 import axios from "axios";
 import { INSTAGRAM_ACCESS_TOKEN } from "../constants";
-import { INSTA_APP_ID, INSTA_CLIENT_SECRET } from "../secrets";
 import { stringify } from "qs";
+import { firestore } from "firebase-admin";
 
 export const getAccessToken = async (code?: string) => {
   let access_token = "";
   let user_id = "";
 
+  const config = (await firestore().collection("config").get()).docs[0];
+
   const data = stringify({
-    client_id: INSTA_APP_ID,
-    client_secret: INSTA_CLIENT_SECRET,
+    client_id: config.data().insta_app_id,
+    client_secret: config.data().insta_client_secret,
     code: code,
     grant_type: "authorization_code",
     redirect_uri: "https://bold-96a92.firebaseapp.com/__/auth/handler",
@@ -38,7 +40,11 @@ export const getAccessToken = async (code?: string) => {
 };
 
 export const getLongLivedAccessToken = async (access_token: string) => {
-  const url = `https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${INSTA_CLIENT_SECRET}&access_token=${access_token}`;
+  const config = (await firestore().collection("config").get()).docs[0];
+
+  const url = `https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${
+    config.data().insta_client_secret
+  }&access_token=${access_token}`;
   let long_access_token = null;
   let error = null;
   let expires_in = null;

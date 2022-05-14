@@ -1,7 +1,6 @@
 import axios from "axios";
 import { firestore } from "firebase-admin";
 // import { INSTAGRAM_LOGIN } from "../constants";
-// import { INSTA_COOKIE } from "../secrets";
 
 export const getInstaData = async (username: string) => {
   const configs = await firestore().collection("config").get();
