@@ -6,7 +6,6 @@ import axios from "axios";
 import { SHIPROCKET_SERVICEABILITY } from "./constants";
 import { sendMail } from "./helper/mails";
 import { createShipment } from "./helper/shipping";
-import { SHIPROCKET_ACCESS_TOKEN } from "./secrets";
 import { checkAuth } from "./helper/check_auth";
 
 exports.createOrder = https.onRequest(
@@ -237,6 +236,8 @@ exports.checkForDelivery = https.onRequest(
       const delivery_postcode: string = req.body.postCode;
       const productId: string = req.body.productId;
 
+      const config = (await firestoredb().collection("config").get()).docs[0];
+
       const product = (
         await firestoredb().collection("products").doc(productId).get()
       ).data();
@@ -285,7 +286,7 @@ exports.checkForDelivery = https.onRequest(
         },
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${SHIPROCKET_ACCESS_TOKEN}`,
+          Authorization: `Bearer ${config.data().shiprocket_access_token}`,
         },
       });
 

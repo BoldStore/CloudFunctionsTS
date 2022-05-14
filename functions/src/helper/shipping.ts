@@ -1,7 +1,6 @@
 import axios from "axios";
 import { firestore } from "firebase-admin";
 import { CREATE_SHIPMENT, NEW_PICKUP, SHIPROCKET_CHANNELS } from "../constants";
-import { SHIPROCKET_ACCESS_TOKEN } from "../secrets";
 
 export const addPickup = async (
   name: string,
@@ -21,7 +20,8 @@ export const addPickup = async (
   store_id: string
 ) => {
   try {
-    const shiprocket_access_token = SHIPROCKET_ACCESS_TOKEN;
+    const config = (await firestore().collection("config").get()).docs[0];
+    const shiprocket_access_token = config.data().shiprocket_access_token;
 
     const response = await axios.post(
       NEW_PICKUP,
@@ -52,7 +52,8 @@ export const addPickup = async (
 };
 
 export const getChannelId = async () => {
-  const shiprocket_access_token = SHIPROCKET_ACCESS_TOKEN;
+  const config = (await firestore().collection("config").get()).docs[0];
+  const shiprocket_access_token = config.data().shiprocket_access_token;
 
   const response = await axios.get(SHIPROCKET_CHANNELS, {
     headers: {
@@ -83,7 +84,8 @@ export const createShipment = async (
     await firestore().collection("stores").doc(product!.store).get()
   ).data();
 
-  const shiprocket_access_token = SHIPROCKET_ACCESS_TOKEN;
+  const config = (await firestore().collection("config").get()).docs[0];
+  const shiprocket_access_token = config.data().shiprocket_access_token;
   const date = new Date();
   const formatted_date = date.toISOString().slice(0, 10);
   const formatted_time = `${date.getHours()}:${date.getMinutes()}`;

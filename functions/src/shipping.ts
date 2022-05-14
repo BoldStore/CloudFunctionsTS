@@ -1,19 +1,15 @@
 import { https, Request, Response } from "firebase-functions/v1";
 import axios from "axios";
 import { SHIPROCKET_ADDRESSES, SHIPROCKET_LOGIN } from "./constants";
-import {
-  SHIPROCKET_ACCESS_TOKEN,
-  SHIPROCKET_EMAIL,
-  SHIPROCKET_PASSWORD,
-} from "./secrets";
+import { firestore } from "firebase-admin";
 
 exports.getShiprocketAccessToken = https.onRequest(
   async (req: Request, res: Response<any>) => {
     try {
-      const email = SHIPROCKET_EMAIL;
-      const password = SHIPROCKET_PASSWORD;
+      const config = (await firestore().collection("config").get()).docs[0];
 
-      // TODO: Save to DB
+      const email = config.data().shiprocket_email;
+      const password = config.data().shiprocket_password;
 
       const response = await axios.post(SHIPROCKET_LOGIN, {
         email: email,
@@ -21,6 +17,10 @@ exports.getShiprocketAccessToken = https.onRequest(
       });
 
       const access_token = response.data.token;
+
+      await firestore().collection("config").doc(config.id).update({
+        shiprocket_access_token: access_token,
+      });
 
       res.status(200).json({
         success: true,
@@ -40,7 +40,8 @@ exports.getShiprocketAccessToken = https.onRequest(
 exports.getShiprocketAddresses = https.onRequest(
   async (req: Request, res: Response<any>) => {
     try {
-      const access_token = SHIPROCKET_ACCESS_TOKEN;
+      const config = (await firestore().collection("config").get()).docs[0];
+      const access_token = config.data().shiprocket_access_token;
       const response = await axios.get(SHIPROCKET_ADDRESSES, {
         headers: {
           Authorization: "Bearer " + access_token,
