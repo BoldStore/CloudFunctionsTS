@@ -7,32 +7,48 @@ export const addPickup = async (
   name: string,
   email: string,
   number: string,
-  address: AddressType,
-  store_id: string,
-  index: number
+  address: {
+    address: string;
+    title: string;
+    addressL1: string;
+    addressL2: string;
+    city: string;
+    state: string;
+    pincode: number;
+    user: string;
+    notes?: string;
+  },
+  store_id: string
 ) => {
-  const shiprocket_access_token = SHIPROCKET_ACCESS_TOKEN;
+  try {
+    const shiprocket_access_token = SHIPROCKET_ACCESS_TOKEN;
 
-  await axios.post(
-    NEW_PICKUP,
-    {
-      pickup_location: `${store_id}_address_${index}`,
-      name: name,
-      email: email,
-      phone: number,
-      address: address.addressL1,
-      address_2: address.addressL2,
-      city: address.city,
-      state: address.state,
-      country: "India",
-      pin_code: address.pincode,
-    },
-    {
-      headers: {
-        Authorization: "Bearer " + shiprocket_access_token,
+    const response = await axios.post(
+      NEW_PICKUP,
+      {
+        pickup_location: store_id,
+        name: name,
+        email: email,
+        phone: number,
+        address: address.addressL1,
+        address_2: address.addressL2,
+        city: address.city,
+        state: address.state,
+        country: "India",
+        pin_code: address.pincode,
       },
-    }
-  );
+      {
+        headers: {
+          Authorization: "Bearer " + shiprocket_access_token,
+        },
+      }
+    );
+
+    return response.data.success;
+  } catch (e) {
+    console.log("Shiprocket pickup error: ", e);
+    return false;
+  }
 };
 
 export const getChannelId = async () => {
@@ -105,7 +121,7 @@ export const createShipment = async (
       breadth: 50,
       height: 10,
       weight: 0.5,
-      pickup_location: `${store_id}_address`,
+      pickup_location: store_id,
       // vendor_details: {
       //   email: "boldstore@gmail.com",
       //   phone: seller!.phone,

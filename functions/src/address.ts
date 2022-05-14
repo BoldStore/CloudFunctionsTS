@@ -1,11 +1,14 @@
 import { https, Request, Response } from "firebase-functions/v1";
 import { firestore as firestoredb } from "firebase-admin";
 import { checkAuth } from "./helper/check_auth";
+import { addPickup } from "./helper/shipping";
 
 exports.addAddress = https.onRequest(
   async (req: Request, res: Response<any>) => {
     try {
       const userId = (await checkAuth(req, res))!.userId!;
+
+      const store = await firestoredb().collection("stores").doc(userId).get();
 
       const title = req.body.title;
       const address_string = req.body.address;
@@ -39,6 +42,26 @@ exports.addAddress = https.onRequest(
         userId,
         notes,
       });
+
+      if (store.exists) {
+        await addPickup(
+          title,
+          store.data()!.eamil,
+          store.data()!.phone,
+          {
+            address: address_string,
+            title,
+            addressL1,
+            addressL2,
+            city,
+            state,
+            pincode,
+            user: userId,
+            notes,
+          },
+          store.id
+        );
+      }
 
       res.status(201).json({
         success: true,
