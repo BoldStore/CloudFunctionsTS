@@ -117,7 +117,7 @@ exports.verifyOrder = https.onRequest(
           response.order!.data().store,
           user!
         );
-        sendMail(
+        await sendMail(
           user!.email,
           "Product Bought",
           "You just bought a product",
