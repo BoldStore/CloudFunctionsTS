@@ -1,7 +1,27 @@
 import { firestore } from "firebase-admin";
 import { pubsub } from "firebase-functions/v1";
+import axiosInstance from "./axios";
 import { refreshToken } from "./helper/get_access_token";
 import { refresh_all_products } from "./helper/store";
+
+exports.refershServices = pubsub
+  .schedule("every day 00:00")
+  .onRun(async (context) => {
+    try {
+      const response = await axiosInstance.get(
+        "/shipping-getShiprocketAccessToken"
+      );
+      const access_token = response.data.access_token;
+      const config = (await firestore().collection("config").get()).docs[0];
+
+      await firestore().collection("config").doc(config.id).update({
+        shiprocket_access_token: access_token,
+      });
+    } catch (e) {
+      console.log("Refresh shiprocket token error", e);
+    }
+    return null;
+  });
 
 exports.refreshStores = pubsub.schedule("every 3 hours").onRun(async (_) => {
   console.log("Refreshing stores");
