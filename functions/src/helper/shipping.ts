@@ -1,6 +1,6 @@
 import axios from "axios";
 import { firestore } from "firebase-admin";
-import { NEW_PICKUP, SHIPROCKET_CHANNELS } from "../constants";
+import { CREATE_SHIPMENT, NEW_PICKUP, SHIPROCKET_CHANNELS } from "../constants";
 import { SHIPROCKET_ACCESS_TOKEN } from "../secrets";
 
 export const addPickup = async (
@@ -75,7 +75,7 @@ export const createShipment = async (
   const channel_id = await getChannelId();
 
   const response = await axios.post(
-    NEW_PICKUP,
+    CREATE_SHIPMENT,
     {
       order_id: order_id,
       order_date: `${formatted_date} ${formatted_time}`,
@@ -106,27 +106,27 @@ export const createShipment = async (
       height: 10,
       weight: 0.5,
       pickup_location: `${store_id}_address`,
-      vendor_details: {
-        email: "boldstore@gmail.com",
-        phone: seller!.phone,
-        name: "Bold",
-        address: "Bold Store, Flat number 8",
-        address_2: "Head Office",
-        city: "Delhi",
-        state: "New Delhi",
-        country: "India",
-        pin_code: "110024",
-        pickup_location: `${store_id}_address`,
-      },
-      phone: seller!.phone,
-      name: "Bold",
-      address: "Bold Store, Road no. 8",
-      address_2: "Head Office",
-      city: "Delhi",
-      state: "New Delhi",
-      country: "India",
-      pin_code: "110024",
-      email: "boldstore@gmail.com",
+      // vendor_details: {
+      //   email: "boldstore@gmail.com",
+      //   phone: seller!.phone,
+      //   name: "Bold",
+      //   address: "Bold Store, Flat number 8",
+      //   address_2: "Head Office",
+      //   city: "Delhi",
+      //   state: "New Delhi",
+      //   country: "India",
+      //   pin_code: "110024",
+      //   pickup_location: `${store_id}_address`,
+      // },
+      // phone: seller!.phone,
+      // name: "Bold",
+      // address: "Bold Store, Road no. 8",
+      // address_2: "Head Office",
+      // city: "Delhi",
+      // state: "New Delhi",
+      // country: "India",
+      // pin_code: "110024",
+      // email: "boldstore@gmail.com",
     },
     {
       headers: {
