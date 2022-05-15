@@ -121,7 +121,7 @@ export const createShipment = async (
         },
       ],
       payment_method: "Prepaid",
-      sub_total: product!.amount ?? 1000,
+      sub_total: product!.amount ? product!.amount : 1000,
       length: 100,
       breadth: 50,
       height: 10,
