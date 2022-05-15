@@ -45,9 +45,6 @@ export const addPickup = async (
       }
     );
 
-    console.log("Status>>", response.status);
-    console.log("Data>>>", response.data);
-
     return response.data.success;
   } catch (e) {
     console.log("Shiprocket pickup error: ", e);

@@ -46,7 +46,7 @@ exports.addAddress = https.onRequest(
       if (store.exists) {
         await addPickup(
           title,
-          store.data()!.eamil,
+          store.data()!.email,
           store.data()!.phone,
           {
             address: address_string,
