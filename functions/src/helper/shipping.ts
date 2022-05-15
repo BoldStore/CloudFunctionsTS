@@ -30,7 +30,7 @@ export const addPickup = async (
         pickup_location: store_id,
         name: name,
         email: email,
-        phone: number,
+        phone: number ?? "9876543210",
         address: address.addressL1,
         address_2: address.addressL2,
         city: address.city,
