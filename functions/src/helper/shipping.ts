@@ -1,3 +1,4 @@
+/* eslint-disable operator-linebreak */
 import axios from "axios";
 import { firestore } from "firebase-admin";
 import { CREATE_SHIPMENT, NEW_PICKUP, SHIPROCKET_CHANNELS } from "../constants";
@@ -43,6 +44,9 @@ export const addPickup = async (
         },
       }
     );
+
+    console.log("Status>>", response.status);
+    console.log("Data>>>", response.data);
 
     return response.data.success;
   } catch (e) {
@@ -107,14 +111,16 @@ export const createShipment = async (
       billing_state: address!.state,
       billing_country: "India",
       billing_email: user.email,
-      billing_phone: user.phone,
+      billing_phone: user.phone ?? "9899999999",
       shipping_is_billing: true,
       order_items: [
         {
-          name: product!.name ?? `Product by ${seller!.full_name}`,
+          name: product!.name
+            ? product!.name
+            : `Product by ${seller!.full_name}`,
           sku: product_id,
           units: 1,
-          selling_price: product!.amount ?? 1000,
+          selling_price: product!.amount ? product!.amount : 1000,
         },
       ],
       payment_method: "Prepaid",
