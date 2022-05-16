@@ -99,31 +99,11 @@ exports.verifyOrder = https.onRequest(
         paymentId,
         orderId,
         razorpaySignature,
-        id
+        id,
+        user!
       );
 
       if (response.success) {
-        // Set Product to sold
-        await firestoredb()
-          .collection("products")
-          .doc(response.order!.data().product)
-          .update({
-            sold: true,
-          });
-
-        await createShipment(
-          response.order!.data().address,
-          orderId,
-          response.order!.data().product,
-          response.order!.data().store,
-          user!
-        );
-        await sendMail(
-          user!.email,
-          "Product Bought",
-          "You just bought a product",
-          "/templates/product_bought.html"
-        );
         res.status(200).json({
           success: true,
           message: "Order confirmed",
@@ -160,31 +140,11 @@ exports.callback = https.onRequest(async (req: Request, res: Response<any>) => {
       paymentId,
       orderId,
       razorpaySignature,
-      id
+      id,
+      user!
     );
 
     if (response.success) {
-      // Set Product to sold
-      await firestoredb()
-        .collection("products")
-        .doc(response.order!.data().product)
-        .update({
-          sold: true,
-        });
-
-      await createShipment(
-        response.order!.data().address,
-        orderId,
-        response.order!.data().product,
-        response.order!.data().store,
-        user!
-      );
-      sendMail(
-        user!.email,
-        "Product Bought",
-        "You just bought a product",
-        "/templates/product_bought.html"
-      );
       res.status(200).json({
         success: true,
         message: "Order confirmed",

@@ -2,6 +2,7 @@ import { https, Request, Response } from "firebase-functions/v1";
 import { firestore as firestoredb } from "firebase-admin";
 import { handler } from "./helper/file_upload_s3";
 import { S3_BUCKET_NAME } from "./secrets";
+import { analysePost } from "./helper/product";
 
 exports.getProductData = https.onRequest(
   async (req: Request, res: Response<any>) => {
@@ -22,30 +23,14 @@ exports.getProductData = https.onRequest(
           bucket: S3_BUCKET_NAME,
         });
 
-        //   TODO: Analyze the post and get the data
-
-        // const product = new Product(
-        //   "",
-        //   "",
-        //   false,
-        //   post.timestamp,
-        //   "",
-        //   "",
-        //   "",
-        //   storeId,
-        //   "",
-        //   "",
-        //   new Date(),
-        //   file_name,
-        //   post_url
-        // );
+        const prod_data = analysePost(post.caption);
 
         const product = {
-          name: "",
+          name: prod_data.name,
           size: "",
-          sold: false,
+          sold: prod_data.sold,
           postedOn: post.timestamp,
-          amount: "",
+          amount: prod_data.price,
           likes: "",
           comments: "",
           store: storeId,

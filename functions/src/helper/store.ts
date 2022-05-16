@@ -4,6 +4,7 @@ import { INSTAGRAM_GRAPH_API_URL, MEDIA_FIELDS } from "../constants";
 import { getAccessToken } from "./get_access_token";
 import { getInstaData } from "./get_insta_data";
 import { getStoreData } from "./get_store_data";
+import { analysePost } from "./product";
 
 export const refresh_store_data = async (
   storeId: string,
@@ -103,23 +104,20 @@ export const refresh_store_products: any = async (
       for (let j = 0; j < products.docs.length; j++) {
         const product = products.docs[j];
         if (product.data().id === post.id) {
-          // TODO: Maybe check if product is sold and ONLY update that
-          // TODO: Or just do this, con: more writes, more money
-          const updatedProduct = {
-            name: "",
-            size: "",
-            sold: false,
-            amount: "",
-            likes: "",
-            comments: "",
-            color: "",
-            caption: post?.caption ?? null,
-            permalink: post.permalink,
-          };
-          await firestore()
-            .collection("products")
-            .doc(product.id)
-            .update(updatedProduct);
+          const prod_data = analysePost(post.caption);
+          if (prod_data.sold || prod_data.price != product.data().price) {
+            const updatedProduct = {
+              name: prod_data.name,
+              sold: prod_data.sold,
+              amount: prod_data.price,
+              caption: post?.caption ?? null,
+              permalink: post.permalink,
+            };
+            await firestore()
+              .collection("products")
+              .doc(product.id)
+              .update(updatedProduct);
+          }
         }
       }
     }

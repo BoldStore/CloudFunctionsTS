@@ -1,12 +1,15 @@
 import { createHmac } from "crypto";
 import { firestore } from "firebase-admin";
 import { RAZORPAY_SECRET } from "../secrets";
+import { sendMail } from "./mails";
+import { createShipment } from "./shipping";
 
 export const confirmOrder = async (
   paymentId: string,
   orderId: string,
   razorpaySignature: string,
-  userId: string
+  userId: string,
+  user: any
 ) => {
   try {
     const keySecret: string = RAZORPAY_SECRET!.toString();
@@ -55,8 +58,27 @@ export const confirmOrder = async (
         { merge: true }
       );
 
-      // TODO: Ship product
-      // TODO: Send Email to user
+      await firestore()
+        .collection("products")
+        .doc(order!.data().product)
+        .update({
+          sold: true,
+        });
+
+      await createShipment(
+        order!.data().address,
+        orderId,
+        order!.data().product,
+        order!.data().store,
+        user!
+      );
+
+      await sendMail(
+        user!.email,
+        "Product Bought",
+        "You just bought a product",
+        "/templates/product_bought.html"
+      );
     } else {
       return {
         success: false,
