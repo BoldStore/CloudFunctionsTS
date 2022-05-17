@@ -4,8 +4,6 @@ import { razorpayInstance } from ".";
 import { confirmOrder } from "./helper/order";
 import axios from "axios";
 import { SHIPROCKET_SERVICEABILITY } from "./constants";
-import { sendMail } from "./helper/mails";
-import { createShipment } from "./helper/shipping";
 import { checkAuth } from "./helper/check_auth";
 
 exports.createOrder = https.onRequest(

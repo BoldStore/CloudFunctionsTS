@@ -10,6 +10,10 @@ import {
   CLOUD_TASK_TEST,
 } from "./secrets";
 
+import { Router } from "express";
+// eslint-disable-next-line new-cap
+const router = Router();
+
 // Check if auth is working
 exports.newUser = auth.user().onCreate(async (user) => {
   const email: string = user.email!.toString();
@@ -23,7 +27,8 @@ exports.newUser = auth.user().onCreate(async (user) => {
 });
 
 // Send mail
-exports.sendMail = https.onRequest(async (req: Request, res: Response) => {
+// exports.sendMail = https.onRequest(async (req: Request, res: Response) => {
+router.get("/sendMail", async (req: Request, res: Response) => {
   try {
     await sendMail(
       "jayeshsadhwani99@gmail.com",
@@ -157,3 +162,5 @@ const createTask = async () => {
 
   return;
 };
+
+export = router;
