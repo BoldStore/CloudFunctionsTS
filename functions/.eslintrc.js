@@ -32,5 +32,4 @@ module.exports = {
     "@typescript-eslint/ban-ts-ignore": "off",
     "max-len": ["error", { code: 1000 }],
   },
-  files: ["types.d.ts"],
 };
