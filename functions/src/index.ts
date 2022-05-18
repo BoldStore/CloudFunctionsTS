@@ -5,10 +5,7 @@ import { RAZORPAY_KEY, RAZORPAY_SECRET } from "./secrets";
 
 import * as cors from "cors";
 import * as express from "express";
-import * as testRoutes from "./test";
-
-const app = express();
-app.use(cors({ origin: true, credentials: true }));
+import * as routes from "./routes";
 
 // Initialize razorpay instance
 export const razorpayInstance: Razorpay = new Razorpay({
@@ -22,6 +19,12 @@ initializeApp({
   credential: credential.applicationDefault(),
 });
 
+const app = express();
+app.use(cors({ origin: true, credentials: true }));
+app.use("/", routes);
+
+exports.app = https.onRequest(app);
+
 exports.users = require("./users");
 exports.addresses = require("./address");
 exports.products = require("./products");
@@ -31,7 +34,3 @@ exports.shipping = require("./shipping");
 exports.codes = require("./codes");
 exports.tests = require("./test");
 exports.pages = require("./pages");
-
-app.use("/tests", testRoutes);
-
-exports.app = https.onRequest(app);
