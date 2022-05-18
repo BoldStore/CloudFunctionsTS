@@ -10,9 +10,10 @@ import { validateFirebaseIdToken } from "../middlewares/auth";
 const router = Router();
 
 router
-  .get("getUserAddresses", validateFirebaseIdToken, getUserAddresses)
-  .post("addAddress", validateFirebaseIdToken, addAddress)
-  .patch("updateAddress", validateFirebaseIdToken, updateAddress)
-  .delete("deleteAddress", validateFirebaseIdToken, deleteAddress);
+  .route("/")
+  .get(validateFirebaseIdToken, getUserAddresses)
+  .post(validateFirebaseIdToken, addAddress)
+  .patch(validateFirebaseIdToken, updateAddress)
+  .delete(validateFirebaseIdToken, deleteAddress);
 
 export = router;

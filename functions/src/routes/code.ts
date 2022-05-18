@@ -4,6 +4,6 @@ import { validateFirebaseIdToken } from "../middlewares/auth";
 // eslint-disable-next-line new-cap
 const router = Router();
 
-router.post("addInviteToken", validateFirebaseIdToken, addInviteToken);
+router.route("/").post(validateFirebaseIdToken, addInviteToken);
 
 export = router;
