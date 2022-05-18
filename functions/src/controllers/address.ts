@@ -1,11 +1,15 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
-import { checkAuth } from "../helper/check_auth";
 import { addPickup } from "../helper/shipping";
+import ExpressError = require("../utils/ExpressError");
 
-export const addAddress = async (req: Request, res: Response) => {
+export const addAddress = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const userId = (await checkAuth(req, res))!.userId!;
+    const userId = req.user.uid;
 
     const store = await firestore().collection("stores").doc(userId).get();
 
@@ -79,10 +83,6 @@ export const addAddress = async (req: Request, res: Response) => {
     });
   } catch (e) {
     console.log("Add address error: ", e);
-    res.status(500).json({
-      success: false,
-      message: "Could not add address",
-      error: e,
-    });
+    next(new ExpressError("Could not add address", 500, e));
   }
 };
