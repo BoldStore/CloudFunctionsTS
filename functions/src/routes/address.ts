@@ -13,7 +13,8 @@ router
   .route("/")
   .get(validateFirebaseIdToken, getUserAddresses)
   .post(validateFirebaseIdToken, addAddress)
-  .patch(validateFirebaseIdToken, updateAddress)
-  .delete(validateFirebaseIdToken, deleteAddress);
+  .patch(validateFirebaseIdToken, updateAddress);
+
+router.route("/delete").post(validateFirebaseIdToken, deleteAddress);
 
 export = router;
