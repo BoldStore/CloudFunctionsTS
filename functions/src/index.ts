@@ -34,11 +34,11 @@ app.use(
   ) => {
     const { statusCode = 500 } = err;
     if (!err.message) err.message = "Oh No, Something Went Wrong!";
-    if (process.env.NODE_ENV !== "production") {
-      res.status(statusCode).send({ err });
-    } else {
-      res.status(500).send({ success: false, message: "Something went wrong" });
-    }
+    // if (process.env.NODE_ENV !== "production") {
+    res.status(statusCode).send({ err });
+    // } else {
+    //   res.status(500).send({ success: false, message: "Something went wrong" });
+    // }
   }
 );
 
