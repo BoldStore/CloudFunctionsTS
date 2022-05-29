@@ -17,20 +17,25 @@ export const getAccessToken = async (code?: string) => {
     redirect_uri: config.data().redirect_uri,
   });
 
-  const response = await axios.post(INSTAGRAM_ACCESS_TOKEN, data, {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  });
+  try {
+    const response = await axios.post(INSTAGRAM_ACCESS_TOKEN, data, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
 
-  if (response.status === 200) {
-    access_token = response.data.access_token;
+    if (response.status === 200) {
+      access_token = response.data.access_token;
 
-    const user_id_res = response.data.user_id.toString();
-    user_id = user_id.concat(
-      user_id_res.slice(0, -1),
-      (parseInt(user_id_res.slice(-1)) + 1).toString()
-    );
+      const user_id_res = response.data.user_id.toString();
+      user_id = user_id.concat(
+        user_id_res.slice(0, -1),
+        (parseInt(user_id_res.slice(-1)) + 1).toString()
+      );
+    }
+  } catch (e) {
+    console.log("Error in getting access token", e);
+    console.log("LOLERROR", (e as any).response.data);
   }
 
   return {
