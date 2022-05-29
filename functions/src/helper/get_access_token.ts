@@ -14,7 +14,7 @@ export const getAccessToken = async (code?: string) => {
     client_secret: config.data().insta_client_secret,
     code: code,
     grant_type: "authorization_code",
-    redirect_uri: "https://bold-96a92.firebaseapp.com/__/auth/handler",
+    redirect_uri: config.data().redirect_uri,
   });
 
   const response = await axios.post(INSTAGRAM_ACCESS_TOKEN, data, {
