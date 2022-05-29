@@ -34,8 +34,7 @@ export const getAccessToken = async (code?: string) => {
       );
     }
   } catch (e) {
-    console.log("Error in getting access token", e);
-    console.log("LOLERROR", (e as any).response.data);
+    console.log("Error in getting access token", (e as any).response.data);
   }
 
   return {

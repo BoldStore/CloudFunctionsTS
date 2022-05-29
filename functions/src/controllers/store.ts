@@ -81,7 +81,12 @@ export const saveStoreData = async (
     const store = await firestore().collection("stores").doc(id).get();
 
     if (!store.exists) {
-      next(new ExpressError("Store does not exist", 400));
+      next(new ExpressError("Store does not exist", 401));
+      return;
+    }
+
+    if (!insta_code) {
+      next(new ExpressError("Instagram code is required", 400));
       return;
     }
 
