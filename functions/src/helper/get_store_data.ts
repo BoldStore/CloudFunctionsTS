@@ -5,9 +5,9 @@ import {
   MEDIA_FIELDS,
 } from "../constants";
 import { createProductTask } from "../tasks/products";
-// import { getInstaData } from "./get_insta_data";
+import { getInstaData } from "./get_insta_data";
 
-export const getStoreData = async (
+export const getStoreData: any = async (
   user_id: string,
   user_id_orignal: string,
   access_token: string,
@@ -15,6 +15,7 @@ export const getStoreData = async (
   expires_in = 3600,
   tryAgain = false
 ) => {
+  console.log("GET STORE DATA");
   let store: any = null;
   const insta_id: string = tryAgain ? user_id : user_id_orignal;
 
@@ -25,18 +26,18 @@ export const getStoreData = async (
     const username: string = response.data.username;
     const id: string = response.data.id;
 
-    // const data = await getInstaData(username);
+    const data = await getInstaData(username);
 
     store = {
-      full_name: "data.full_name",
+      full_name: data.full_name,
       username: username,
       id: storeId,
       lastRefreshed: new Date(),
-      followers: "data.followers",
-      following: "data.following",
-      profile_pic: "data.profile_pic",
+      followers: data.followers,
+      following: data.following,
+      profile_pic: data.profile_pic,
       instagram_id: id,
-      bio: "data.bio",
+      bio: data.bio,
       access_token,
       user_id: insta_id,
       expires_in,
@@ -44,8 +45,8 @@ export const getStoreData = async (
 
     // getStoreMedia(user_id, access_token, storeId);
   } catch (e) {
-    if ((e as any).response.data.code === 100 && !tryAgain) {
-      await getStoreData(
+    if ((e as any).response.data.error.code == 100 && !tryAgain) {
+      return await getStoreData(
         user_id,
         user_id_orignal,
         access_token,

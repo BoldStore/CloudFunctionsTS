@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
 import {
   getAccessToken,
-  getLongLivedAccessToken,
+  // getLongLivedAccessToken,
 } from "../helper/get_access_token";
 import { getStoreData } from "../helper/get_store_data";
 import { APP_NAME, transporter } from "../helper/mails";
@@ -93,33 +93,33 @@ export const saveStoreData = async (
     // Get Insta access Token
     const auth_data = await getAccessToken(insta_code);
 
-    const access_token_data = await getLongLivedAccessToken(
-      auth_data.access_token
-    );
+    // const access_token_data = await getLongLivedAccessToken(
+    //   auth_data.access_token
+    // );
 
     let data = {};
 
-    if (access_token_data.error) {
-      // Get store data
-      data = (
-        await getStoreData(
-          auth_data.user_id,
-          auth_data.user_id_orignal,
-          auth_data.access_token,
-          store.id
-        )
-      ).store;
-    } else {
-      data = (
-        await getStoreData(
-          auth_data.user_id,
-          auth_data.user_id_orignal,
-          access_token_data.access_token,
-          store.id,
-          access_token_data.expires_in
-        )
-      ).store;
-    }
+    // if (access_token_data.error) {
+    // Get store data
+    data = (
+      await getStoreData(
+        auth_data.user_id,
+        auth_data.user_id_orignal,
+        auth_data.access_token,
+        store.id
+      )
+    ).store;
+    // } else {
+    //   data = (
+    //     await getStoreData(
+    //       auth_data.user_id,
+    //       auth_data.user_id_orignal,
+    //       access_token_data.access_token,
+    //       store.id,
+    //       access_token_data.expires_in
+    //     )
+    //   ).store;
+    // }
 
     // Save to db
     await firestore().collection("stores").doc(id).set(data, { merge: true });

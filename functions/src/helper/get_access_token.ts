@@ -62,7 +62,7 @@ export const getLongLivedAccessToken = async (access_token: string) => {
       expires_in = response.data.expires_in;
     }
   } catch (e) {
-    console.log("Long Lived token error>>", e);
+    console.log("Long Lived token error>>", (e as any).response.data);
     error = e;
   }
 
