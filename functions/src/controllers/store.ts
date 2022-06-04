@@ -129,7 +129,7 @@ export const saveStoreData = async (
       store: data,
     });
   } catch (e) {
-    console.log("Error in saving store data", e);
+    // console.log("Error in saving store data", e);
     next(new ExpressError("Could not store save store data", 500, e));
   }
 };

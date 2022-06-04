@@ -1,9 +1,9 @@
 import axios from "axios";
 import { firestore } from "firebase-admin";
 import { INSTAGRAM_GRAPH_API_URL, MEDIA_FIELDS } from "../constants";
-import { getAccessToken } from "./get_access_token";
+// import { getAccessToken } from "./get_access_token";
 import { getInstaData } from "./get_insta_data";
-import { getStoreData } from "./get_store_data";
+// import { getStoreData } from "./get_store_data";
 import { analysePost } from "./product";
 
 export const refresh_store_data = async (
@@ -11,11 +11,13 @@ export const refresh_store_data = async (
   phone_number: string
 ) => {
   // Get insta access token
-  const auth_data = await getAccessToken();
+  // const auth_data = await getAccessToken();
 
-  const data = (
-    await getStoreData(auth_data.user_id, auth_data.access_token, storeId)
-  ).store;
+  // const data = (
+  //   await getStoreData(auth_data.user_id, auth_data.access_token, storeId)
+  // ).store;
+
+  const data = {} as any;
 
   if (!data) {
     return;

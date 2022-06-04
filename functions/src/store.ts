@@ -115,13 +115,13 @@ exports.saveStoreData = https.onRequest(
 
       if (access_token_data.error) {
         // Get store data
-        data = (
-          await getStoreData(
-            auth_data.user_id,
-            auth_data.access_token,
-            store.id
-          )
-        ).store;
+        // data = (
+        //   await getStoreData(
+        //     auth_data.user_id,
+        //     auth_data.access_token,
+        //     store.id
+        //   )
+        // ).store;
       } else {
         data = (
           await getStoreData(

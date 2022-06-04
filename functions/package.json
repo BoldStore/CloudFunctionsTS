@@ -8,7 +8,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "test-functions": " npx kill-port 8081 && firebase emulators:start --import exported-dev-data --export-on-exit"
+    "test-functions": "npm run build && npx kill-port 8081 && firebase emulators:start --import exported-dev-data --export-on-exit"
   },
   "engines": {
     "node": "14"
