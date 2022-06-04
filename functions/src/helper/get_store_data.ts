@@ -9,16 +9,19 @@ import { getInstaData } from "./get_insta_data";
 
 export const getStoreData = async (
   user_id: string,
+  user_id_orignal: string,
   access_token: string,
   storeId: string,
-  expires_in = 3600
+  expires_in = 3600,
+  tryAgain = false
 ) => {
   let store: any = null;
-  const response = await axios.get(
-    `${INSTAGRAM_GRAPH_API_URL}/${user_id}?access_token=${access_token}&fields=${BASIC_FIELDS}`
-  );
+  const insta_id: string = tryAgain ? user_id : user_id_orignal;
 
-  if (response.status === 200) {
+  try {
+    const response = await axios.get(
+      `${INSTAGRAM_GRAPH_API_URL}/${insta_id}?access_token=${access_token}&fields=${BASIC_FIELDS}`
+    );
     const username: string = response.data.username;
     const id: string = response.data.id;
 
@@ -35,24 +38,35 @@ export const getStoreData = async (
       instagram_id: id,
       bio: data.bio,
       access_token,
-      user_id,
+      user_id: insta_id,
       expires_in,
     };
 
-    // new Store(
-    //   data.full_name,
-    //   username,
-    //   storeId,
-    //   new Date(),
-    //   data.followers,
-    //   data.following,
-    //   data.profile_pic,
-    //   id,
-    //   data.bio
-    // );
+    getStoreMedia(user_id, access_token, storeId);
+  } catch (e) {
+    if ((e as any).response.data.code === 100 && !tryAgain) {
+      await getStoreData(
+        user_id,
+        user_id_orignal,
+        access_token,
+        storeId,
+        expires_in,
+        true
+      );
+    }
   }
 
-  getStoreMedia(user_id, access_token, storeId);
+  // new Store(
+  //   data.full_name,
+  //   username,
+  //   storeId,
+  //   new Date(),
+  //   data.followers,
+  //   data.following,
+  //   data.profile_pic,
+  //   id,
+  //   data.bio
+  // );
 
   return {
     store,

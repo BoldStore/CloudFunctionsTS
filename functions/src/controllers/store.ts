@@ -102,12 +102,18 @@ export const saveStoreData = async (
     if (access_token_data.error) {
       // Get store data
       data = (
-        await getStoreData(auth_data.user_id, auth_data.access_token, store.id)
+        await getStoreData(
+          auth_data.user_id,
+          auth_data.user_id_orignal,
+          auth_data.access_token,
+          store.id
+        )
       ).store;
     } else {
       data = (
         await getStoreData(
           auth_data.user_id,
+          auth_data.user_id_orignal,
           access_token_data.access_token,
           store.id,
           access_token_data.expires_in

@@ -6,6 +6,7 @@ import { firestore } from "firebase-admin";
 export const getAccessToken = async (code?: string) => {
   let access_token = "";
   let user_id = "";
+  let user_id_orignal = "";
 
   const config = (await firestore().collection("config").get()).docs[0];
 
@@ -24,15 +25,14 @@ export const getAccessToken = async (code?: string) => {
       },
     });
 
-    if (response.status === 200) {
-      access_token = response.data.access_token;
+    access_token = response.data.access_token;
 
-      const user_id_res = response.data.user_id.toString();
-      user_id = user_id.concat(
-        user_id_res.slice(0, -1),
-        (parseInt(user_id_res.slice(-1)) + 1).toString()
-      );
-    }
+    const user_id_res = response.data.user_id.toString();
+    user_id_orignal = response.data.user_id.toString();
+    user_id = user_id.concat(
+      user_id_res.slice(0, -1),
+      (parseInt(user_id_res.slice(-1)) + 1).toString()
+    );
   } catch (e) {
     console.log("Error in getting access token", (e as any).response.data);
   }
@@ -40,6 +40,7 @@ export const getAccessToken = async (code?: string) => {
   return {
     access_token,
     user_id,
+    user_id_orignal,
   };
 };
 
