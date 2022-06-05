@@ -2,8 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
 import { addPickup } from "../helper/shipping";
 import ExpressError = require("../utils/ExpressError");
+import Address, { AddressType } from "../models/Address";
 
-export const addAddress = async (
+export const addAddress: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -22,19 +27,7 @@ export const addAddress = async (
     const pincode = req.body.pincode;
     const notes = req.body.notes;
 
-    // const address_model = new Address(
-    //   address_string,
-    //   title,
-    //   addressL1,
-    //   addressL2,
-    //   city,
-    //   state,
-    //   pincode,
-    //   userId,
-    //   notes
-    // );
-
-    const address = await firestore().collection("addresses").add({
+    const address_model: AddressType = new Address(
       address_string,
       title,
       addressL1,
@@ -43,51 +36,39 @@ export const addAddress = async (
       state,
       pincode,
       userId,
-      notes,
-    });
+      notes
+    );
+
+    const address = await firestore()
+      .collection("addresses")
+      .add(address_model);
+
+    address_model.id = address.id;
 
     if (store.exists) {
       await addPickup(
         title,
-        store.data()!.email,
-        store.data()!.phone,
-        {
-          address: address_string,
-          title,
-          addressL1,
-          addressL2,
-          city,
-          state,
-          pincode,
-          user: userId,
-          notes,
-        },
+        store.data()?.email,
+        store.data()?.phone,
+        address_model,
         store.id
       );
     }
 
     res.status(201).json({
       success: true,
-      address: {
-        address_string,
-        title,
-        addressL1,
-        addressL2,
-        city,
-        state,
-        pincode,
-        userId,
-        notes,
-        id: address.id,
-      },
+      address: address_model,
     });
   } catch (e) {
-    console.log("Add address error: ", e);
     next(new ExpressError("Could not add address", 500, e));
   }
 };
 
-export const getUserAddresses = async (
+export const getUserAddresses: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -113,13 +94,17 @@ export const getUserAddresses = async (
   }
 };
 
-export const updateAddress = async (
+export const updateAddress: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const id: string = req.body.id!.toString();
+    const id: string = req.body.id?.toString();
     const userId = req.user.uid;
 
     const title = req.body.title;
@@ -176,13 +161,17 @@ export const updateAddress = async (
   }
 };
 
-export const deleteAddress = async (
+export const deleteAddress: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const id: string = req.body.id!.toString();
+    const id: string = req.body.id?.toString();
     const userId = req.user.uid;
 
     await firestore().collection("addresses").doc(id).delete();

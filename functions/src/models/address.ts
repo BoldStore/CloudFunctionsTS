@@ -1,5 +1,6 @@
 /* eslint-disable require-jsdoc */
-class Address {
+export default class Address {
+  id: string | null;
   address: string;
   title: string;
   addressL1: string;
@@ -11,6 +12,7 @@ class Address {
   notes?: string;
 
   constructor(
+    id: string | null,
     address: string,
     title: string,
     addressL1: string,
@@ -21,6 +23,7 @@ class Address {
     user: string,
     notes?: string
   ) {
+    this.id = id;
     this.address = address;
     this.title = title;
     this.addressL1 = addressL1;
@@ -32,6 +35,7 @@ class Address {
     this.notes = notes;
 
     return {
+      id: this.id,
       address: this.address,
       title: this.title,
       addressL1: this.addressL1,
@@ -45,7 +49,8 @@ class Address {
   }
 }
 
-type AddressType = {
+export interface AddressType {
+  id: string | null;
   address: string;
   title: string;
   addressL1: string;
@@ -55,4 +60,4 @@ type AddressType = {
   pincode: number;
   user: string;
   notes?: string;
-};
+}
