@@ -314,3 +314,40 @@ export const addPotentialStore: (
     next(new ExpressError("Could not save data", 500, e));
   }
 };
+
+export const checkIfStore: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const id = req.user.uid;
+
+    const user = await firestore().collection("users").doc(id).get();
+    const store = await firestore().collection("stores").doc(id).get();
+
+    if (user.exists) {
+      res.status(200).json({
+        success: true,
+        isStore: false,
+      });
+      return;
+    }
+
+    if (store.exists) {
+      res.status(200).json({
+        success: true,
+        isStore: true,
+      });
+      return;
+    }
+
+    next(new ExpressError("User does not exist", 400));
+  } catch (e) {
+    next(new ExpressError("There was an error", 500, e));
+  }
+};
