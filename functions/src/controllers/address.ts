@@ -28,6 +28,7 @@ export const addAddress: (
     const notes = req.body.notes;
 
     const address_model: AddressType = new Address(
+      null,
       address_string,
       title,
       addressL1,
@@ -89,7 +90,6 @@ export const getUserAddresses: (
       })),
     });
   } catch (e) {
-    console.log("Get user addresses error: ", e);
     next(new ExpressError("Could not get user addresses", 500, e));
   }
 };
@@ -116,32 +116,23 @@ export const updateAddress: (
     const pincode = req.body.pincode;
     const notes = req.body.notes;
 
-    // const address_model = new Address(
-    //   address_string,
-    //   title,
-    //   addressL1,
-    //   addressL2,
-    //   city,
-    //   state,
-    //   pincode,
-    //   userId,
-    //   notes
-    // );
-
-    await firestore().collection("addresses").doc(id).set(
-      {
-        address_string,
-        title,
-        addressL1,
-        addressL2,
-        city,
-        state,
-        pincode,
-        userId,
-        notes,
-      },
-      { merge: true }
+    const address_model = new Address(
+      null,
+      address_string,
+      title,
+      addressL1,
+      addressL2,
+      city,
+      state,
+      pincode,
+      userId,
+      notes
     );
+
+    await firestore()
+      .collection("addresses")
+      .doc(id)
+      .set(address_model, { merge: true });
 
     const addresses = await firestore()
       .collection("addresses")
@@ -156,7 +147,6 @@ export const updateAddress: (
       })),
     });
   } catch (e) {
-    console.log("Update address error: ", e);
     next(new ExpressError("Could not update address", 500, e));
   }
 };
