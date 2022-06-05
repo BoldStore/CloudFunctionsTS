@@ -7,7 +7,11 @@ import { auth } from "firebase-admin";
 import ExpressError = require("../utils/ExpressError");
 
 // when decoded successfully, the ID Token content will be added as `req.user`.
-export const validateFirebaseIdToken = async (
+export const validateFirebaseIdToken: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -39,7 +43,6 @@ export const validateFirebaseIdToken = async (
     next();
     return;
   } catch (e) {
-    console.log(e);
     next(new ExpressError("There was an error", 401, e));
     return;
   }
