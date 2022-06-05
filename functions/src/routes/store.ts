@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   addPotentialStore,
+  checkIfStore,
   createStore,
   saveStoreData,
   updateStore,
@@ -10,7 +11,10 @@ import { validateFirebaseIdToken } from "../middlewares/auth";
 // eslint-disable-next-line new-cap
 const router = Router();
 
-router.route("/").post(validateFirebaseIdToken, createStore);
+router
+  .route("/")
+  .post(validateFirebaseIdToken, createStore)
+  .get(validateFirebaseIdToken, checkIfStore);
 
 router.route("/saveStoreData").post(validateFirebaseIdToken, saveStoreData);
 
