@@ -5,7 +5,7 @@ import { APP_NAME, transporter } from "./helper/mails";
 import { AVI_MAIL, JAYESH_MAIL } from "./secrets";
 
 exports.addPotentialStore = https.onRequest(
-  async (req: Request, res: Response<any>) => {
+  async (req: Request, res: Response<unknown>) => {
     cors({
       origin: true,
     })(req, res, async () => {

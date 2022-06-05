@@ -1,9 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
 import { generateCode } from "../helper/code";
+import { Code, CodeType } from "../models/code";
 import ExpressError = require("../utils/ExpressError");
 
-export const addInviteToken = async (
+export const addInviteToken: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -42,27 +47,16 @@ export const addInviteToken = async (
 
     const inviteCode = await generateCode();
 
-    // const code = new Code(inviteCode, userId, new Date(), true);
+    const code: CodeType = new Code(inviteCode, "userId", new Date(), true);
 
     // Add to db
-    await firestore().collection("codes").add({
-      code: inviteCode,
-      createdBy: "userId",
-      createdAt: new Date(),
-      isActive: true,
-    });
+    await firestore().collection("codes").add(code);
 
     res.status(201).json({
       success: true,
-      code: {
-        code: inviteCode,
-        createdBy: "userId",
-        createdAt: new Date(),
-        isActive: true,
-      },
+      code,
     });
   } catch (e) {
-    console.log("Add invite token error: ", e);
     next(new ExpressError("Error adding invite token", 500, e));
   }
 };

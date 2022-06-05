@@ -1,5 +1,5 @@
 /* eslint-disable require-jsdoc */
-class Code {
+export class Code {
   code: string;
   createdBy: string;
   createdAt: Date;
@@ -23,4 +23,11 @@ class Code {
       isActive: this.isActive,
     };
   }
+}
+
+export interface CodeType {
+  code: string;
+  createdBy: string;
+  createdAt: Date;
+  isActive: boolean;
 }
