@@ -43,7 +43,7 @@ export const getStoreData: any = async (
       expires_in,
     };
 
-    // getStoreMedia(user_id, access_token, storeId);
+    getStoreMedia(user_id, access_token, storeId);
   } catch (e) {
     if ((e as any).response.data.error.code == 100 && !tryAgain) {
       return await getStoreData(
