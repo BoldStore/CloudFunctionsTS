@@ -1,13 +1,22 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import {
   BASIC_FIELDS,
   INSTAGRAM_GRAPH_API_URL,
   MEDIA_FIELDS,
 } from "../constants";
+import { Store } from "../interfaces/store";
 import { createProductTask } from "../tasks/products";
 import { getInstaData } from "./get_insta_data";
 
-export const getStoreData: any = async (
+export const getStoreData: (
+  user_id: string,
+  user_id_orignal: string,
+  access_token: string,
+  storeId: string,
+  expires_in?: number,
+  tryAgain?: boolean
+) => Promise<{ store: Store | null }> = async (
   user_id: string,
   user_id_orignal: string,
   access_token: string,
@@ -15,8 +24,7 @@ export const getStoreData: any = async (
   expires_in = 3600,
   tryAgain = false
 ) => {
-  console.log("GET STORE DATA");
-  let store: any = null;
+  let store: Store | null = null;
   const insta_id: string = tryAgain ? user_id : user_id_orignal;
 
   try {
@@ -74,7 +82,11 @@ export const getStoreData: any = async (
   };
 };
 
-export const getStoreMedia = async (
+export const getStoreMedia: (
+  user_id: string,
+  access_token: string,
+  storeId: string
+) => Promise<boolean> = async (
   user_id: string,
   access_token: string,
   storeId: string
@@ -89,12 +101,11 @@ export const getStoreMedia = async (
     }
 
     const storeMedia: Array<any> = response.data.data;
-    console.log("MEDIAAAAA", storeMedia);
     createProductTask(storeMedia, storeId);
 
     return true;
   } catch (e) {
-    console.log("There was an error>>>>: ", e);
+    console.log("There was an error>>>>: ", (e as any).response.data);
     return false;
   }
 };

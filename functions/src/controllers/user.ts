@@ -3,7 +3,11 @@ import { auth, firestore } from "firebase-admin";
 import { getInstaData } from "../helper/get_insta_data";
 import ExpressError = require("../utils/ExpressError");
 
-export const createUser = async (
+export const createUser: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -46,7 +50,11 @@ export const createUser = async (
   }
 };
 
-export const addInstaUsername = async (
+export const addInstaUsername: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -54,7 +62,12 @@ export const addInstaUsername = async (
   try {
     const id = req.user.uid;
 
-    const insta_username = req.body.insta_username!.toString();
+    const insta_username = req.body.insta_username?.toString();
+
+    if (!insta_username) {
+      next(new ExpressError("Instagram username is required", 400));
+      return;
+    }
 
     // Check if already exists
     const userDb = (
@@ -96,7 +109,11 @@ export const addInstaUsername = async (
   }
 };
 
-export const getPersonalDetails = async (
+export const getPersonalDetails: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -116,7 +133,11 @@ export const getPersonalDetails = async (
   }
 };
 
-export const updateUser = async (
+export const updateUser: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -147,7 +168,11 @@ export const updateUser = async (
 };
 
 // TODO: Delete users cron
-export const deleteUser = async (
+export const deleteUser: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction

@@ -7,10 +7,15 @@ import {
 import { getStoreData } from "../helper/get_store_data";
 import { APP_NAME, transporter } from "../helper/mails";
 import { refresh_store_products } from "../helper/store";
+import { Store } from "../interfaces/store";
 import { AVI_MAIL, BOLD_MAIL, JAYESH_MAIL } from "../secrets";
 import ExpressError = require("../utils/ExpressError");
 
-export const createStore = async (
+export const createStore: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -33,7 +38,7 @@ export const createStore = async (
         .where("code", "==", inviteCode)
         .get()
     ).docs[0];
-    if (!code.exists || !code.data()!.isActive) {
+    if (!code.exists || !code.data()?.isActive) {
       next(new ExpressError("Invite code is not valid", 400));
     }
 
@@ -74,7 +79,11 @@ export const createStore = async (
   }
 };
 
-export const saveStoreData = async (
+export const saveStoreData: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -102,7 +111,7 @@ export const saveStoreData = async (
     //   auth_data.access_token
     // );
 
-    let data = {};
+    let data: Store | null = null;
 
     // if (access_token_data.error) {
     // Get store data
@@ -127,7 +136,9 @@ export const saveStoreData = async (
     // }
 
     // Save to db
-    await firestore().collection("stores").doc(id).set(data, { merge: true });
+    if (data) {
+      await firestore().collection("stores").doc(id).set(data, { merge: true });
+    }
 
     res.status(200).json({
       success: true,
@@ -139,7 +150,11 @@ export const saveStoreData = async (
   }
 };
 
-export const updateStoreProducts = async (
+export const updateStoreProducts: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -165,7 +180,11 @@ export const updateStoreProducts = async (
   }
 };
 
-export const updateStore = async (
+export const updateStore: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -207,7 +226,11 @@ export const updateStore = async (
   }
 };
 
-export const addPotentialStore = async (
+export const addPotentialStore: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction

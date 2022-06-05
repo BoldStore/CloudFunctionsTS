@@ -1,43 +1,59 @@
 import axios from "axios";
 import { firestore } from "firebase-admin";
+import { InstaData } from "../interfaces/insta_data";
 // import { INSTAGRAM_LOGIN } from "../constants";
 
-export const getInstaData = async (username: string) => {
+export const getInstaData: (username: string) => Promise<InstaData> = async (
+  username: string
+) => {
   const configs = await firestore().collection("config").get();
 
   const configData = configs.docs[0].data();
 
-  const insta_cookie = configData.insta_cookie;
+  // const insta_cookie = configData.insta_cookie;
+  const ig_app_id = configData.ig_app_id;
 
   // const insta_username = configData.username;
   // const enc_password = configData.enc_password;
 
-  const response = await axios.get(
-    `https://www.instagram.com/${username}/?__a=1`,
-    {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36",
-        Accept: "*/*",
-        "Accept-Language": "en-US,en;q=0.9",
-        "X-Requested-With": "XMLHttpRequest",
-        Connection: "keep-alive",
-        cookie: insta_cookie.toString(),
-      },
-    }
-  );
+  let profile_pic = "";
+  let full_name = "";
+  let bio = "";
+  let followers = "";
+  let following = "";
 
-  const data = response.data;
+  try {
+    const response = await axios.get(
+      `https://i.instagram.com/api/v1/users/web_profile_info/?username=${username}`,
+      {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36",
+          Accept: "*/*",
+          "Accept-Language": "en-US,en;q=0.9",
+          "X-Requested-With": "XMLHttpRequest",
+          Connection: "keep-alive",
+          // cookie: insta_cookie.toString(),
+          "X-IG-App-ID": ig_app_id,
+        },
+      }
+    );
 
-  // await loginInsta(insta_username, enc_password);
+    const data = response.data;
 
-  // console.log("Data>>", data);
+    // await loginInsta(insta_username, enc_password);
 
-  const profile_pic = data?.graphql?.user?.profile_pic_url_hd;
-  const full_name = data?.graphql?.user?.full_name;
-  const bio = data?.graphql?.user?.biography;
-  const followers = data?.graphql?.user?.edge_followed_by.count;
-  const following = data?.graphql?.user?.edge_follow.count;
+    // console.log("Data>>", data);
+
+    profile_pic = data?.user?.profile_pic_url_hd;
+    full_name = data?.user?.full_name;
+    bio = data?.user?.biography;
+    followers = data?.user?.edge_followed_by.count;
+    following = data?.user?.edge_follow.count;
+  } catch (e) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    console.log((e as any).response.data);
+  }
 
   return {
     profile_pic,
