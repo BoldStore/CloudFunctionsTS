@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { firestore } from "firebase-admin";
+import { auth, firestore } from "firebase-admin";
 import { getInstaData } from "../helper/get_insta_data";
 import ExpressError = require("../utils/ExpressError");
 
@@ -28,6 +28,10 @@ export const createUser = async (
 
     await firestore().collection("users").doc(id).set({
       email,
+    });
+
+    await auth().setCustomUserClaims(id, {
+      isStore: false,
     });
 
     res.status(201).json({

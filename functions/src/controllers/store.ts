@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { firestore } from "firebase-admin";
+import { auth, firestore } from "firebase-admin";
 import {
   getAccessToken,
   // getLongLivedAccessToken,
@@ -58,6 +58,11 @@ export const createStore = async (
 
     await firestore().collection("stores").doc(id).set({
       email,
+    });
+
+    // So that we can access if is store in frontend
+    await auth().setCustomUserClaims(id, {
+      isStore: true,
     });
 
     res.status(201).json({
