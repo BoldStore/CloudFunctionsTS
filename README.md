@@ -2,15 +2,26 @@
 
 This is the backend code written in Typescript for Cloud Functions in firebase
 
-## Models
+> Will update the documentation soon
 
-All the schema/models can be found in `functions/src/models`
-<br>There are 3 models:
+## How to run
 
-1. Users
-2. Stores
-3. Products
+For testing and development purposes, run the funcitons locally, with the auth and the firestore emulators simply by running in the functions directory
 
-## Triggers
+`npm run test-functions`
 
-All the database triggers or webhooks for firebase are present in `users`, `products` and `store` files.
+This will fireup firebase locally, and store the data (locally) in the folder, exported-dev-data
+
+We can open the firebase UI on `http://localhost:4000`
+
+> NOTE: We gotta re run the command everytime, will daemonize it maybe soon
+
+## Tech
+
+This project uses cloud functions and express like server for calls, the firebase cloud hooks and normal REST API is handled through the express thing
+
+## Deployment
+
+We can deploy to the google server simply by doing, in the functions directory
+
+`npm run deploy`
