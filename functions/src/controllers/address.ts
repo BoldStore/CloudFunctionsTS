@@ -40,6 +40,18 @@ export const addAddress: (
       notes
     );
 
+    const addressFromDb = (
+      await firestore()
+        .collection("addresses")
+        .where("userId", "==", userId)
+        .get()
+    ).docs[0];
+
+    if (addressFromDb.exists) {
+      next(new ExpressError("Address already exists", 400));
+      return;
+    }
+
     const address = await firestore()
       .collection("addresses")
       .add(address_model);
@@ -54,6 +66,21 @@ export const addAddress: (
         address_model,
         store.id
       );
+
+      // Check if completed
+      const paymentDetails = await firestore()
+        .collection("paymentDetails")
+        .doc(store.id)
+        .get();
+
+      if (paymentDetails.exists) {
+        await firestore().collection("stores").doc(store.id).set(
+          {
+            isCompleted: true,
+          },
+          { merge: true }
+        );
+      }
     }
 
     res.status(201).json({
@@ -129,22 +156,26 @@ export const updateAddress: (
       notes
     );
 
+    const address = await firestore().collection("addresses").doc(id).get();
+
+    if (!address.exists) {
+      next(new ExpressError("Address does not exist", 400));
+      return;
+    }
+
+    if (address.data()?.userId !== userId) {
+      next(new ExpressError("Address does not belong to user", 401));
+      return;
+    }
+
     await firestore()
       .collection("addresses")
       .doc(id)
       .set(address_model, { merge: true });
 
-    const addresses = await firestore()
-      .collection("addresses")
-      .where("userId", "==", userId)
-      .get();
-
     res.status(200).json({
       success: true,
-      addresses: addresses.docs.map((address) => ({
-        id: address.id,
-        ...address.data(),
-      })),
+      address: address_model,
     });
   } catch (e) {
     next(new ExpressError("Could not update address", 500, e));
@@ -164,19 +195,22 @@ export const deleteAddress: (
     const id: string = req.body.id?.toString();
     const userId = req.user.uid;
 
-    await firestore().collection("addresses").doc(id).delete();
+    const address = await firestore().collection("addresses").doc(id).get();
 
-    const addresses = await firestore()
-      .collection("addresses")
-      .where("userId", "==", userId)
-      .get();
+    if (!address.exists) {
+      next(new ExpressError("Address does not exist", 400));
+      return;
+    }
+
+    if (address.data()?.userId !== userId) {
+      next(new ExpressError("Address does not belong to user", 401));
+      return;
+    }
+
+    await firestore().collection("addresses").doc(id).delete();
 
     res.status(200).json({
       success: true,
-      addresses: addresses.docs.map((address) => ({
-        id: address.id,
-        ...address.data(),
-      })),
     });
   } catch (e) {
     console.log("Delete address error: ", e);
