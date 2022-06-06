@@ -232,7 +232,7 @@ export const updateStore: (
     );
 
     await auth().updateUser(id, {
-      phoneNumber: "+91" + req.body.phoneNumber,
+      phoneNumber: "+91" + phone_number,
     });
 
     // Check if address is there (To check if completed)
