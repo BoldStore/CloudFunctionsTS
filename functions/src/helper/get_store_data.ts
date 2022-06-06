@@ -33,10 +33,16 @@ export const getStoreData: (
     const response = await axios.get(
       `${INSTAGRAM_GRAPH_API_URL}/${insta_id}?access_token=${access_token}&fields=${BASIC_FIELDS}`
     );
+
     const username: string = response.data.username;
     const id: string = response.data.id;
 
     const data = await getInstaData(username);
+
+    if (data.error) {
+      error = data.error;
+      return { store, error };
+    }
 
     store = new Store(
       data.full_name ?? "",
@@ -55,11 +61,11 @@ export const getStoreData: (
     );
 
     await auth().updateUser(storeId, {
-      photoURL: store.profile_pic,
-      displayName: store.full_name,
+      photoURL: store.profile_pic ?? "",
+      displayName: store.full_name ?? "",
     });
 
-    getStoreMedia(user_id, access_token, storeId);
+    // getStoreMedia(user_id, access_token, storeId);
   } catch (e) {
     if ((e as any).response.data.error.code == 100 && !tryAgain) {
       return await getStoreData(

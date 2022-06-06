@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { firestore } from "firebase-admin";
 import { InstaData } from "../interfaces/insta_data";
@@ -5,18 +6,19 @@ import { InstaData } from "../interfaces/insta_data";
 export const getInstaData: (username: string) => Promise<InstaData> = async (
   username: string
 ) => {
-  const configs = await firestore().collection("config").get();
-
-  const configData = configs.docs[0].data();
-  const ig_app_id = configData.ig_app_id;
-
   let profile_pic = "";
   let full_name = "";
   let bio = "";
   let followers = "";
   let following = "";
+  let error = null;
 
   try {
+    const configs = await firestore().collection("config").get();
+
+    const configData = configs.docs[0].data();
+    const ig_app_id = configData.ig_app_id;
+
     const response = await axios.get(
       `https://i.instagram.com/api/v1/users/web_profile_info/?username=${username}`,
       {
@@ -32,7 +34,7 @@ export const getInstaData: (username: string) => Promise<InstaData> = async (
       }
     );
 
-    const data = response.data;
+    const data = response.data.data;
 
     profile_pic = data?.user?.profile_pic_url_hd;
     full_name = data?.user?.full_name;
@@ -40,8 +42,7 @@ export const getInstaData: (username: string) => Promise<InstaData> = async (
     followers = data?.user?.edge_followed_by.count;
     following = data?.user?.edge_follow.count;
   } catch (e) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    console.log((e as any).response.data);
+    error = (e as any).response.data ?? e;
   }
 
   return {
@@ -50,5 +51,6 @@ export const getInstaData: (username: string) => Promise<InstaData> = async (
     bio,
     followers,
     following,
+    error,
   };
 };

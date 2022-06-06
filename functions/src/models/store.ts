@@ -7,14 +7,14 @@ export class Store {
   followers?: string | number;
   following?: string | number;
   profile_pic: string | null;
-  instagram_id?: string | null | undefined;
+  instagram_id?: string | null;
   bio?: string | null;
   isComplete: boolean;
   expires_in: number | string;
   user_id?: string | null;
   access_token?: string | null;
-  phone: string | null | undefined;
-  upi_id: string | null | undefined;
+  phone: string | null;
+  upi_id: string | null;
 
   constructor(
     full_name: string | null,
@@ -24,14 +24,14 @@ export class Store {
     followers: string | number,
     following: string | number,
     profile_pic: string | null,
-    instagram_id: string | null | undefined,
+    instagram_id: string | null = null,
     bio?: string | null,
     isComplete = false,
     expires_in: number | string = 3600,
     user_id?: string | null,
     access_token?: string | null,
-    phone?: string | null | undefined,
-    upi_id?: string | null | undefined
+    phone: string | null = null,
+    upi_id: string | null = null
   ) {
     this.full_name = full_name;
     this.username = username;
@@ -72,15 +72,15 @@ export interface StoreType {
   username: string;
   id: string;
   lastRefreshed: Date;
-  followers?: string | number | null | undefined;
-  following?: string | number | null | undefined;
-  profile_pic?: string | null | undefined;
-  instagram_id?: string | null | undefined;
-  bio?: string | null | undefined;
+  followers?: string | number | null;
+  following?: string | number | null;
+  profile_pic?: string | null;
+  instagram_id?: string | null;
+  bio?: string | null;
   access_token?: string | null;
   user_id?: string | null;
   expires_in: string | number;
   isComplete: boolean | null;
-  phone?: string | null | undefined;
-  upi_id?: string | null | undefined;
+  phone?: string | null;
+  upi_id?: string | null;
 }

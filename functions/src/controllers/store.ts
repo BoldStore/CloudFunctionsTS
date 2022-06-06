@@ -157,12 +157,15 @@ export const saveStoreData: (
 
     // Save to db
     if (data.store) {
-      await firestore().collection("stores").doc(id).set(data, { merge: true });
+      await firestore()
+        .collection("stores")
+        .doc(id)
+        .set(data.store, { merge: true });
     }
 
     res.status(200).json({
       success: true,
-      store: data,
+      store: data.store,
     });
   } catch (e) {
     next(new ExpressError("Could not store save store data", 500, e));
