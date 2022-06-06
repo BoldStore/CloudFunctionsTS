@@ -2,12 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import { auth, firestore } from "firebase-admin";
 import {
   getAccessToken,
-  // getLongLivedAccessToken,
+  getLongLivedAccessToken,
 } from "../helper/get_access_token";
 import { getStoreData } from "../helper/get_store_data";
 import { APP_NAME, transporter } from "../helper/mails";
 import { refresh_store_products } from "../helper/store";
-import { Store } from "../interfaces/store";
+import { StoreType } from "../models/store";
 import { AVI_MAIL, BOLD_MAIL, JAYESH_MAIL } from "../secrets";
 import ExpressError = require("../utils/ExpressError");
 
@@ -104,36 +104,53 @@ export const saveStoreData: (
       return;
     }
 
+    // Only save data once
+    if (store.data()?.isCompleted) {
+      next(new ExpressError("Store already saved", 400));
+      return;
+    }
+
     // Get Insta access Token
     const auth_data = await getAccessToken(insta_code);
 
-    // const access_token_data = await getLongLivedAccessToken(
-    //   auth_data.access_token
-    // );
+    if (auth_data.error) {
+      next(
+        new ExpressError(
+          "There was an error saving store data",
+          400,
+          auth_data.error
+        )
+      );
+      return;
+    }
 
-    let data: Store | null = null;
+    const access_token_data = await getLongLivedAccessToken(
+      auth_data.access_token
+    );
 
-    // if (access_token_data.error) {
-    // Get store data
-    data = (
-      await getStoreData(
-        auth_data.user_id,
-        auth_data.user_id_orignal,
-        auth_data.access_token,
-        store.id
-      )
-    ).store;
-    // } else {
-    //   data = (
-    //     await getStoreData(
-    //       auth_data.user_id,
-    //       auth_data.user_id_orignal,
-    //       access_token_data.access_token,
-    //       store.id,
-    //       access_token_data.expires_in
-    //     )
-    //   ).store;
-    // }
+    let data: StoreType | null = null;
+
+    if (access_token_data.error) {
+      // Get store data
+      data = (
+        await getStoreData(
+          auth_data.user_id,
+          auth_data.user_id_orignal,
+          auth_data.access_token,
+          store.id
+        )
+      ).store;
+    } else {
+      data = (
+        await getStoreData(
+          auth_data.user_id,
+          auth_data.user_id_orignal,
+          access_token_data.access_token,
+          store.id,
+          access_token_data.expires_in
+        )
+      ).store;
+    }
 
     // Save to db
     if (data) {
@@ -145,7 +162,6 @@ export const saveStoreData: (
       store: data,
     });
   } catch (e) {
-    // console.log("Error in saving store data", e);
     next(new ExpressError("Could not store save store data", 500, e));
   }
 };

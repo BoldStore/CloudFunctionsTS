@@ -1,12 +1,29 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { INSTAGRAM_ACCESS_TOKEN } from "../constants";
 import { stringify } from "qs";
 import { firestore } from "firebase-admin";
 
-export const getAccessToken = async (code?: string) => {
+interface getAccessTokenResponse {
+  access_token: string;
+  user_id: string;
+  user_id_orignal: string;
+  error: any;
+}
+
+interface getLongAccessTokenResponse {
+  access_token: string;
+  expires_in: number | undefined;
+  error: any;
+}
+
+export const getAccessToken: (
+  code: string
+) => Promise<getAccessTokenResponse> = async (code?: string) => {
   let access_token = "";
   let user_id = "";
   let user_id_orignal = "";
+  let error = null;
 
   const config = (await firestore().collection("config").get()).docs[0];
 
@@ -35,16 +52,20 @@ export const getAccessToken = async (code?: string) => {
     );
   } catch (e) {
     console.log("Error in getting access token", (e as any).response.data);
+    error = (e as any).response.data;
   }
 
   return {
     access_token,
     user_id,
     user_id_orignal,
+    error,
   };
 };
 
-export const getLongLivedAccessToken = async (access_token: string) => {
+export const getLongLivedAccessToken: (
+  access_token: string
+) => Promise<getLongAccessTokenResponse> = async (access_token: string) => {
   const config = (await firestore().collection("config").get()).docs[0];
 
   const url = `https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${
@@ -63,7 +84,7 @@ export const getLongLivedAccessToken = async (access_token: string) => {
     }
   } catch (e) {
     console.log("Long Lived token error>>", (e as any).response.data);
-    error = e;
+    error = (e as any).response.data;
   }
 
   return {
@@ -73,7 +94,9 @@ export const getLongLivedAccessToken = async (access_token: string) => {
   };
 };
 
-export const refreshToken = async (access_token: string) => {
+export const refreshToken: (
+  access_token: string
+) => Promise<getLongAccessTokenResponse> = async (access_token: string) => {
   const url = `https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${access_token}`;
   let long_access_token = null;
   let error = null;
@@ -87,8 +110,8 @@ export const refreshToken = async (access_token: string) => {
       expires_in = response.data.expires_in;
     }
   } catch (e) {
-    console.log("Long Lived token error>>", e);
-    error = e;
+    console.log("Long Lived token error>>", (e as any).response.data());
+    error = (e as any).response.data();
   }
 
   return {

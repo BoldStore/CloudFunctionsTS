@@ -5,7 +5,7 @@ import {
   INSTAGRAM_GRAPH_API_URL,
   MEDIA_FIELDS,
 } from "../constants";
-import { Store } from "../interfaces/store";
+import { StoreType } from "../models/store";
 import { createProductTask } from "../tasks/products";
 import { getInstaData } from "./get_insta_data";
 
@@ -16,7 +16,7 @@ export const getStoreData: (
   storeId: string,
   expires_in?: number,
   tryAgain?: boolean
-) => Promise<{ store: Store | null }> = async (
+) => Promise<{ store: StoreType | null }> = async (
   user_id: string,
   user_id_orignal: string,
   access_token: string,
@@ -24,7 +24,7 @@ export const getStoreData: (
   expires_in = 3600,
   tryAgain = false
 ) => {
-  let store: Store | null = null;
+  let store: StoreType | null = null;
   const insta_id: string = tryAgain ? user_id : user_id_orignal;
 
   try {
@@ -49,6 +49,7 @@ export const getStoreData: (
       access_token,
       user_id: insta_id,
       expires_in,
+      isComplete: false,
     };
 
     getStoreMedia(user_id, access_token, storeId);

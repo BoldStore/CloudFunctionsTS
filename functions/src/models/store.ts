@@ -1,5 +1,5 @@
 /* eslint-disable require-jsdoc */
-class Store {
+export class Store {
   full_name: string;
   username: string;
   id: string;
@@ -9,6 +9,7 @@ class Store {
   profile_pic?: string;
   instagram_id?: string;
   bio?: string;
+  isComplete: boolean;
 
   constructor(
     full_name: string,
@@ -19,7 +20,8 @@ class Store {
     following?: string,
     profile_pic?: string,
     instagram_id?: string,
-    bio?: string
+    bio?: string,
+    isComplete = false
   ) {
     this.full_name = full_name;
     this.username = username;
@@ -30,6 +32,7 @@ class Store {
     this.profile_pic = profile_pic;
     this.instagram_id = instagram_id;
     this.bio = bio;
+    this.isComplete = isComplete;
 
     return {
       full_name: this.full_name,
@@ -41,6 +44,23 @@ class Store {
       profile_pic: this.profile_pic,
       instagram_id: this.instagram_id,
       bio: this.bio,
+      isComplete: this.isComplete,
     };
   }
+}
+
+export interface StoreType {
+  full_name: string | null | undefined;
+  username: string;
+  id: string;
+  lastRefreshed: Date;
+  followers: string | number | null | undefined;
+  following: string | number | null | undefined;
+  profile_pic: string | null | undefined;
+  instagram_id: string;
+  bio: string | null | undefined;
+  access_token: string;
+  user_id: string;
+  expires_in: string | number;
+  isComplete: boolean | null;
 }
