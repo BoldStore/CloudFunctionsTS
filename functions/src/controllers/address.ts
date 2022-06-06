@@ -47,7 +47,7 @@ export const addAddress: (
         .get()
     ).docs[0];
 
-    if (addressFromDb.exists) {
+    if (addressFromDb?.exists) {
       next(new ExpressError("Address already exists", 400));
       return;
     }
@@ -58,7 +58,7 @@ export const addAddress: (
 
     address_model.id = address.id;
 
-    if (store.exists) {
+    if (store?.exists) {
       await addPickup(
         title,
         store.data()?.email,
@@ -73,7 +73,7 @@ export const addAddress: (
         .doc(store.id)
         .get();
 
-      if (paymentDetails.exists) {
+      if (paymentDetails?.exists) {
         await firestore().collection("stores").doc(store.id).set(
           {
             isCompleted: true,

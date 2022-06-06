@@ -25,15 +25,22 @@ app.use(cors({ origin: true, credentials: true }));
 app.use("/", routes);
 
 // Check for errors
-app.use((err: ExpressError, req: express.Request, res: express.Response) => {
-  const { statusCode = 500 } = err;
-  if (!err.message) err.message = "Oh No, Something Went Wrong!";
-  // if (process.env.NODE_ENV !== "production") {
-  res.status(statusCode).send({ err });
-  // } else {
-  //   res.status(500).send({ success: false, message: "Something went wrong" });
-  // }
-});
+app.use(
+  (
+    err: ExpressError,
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    const { statusCode = 500 } = err;
+    if (!err.message) err.message = "Oh No, Something Went Wrong!";
+    // if (process.env.NODE_ENV !== "production") {
+    res.status(statusCode).send({ err }).end();
+    // } else {
+    //   res.status(500).send({ success: false, message: "Something went wrong" });
+    // }
+  }
+);
 
 exports.app = https.onRequest(app);
 
