@@ -9,7 +9,7 @@ export class Store {
   profile_pic: string | null;
   instagram_id?: string | null;
   bio?: string | null;
-  isComplete: boolean;
+  isCompleted: boolean;
   expires_in: number | string;
   user_id?: string | null;
   access_token?: string | null;
@@ -24,7 +24,7 @@ export class Store {
     profile_pic: string | null,
     instagram_id: string | null = null,
     bio?: string | null,
-    isComplete = false,
+    isCompleted = false,
     expires_in: number | string = 3600,
     user_id?: string | null,
     access_token?: string | null
@@ -38,7 +38,7 @@ export class Store {
     this.profile_pic = profile_pic;
     this.instagram_id = instagram_id;
     this.bio = bio;
-    this.isComplete = isComplete;
+    this.isCompleted = isCompleted;
     this.expires_in = expires_in;
     this.user_id = user_id;
     this.access_token = access_token;
@@ -53,7 +53,7 @@ export class Store {
       profile_pic: this.profile_pic,
       instagram_id: this.instagram_id,
       bio: this.bio,
-      isComplete: this.isComplete,
+      isCompleted: this.isCompleted,
       expires_in: this.expires_in,
     };
   }
@@ -72,5 +72,5 @@ export interface StoreType {
   access_token?: string | null;
   user_id?: string | null;
   expires_in: string | number;
-  isComplete: boolean | null;
+  isCompleted: boolean | null;
 }

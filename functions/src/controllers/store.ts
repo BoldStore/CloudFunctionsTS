@@ -203,17 +203,13 @@ export const updateStore: (
   req: Request,
   res: Response,
   next: NextFunction
-) => Promise<void> = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+) => Promise<void> = async (req, res, next) => {
   try {
     const id = req.user.uid;
 
     const user = await firestore().collection("users").doc(id).get();
 
-    if (user.exists) {
+    if (user?.exists) {
       next(new ExpressError("User already exists", 400));
       return;
     }
@@ -244,7 +240,7 @@ export const updateStore: (
       await firestore().collection("addresses").where("store", "==", id).get()
     ).docs[0];
 
-    if (address.exists) {
+    if (address?.exists) {
       // Set store to completed
       await firestore().collection("stores").doc(id).set(
         {
