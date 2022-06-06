@@ -13,8 +13,6 @@ export class Store {
   expires_in: number | string;
   user_id?: string | null;
   access_token?: string | null;
-  phone: string | null;
-  upi_id: string | null;
 
   constructor(
     full_name: string | null,
@@ -29,9 +27,7 @@ export class Store {
     isComplete = false,
     expires_in: number | string = 3600,
     user_id?: string | null,
-    access_token?: string | null,
-    phone: string | null = null,
-    upi_id: string | null = null
+    access_token?: string | null
   ) {
     this.full_name = full_name;
     this.username = username;
@@ -46,8 +42,6 @@ export class Store {
     this.expires_in = expires_in;
     this.user_id = user_id;
     this.access_token = access_token;
-    this.phone = phone;
-    this.upi_id = upi_id;
 
     return {
       full_name: this.full_name,
@@ -61,8 +55,6 @@ export class Store {
       bio: this.bio,
       isComplete: this.isComplete,
       expires_in: this.expires_in,
-      phone: this.phone,
-      upi_id: this.upi_id,
     };
   }
 }
@@ -81,6 +73,4 @@ export interface StoreType {
   user_id?: string | null;
   expires_in: string | number;
   isComplete: boolean | null;
-  phone?: string | null;
-  upi_id?: string | null;
 }
