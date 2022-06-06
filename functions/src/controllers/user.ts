@@ -94,6 +94,11 @@ export const addInstaUsername: (
       { merge: true }
     );
 
+    await auth().updateUser(id, {
+      photoURL: data.profile_pic,
+      displayName: data.full_name,
+    });
+
     res.status(200).json({
       success: true,
       user: {
