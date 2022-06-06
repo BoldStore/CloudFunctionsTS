@@ -1,29 +1,35 @@
 /* eslint-disable require-jsdoc */
 export class Store {
-  full_name: string;
+  full_name: string | null;
   username: string;
   id: string;
   lastRefreshed: Date;
-  followers?: string;
-  following?: string;
-  profile_pic?: string;
-  instagram_id?: string;
-  bio?: string;
+  followers?: string | number;
+  following?: string | number;
+  profile_pic: string | null;
+  instagram_id?: string | null | undefined;
+  bio?: string | null;
   isComplete: boolean;
+  expires_in: number | string;
+  user_id?: string | null;
+  access_token?: string | null;
   phone: string | null | undefined;
   upi_id: string | null | undefined;
 
   constructor(
-    full_name: string,
+    full_name: string | null,
     username: string,
     id: string,
     lastRefreshed: Date,
-    followers?: string,
-    following?: string,
-    profile_pic?: string,
-    instagram_id?: string,
-    bio?: string,
+    followers: string | number,
+    following: string | number,
+    profile_pic: string | null,
+    instagram_id: string | null | undefined,
+    bio?: string | null,
     isComplete = false,
+    expires_in: number | string = 3600,
+    user_id?: string | null,
+    access_token?: string | null,
     phone?: string | null | undefined,
     upi_id?: string | null | undefined
   ) {
@@ -37,6 +43,9 @@ export class Store {
     this.instagram_id = instagram_id;
     this.bio = bio;
     this.isComplete = isComplete;
+    this.expires_in = expires_in;
+    this.user_id = user_id;
+    this.access_token = access_token;
     this.phone = phone;
     this.upi_id = upi_id;
 
@@ -51,6 +60,7 @@ export class Store {
       instagram_id: this.instagram_id,
       bio: this.bio,
       isComplete: this.isComplete,
+      expires_in: this.expires_in,
       phone: this.phone,
       upi_id: this.upi_id,
     };
@@ -62,13 +72,13 @@ export interface StoreType {
   username: string;
   id: string;
   lastRefreshed: Date;
-  followers: string | number | null | undefined;
-  following: string | number | null | undefined;
-  profile_pic: string | null | undefined;
-  instagram_id: string;
-  bio: string | null | undefined;
-  access_token: string;
-  user_id: string;
+  followers?: string | number | null | undefined;
+  following?: string | number | null | undefined;
+  profile_pic?: string | null | undefined;
+  instagram_id?: string | null | undefined;
+  bio?: string | null | undefined;
+  access_token?: string | null;
+  user_id?: string | null;
   expires_in: string | number;
   isComplete: boolean | null;
   phone?: string | null | undefined;

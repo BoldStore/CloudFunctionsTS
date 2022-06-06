@@ -1,6 +1,14 @@
 import { listOfClothes } from "../data/listOfClothes";
 
-export const analysePost = (captionString: string) => {
+interface PostData {
+  price: string;
+  name: string;
+  sold: boolean;
+}
+
+export const analysePost: (captionString: string) => PostData = (
+  captionString: string
+) => {
   const caption = captionString.toLowerCase();
   let price = "";
   let sold = false;

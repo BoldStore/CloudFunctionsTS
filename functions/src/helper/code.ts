@@ -1,6 +1,6 @@
 import { firestore } from "firebase-admin";
 
-export const generateCode = async () => {
+export const generateCode: () => Promise<string> = async () => {
   // Generate invite token (6 digit random number)
   const inviteCode = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -12,7 +12,9 @@ export const generateCode = async () => {
   return inviteCode;
 };
 
-export const checkCodeValidation = async (code: string) => {
+export const checkCodeValidation: (code: string) => Promise<boolean> = async (
+  code: string
+) => {
   let exists = false;
 
   // Check if already exists

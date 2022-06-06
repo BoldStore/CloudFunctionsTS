@@ -17,7 +17,12 @@ export const transporter = createTransport({
 
 export const APP_NAME = "Bold";
 
-export const sendMail = async (
+export const sendMail: (
+  email: string,
+  subject: string,
+  text: string,
+  htmlPath: string
+) => Promise<void> = async (
   email: string,
   subject: string,
   text: string,
@@ -44,6 +49,7 @@ export const sendMail = async (
         return;
       }
     });
+    return;
   } catch (e) {
     console.log("Error sending mail>>", e);
   }

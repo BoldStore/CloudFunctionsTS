@@ -6,7 +6,7 @@ import {
   INSTAGRAM_GRAPH_API_URL,
   MEDIA_FIELDS,
 } from "../constants";
-import { StoreType } from "../models/store";
+import { Store, StoreType } from "../models/store";
 import { createProductTask } from "../tasks/products";
 import { getInstaData } from "./get_insta_data";
 
@@ -38,21 +38,21 @@ export const getStoreData: (
 
     const data = await getInstaData(username);
 
-    store = {
-      full_name: data.full_name,
-      username: username,
-      id: storeId,
-      lastRefreshed: new Date(),
-      followers: data.followers,
-      following: data.following,
-      profile_pic: data.profile_pic,
-      instagram_id: id,
-      bio: data.bio,
-      access_token,
-      user_id: insta_id,
+    store = new Store(
+      data.full_name ?? "",
+      username,
+      storeId,
+      new Date(),
+      data.followers ?? "",
+      data.following ?? "",
+      data.profile_pic ?? "",
+      id,
+      data.bio,
+      false,
       expires_in,
-      isComplete: false,
-    };
+      user_id,
+      access_token
+    );
 
     await auth().updateUser(storeId, {
       photoURL: store.profile_pic,
@@ -73,18 +73,6 @@ export const getStoreData: (
     }
     error = (e as any)?.response?.data ?? e;
   }
-
-  // new Store(
-  //   data.full_name,
-  //   username,
-  //   storeId,
-  //   new Date(),
-  //   data.followers,
-  //   data.following,
-  //   data.profile_pic,
-  //   id,
-  //   data.bio
-  // );
 
   return {
     store,
