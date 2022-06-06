@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import { auth, firestore } from "firebase-admin";
 import {
@@ -128,32 +129,33 @@ export const saveStoreData: (
       auth_data.access_token
     );
 
-    let data: StoreType | null = null;
+    let data: { store: StoreType | null; error: any } | null = null;
 
     if (access_token_data.error) {
       // Get store data
-      data = (
-        await getStoreData(
-          auth_data.user_id,
-          auth_data.user_id_orignal,
-          auth_data.access_token,
-          store.id
-        )
-      ).store;
+      data = await getStoreData(
+        auth_data.user_id,
+        auth_data.user_id_orignal,
+        auth_data.access_token,
+        store.id
+      );
     } else {
-      data = (
-        await getStoreData(
-          auth_data.user_id,
-          auth_data.user_id_orignal,
-          access_token_data.access_token,
-          store.id,
-          access_token_data.expires_in
-        )
-      ).store;
+      data = await getStoreData(
+        auth_data.user_id,
+        auth_data.user_id_orignal,
+        access_token_data.access_token,
+        store.id,
+        access_token_data.expires_in
+      );
+    }
+
+    if (data.error) {
+      next(new ExpressError("Could not get store data", 400, data.error));
+      return;
     }
 
     // Save to db
-    if (data) {
+    if (data.store) {
       await firestore().collection("stores").doc(id).set(data, { merge: true });
     }
 
@@ -191,7 +193,6 @@ export const updateStoreProducts: (
       data,
     });
   } catch (e) {
-    console.log("Error in updating store products", e);
     next(new ExpressError("Could not update store products", 500, e));
   }
 };
@@ -218,7 +219,11 @@ export const updateStore: (
     const upi_id = req.body.upi_id;
     const phone_number = req.body.phone_number;
 
-    // if (upi_id) {
+    if (!upi_id || !phone_number) {
+      next(new ExpressError("Upi ID and phone number are required", 400));
+      return;
+    }
+
     // Payment Details
     await firestore().collection("paymentDetails").doc(id).set(
       {
@@ -227,10 +232,24 @@ export const updateStore: (
       },
       { merge: true }
     );
-    // }
 
-    if (phone_number) {
-      // refresh_store_data(id, phone_number);
+    await auth().updateUser(id, {
+      phoneNumber: "+91" + req.body.phoneNumber,
+    });
+
+    // Check if address is there (To check if completed)
+    const address = (
+      await firestore().collection("addresses").where("store", "==", id).get()
+    ).docs[0];
+
+    if (address.exists) {
+      // Set store to completed
+      await firestore().collection("stores").doc(id).set(
+        {
+          isCompleted: true,
+        },
+        { merge: true }
+      );
     }
 
     res.status(200).json({

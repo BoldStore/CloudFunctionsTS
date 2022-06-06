@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
+import { auth } from "firebase-admin";
 import {
   BASIC_FIELDS,
   INSTAGRAM_GRAPH_API_URL,
@@ -16,7 +17,7 @@ export const getStoreData: (
   storeId: string,
   expires_in?: number,
   tryAgain?: boolean
-) => Promise<{ store: StoreType | null }> = async (
+) => Promise<{ store: StoreType | null; error: any }> = async (
   user_id: string,
   user_id_orignal: string,
   access_token: string,
@@ -25,6 +26,7 @@ export const getStoreData: (
   tryAgain = false
 ) => {
   let store: StoreType | null = null;
+  let error: any;
   const insta_id: string = tryAgain ? user_id : user_id_orignal;
 
   try {
@@ -52,6 +54,11 @@ export const getStoreData: (
       isComplete: false,
     };
 
+    await auth().updateUser(storeId, {
+      photoURL: store.profile_pic,
+      displayName: store.full_name,
+    });
+
     getStoreMedia(user_id, access_token, storeId);
   } catch (e) {
     if ((e as any).response.data.error.code == 100 && !tryAgain) {
@@ -64,6 +71,7 @@ export const getStoreData: (
         true
       );
     }
+    error = (e as any)?.response?.data ?? e;
   }
 
   // new Store(
@@ -80,6 +88,7 @@ export const getStoreData: (
 
   return {
     store,
+    error,
   };
 };
 
