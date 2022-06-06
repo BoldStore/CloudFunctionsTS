@@ -64,6 +64,7 @@ export const createStore: (
 
     await firestore().collection("stores").doc(id).set({
       email,
+      isCompleted: false,
     });
 
     // So that we can access if is store in frontend
