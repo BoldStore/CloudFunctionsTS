@@ -1,86 +1,81 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
-import { firestore } from "firebase-admin";
+import { auth, firestore } from "firebase-admin";
 import { INSTAGRAM_GRAPH_API_URL, MEDIA_FIELDS } from "../constants";
-// import { getAccessToken } from "./get_access_token";
 import { getInstaData } from "./get_insta_data";
-// import { getStoreData } from "./get_store_data";
 import { analysePost } from "./product";
 
-export const refresh_store_data = async (
-  storeId: string,
-  phone_number: string
-) => {
-  // Get insta access token
-  // const auth_data = await getAccessToken();
+interface getMediaResponse {
+  success: boolean;
+  error: string | null;
+  media: Array<any>;
+}
 
-  // const data = (
-  //   await getStoreData(auth_data.user_id, auth_data.access_token, storeId)
-  // ).store;
+export const getMedia: (
+  store: FirebaseFirestore.DocumentData,
+  access_token: string
+) => Promise<getMediaResponse> = async (store: any, access_token: string) => {
+  try {
+    const response = await axios.get(
+      `${INSTAGRAM_GRAPH_API_URL}/${store.instagram_id}/media?access_token=${access_token}&fields=${MEDIA_FIELDS}`
+    );
 
-  const data = {} as any;
+    if (response.status !== 200) {
+      console.log("There was an error getting the store's products");
+      return {
+        success: false,
+        error: "There was an error getting the store's products",
+        media: [],
+      };
+    }
 
-  if (!data) {
-    return;
-  }
-
-  await firestore().collection("stores").doc(storeId).set(
-    {
-      profile_pic: data.profile_pic,
-      full_name: data.full_name,
-      bio: data.bio,
-      followers: data.followers,
-      following: data.following,
-      insta_username: data.username,
-      phone_number,
-    },
-    { merge: true }
-  );
-};
-
-export const getMedia = async (store: any, access_token: string) => {
-  const response = await axios.get(
-    `${INSTAGRAM_GRAPH_API_URL}/${
-      store!.instagram_id
-    }/media?access_token=${access_token}&fields=${MEDIA_FIELDS}`
-  );
-
-  if (response.status !== 200) {
-    console.log("There was an error getting the store's products");
+    const storeMedia: Array<any> = response.data.data;
+    return {
+      success: true,
+      error: null,
+      media: storeMedia,
+    };
+  } catch (e) {
     return {
       success: false,
-      error: "There was an error getting the store's products",
+      error: (e as any).response.data,
       media: [],
     };
   }
-
-  const storeMedia: Array<any> = response.data.data;
-  return {
-    success: true,
-    error: null,
-    media: storeMedia,
-  };
 };
 
 export const refresh_store_products: any = async (
   storeId: string,
-  storeFromDb: FirebaseFirestore.DocumentData | undefined = undefined
+  storeFromDb?: FirebaseFirestore.DocumentData | undefined
 ) => {
   try {
-    let store: FirebaseFirestore.DocumentData;
+    let store: FirebaseFirestore.DocumentData | undefined;
     // Get insta access token
     if (!storeFromDb) {
       store = (
         await firestore().collection("stores").doc(storeId).get()
-      ).data()!;
+      ).data();
     } else {
       store = storeFromDb.data();
     }
 
-    const access_token = store!.access_token;
+    if (!store) {
+      return {
+        success: false,
+        error: "Store not found",
+      };
+    }
 
-    const username = store!.insta_username;
+    const access_token = store?.access_token;
+
+    const username = store?.insta_username;
 
     const data = await getInstaData(username);
+
+    await auth().updateUser(storeId, {
+      photoURL: store.profile_pic,
+      displayName: store.full_name,
+    });
 
     await firestore().collection("stores").doc(storeId).set(
       {
@@ -94,6 +89,14 @@ export const refresh_store_products: any = async (
     );
 
     const storeData = await getMedia(store, access_token);
+
+    if (!storeData.success) {
+      return {
+        success: false,
+        error: storeData.error,
+      };
+    }
+
     const media = storeData.media;
     const products = await firestore()
       .collection("products")
@@ -139,7 +142,7 @@ export const refresh_store_products: any = async (
   }
 };
 
-export const refresh_all_products = async () => {
+export const refresh_all_products: () => Promise<void> = async () => {
   try {
     const stores = (await firestore().collection("stores").get()).docs;
 

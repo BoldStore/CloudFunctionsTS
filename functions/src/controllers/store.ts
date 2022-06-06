@@ -189,9 +189,7 @@ export const updateStoreProducts: (
 
     const data = await refresh_store_products(store.id, store.data());
 
-    res.status(200).json({
-      data,
-    });
+    res.status(200).json(data);
   } catch (e) {
     next(new ExpressError("Could not update store products", 500, e));
   }
