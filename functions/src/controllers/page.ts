@@ -1,8 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
 import ExpressError = require("../utils/ExpressError");
 
-export const homePage = async (
+export const homePage: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -14,7 +19,7 @@ export const homePage = async (
       .limit(15)
       .get();
 
-    const stores = await firestore().collection("stores").limit(15).get();
+    const stores = await firestore().collection("stores").limit(50).get();
 
     res.status(200).json({
       success: true,
@@ -33,7 +38,11 @@ export const homePage = async (
   }
 };
 
-export const explorePage = async (
+export const explorePage: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -77,13 +86,22 @@ export const explorePage = async (
   }
 };
 
-export const storePage = async (
+export const storePage: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const storeId = req.query.storeId!.toString();
+    const storeId = req.query.storeId?.toString();
+
+    if (!storeId) {
+      next(new ExpressError("Store id is required", 400));
+      return;
+    }
 
     const store = await firestore().collection("stores").doc(storeId).get();
 
