@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { credential, initializeApp } from "firebase-admin";
 import { https } from "firebase-functions/v1";
 import { Razorpay } from "razorpay-typescript";
@@ -30,7 +31,7 @@ app.use(
     err: ExpressError,
     req: express.Request,
     res: express.Response,
-    next: express.NextFunction
+    _next: express.NextFunction
   ) => {
     const { statusCode = 500 } = err;
     if (!err.message) err.message = "Oh No, Something Went Wrong!";
