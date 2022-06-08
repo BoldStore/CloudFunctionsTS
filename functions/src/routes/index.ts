@@ -5,6 +5,7 @@ import * as pageRoutes from "./pages";
 import * as storeRoutes from "./store";
 import * as testRoutes from "./test";
 import * as userRoutes from "./user";
+import * as profileRoutes from "./profile";
 // eslint-disable-next-line new-cap
 const router = Router();
 
@@ -13,6 +14,7 @@ router.use("/codes", codeRoutes);
 router.use("/pages", pageRoutes);
 router.use("/store", storeRoutes);
 router.use("/user", userRoutes);
+router.use("/profile", profileRoutes);
 router.use("/test", testRoutes);
 
 export = router;
