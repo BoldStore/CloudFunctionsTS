@@ -5,7 +5,7 @@ import { analysePost } from "../helper/product";
 import { S3_BUCKET_NAME } from "../secrets";
 import ExpressError = require("../utils/ExpressError");
 
-export const addInviteToken: (
+export const getProductData: (
   req: Request,
   res: Response,
   next: NextFunction
