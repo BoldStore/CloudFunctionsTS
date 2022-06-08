@@ -17,18 +17,18 @@ export const createUser: (
 ) => {
   try {
     const authData = req.user;
-    const id = authData.user;
+    const id = authData.uid;
     const email = authData.email;
 
     const user = await firestore().collection("users").doc(id).get();
     const store = await firestore().collection("stores").doc(id).get();
 
-    if (user.exists) {
+    if (user?.exists) {
       next(new ExpressError("User already exists", 400));
       return;
     }
 
-    if (store.exists) {
+    if (store?.exists) {
       next(new ExpressError("Store already exists", 400));
       return;
     }
@@ -82,8 +82,10 @@ export const addInstaUsername: (
     ).docs;
 
     if (userDb.length > 0) {
-      next(new ExpressError("Instagram username already exists", 400));
-      return;
+      if (userDb[0].id !== id) {
+        next(new ExpressError("Instagram username already exists", 400));
+        return;
+      }
     }
 
     const data = await getInstaData(insta_username);
@@ -127,7 +129,7 @@ export const addInstaUsername: (
       user: {
         insta_username: insta_username,
         name: data.full_name,
-        imgUrl: data.profile_pic,
+        imgUrl: profilePic,
       },
       userResult: user,
     });

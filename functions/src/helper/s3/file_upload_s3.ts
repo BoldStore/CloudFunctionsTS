@@ -72,7 +72,12 @@ export const deleteObject: (
     (err, data) => {
       if (err) {
         console.log(err, err.stack);
-      } else console.log(data);
+        return;
+      } else {
+        console.log(data);
+        return;
+      }
     }
   );
+  return;
 };
