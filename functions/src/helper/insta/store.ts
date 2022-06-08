@@ -74,7 +74,7 @@ export const refresh_store_products: (
 
     const access_token = store?.access_token;
 
-    const username = store?.insta_username;
+    const username = store?.username;
 
     const data = await getInstaData(username);
 
