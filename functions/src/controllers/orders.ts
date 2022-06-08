@@ -39,6 +39,43 @@ export const createOrder: (
       next(new ExpressError("Product is not available", 400));
       return;
     }
+
+    const userInDb = await firestore().collection("stores").doc(id).get();
+
+    if (!userInDb?.exists) {
+      const storeInDb = await firestore().collection("stores").doc(id).get();
+
+      if (!storeInDb?.exists) {
+        next(new ExpressError("User not found", 400));
+        return;
+      }
+
+      if (!storeInDb.data()?.isCompleted) {
+        next(new ExpressError("User not completed profile", 400));
+        return;
+      }
+    }
+
+    if (!userInDb.data()?.isCompleted) {
+      next(new ExpressError("Please complete your profile", 400));
+      return;
+    }
+
+    // Check if store is completed
+    const store = await firestore()
+      .collection("stores")
+      .doc(product.data()?.seller)
+      .get();
+
+    if (!store?.exists) {
+      next(new ExpressError("Store not found", 400));
+      return;
+    }
+
+    if (!store.data()?.isCompleted) {
+      next(new ExpressError("Store is not completed", 400));
+      return;
+    }
     // TODO: Check if product is available on insta
 
     // Make the product unavailable

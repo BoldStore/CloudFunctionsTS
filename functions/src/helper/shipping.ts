@@ -50,13 +50,10 @@ export const addPickup: (
   }
 };
 
-export const getChannelId: () => Promise<{
+export const getChannelId: (shiprocket_access_token: string) => Promise<{
   channel_id: string | null;
   error: any;
-}> = async () => {
-  const config = (await firestore().collection("config").get()).docs[0];
-  const shiprocket_access_token = config.data().shiprocket_access_token;
-
+}> = async (shiprocket_access_token) => {
   try {
     const response = await axios.get(SHIPROCKET_CHANNELS, {
       headers: {
@@ -84,32 +81,44 @@ export const createShipment: (
   product_id: string,
   store_id: string,
   user: firestore.DocumentData
-) => Promise<{ success: boolean; error: any }> = async (
+) => Promise<{ success: boolean; error: any; data?: any }> = async (
   address_id: string,
   order_id: string,
   product_id: string,
   store_id: string,
   user: firestore.DocumentData
 ) => {
+  let address = null;
   const product = (
     await firestore().collection("products").doc(product_id).get()
   ).data();
 
-  const address = (
-    await firestore().collection("addresses").doc(address_id).get()
-  ).data();
+  const addressFromDb = await firestore()
+    .collection("addresses")
+    .doc(address_id)
+    .get();
+
+  if (!addressFromDb || !addressFromDb?.exists) {
+    return {
+      success: false,
+      error: "Address not found",
+    };
+  }
+
+  address = addressFromDb?.data();
 
   const seller = (
     await firestore().collection("stores").doc(product?.store).get()
   ).data();
 
-  const config = (await firestore().collection("config").get()).docs[0];
+  const config = (await firestore().collection("config").limit(1).get())
+    .docs[0];
   const shiprocket_access_token = config.data().shiprocket_access_token;
   const date = new Date();
   const formatted_date = date.toISOString().slice(0, 10);
   const formatted_time = `${date.getHours()}:${date.getMinutes()}`;
 
-  const channel_id_data = await getChannelId();
+  const channel_id_data = await getChannelId(shiprocket_access_token);
 
   if (channel_id_data.error) {
     return {
@@ -121,15 +130,20 @@ export const createShipment: (
   const channel_id = channel_id_data.channel_id;
 
   try {
-    await axios.post(
+    const response = await axios.post(
       CREATE_SHIPMENT,
       {
         order_id: order_id,
         order_date: `${formatted_date} ${formatted_time}`,
         channel_id: channel_id,
-        billing_customer_name: user.name,
-        billing_last_name:
-          user.name?.split(" ").length >= 1 ? user.name?.split(" ")[1] : "",
+        billing_customer_name: user.name ?? user.full_name,
+        billing_last_name: user.name
+          ? user.name?.split(" ").length >= 1
+            ? user.name?.split(" ")[1]
+            : ""
+          : user.full_name?.split(" ").length >= 1
+          ? user.full_name?.split(" ")[1]
+          : "",
         billing_address: address?.addressL1,
         billing_city: address?.city,
         billing_pincode: address?.pincode,
@@ -156,7 +170,8 @@ export const createShipment: (
         weight: 0.5,
         pickup_location: store_id,
         phone: seller?.phone,
-        name: "Bold",
+        reseller_name: "Bold",
+        name: seller?.full_name ?? "Bold Store",
         address: "Bold Store, Road no. 8",
         address_2: "Head Office",
         city: "Delhi",
@@ -175,6 +190,7 @@ export const createShipment: (
     return {
       success: true,
       error: null,
+      data: response.data,
     };
   } catch (e) {
     console.log("Shiprocket shipment error: ", (e as any).response.data);
