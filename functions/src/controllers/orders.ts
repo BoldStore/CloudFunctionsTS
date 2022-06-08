@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import axios from "axios";
 import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
 import { razorpayInstance } from "..";
+import { SHIPROCKET_SERVICEABILITY } from "../constants";
 import { confirmOrder } from "../helper/order";
 import { Order, OrderType } from "../models/orders";
 import ExpressError = require("../utils/ExpressError");
@@ -192,4 +195,71 @@ export const checkForDelivery: (
   req: Request,
   res: Response,
   next: NextFunction
-) => Promise<void> = async (req, res, next) => {};
+) => Promise<void> = async (req, res, next) => {
+  try {
+    const delivery_postcode: string = req.body.postCode;
+    const productId: string = req.body.productId;
+
+    const config = (await firestore().collection("config").limit(1).get())
+      .docs[0];
+
+    const product = (
+      await firestore().collection("products").doc(productId).get()
+    ).data();
+
+    if (!product) {
+      next(new ExpressError("Product not found", 400));
+      return;
+    }
+
+    if (!product?.available) {
+      next(new ExpressError("Product is sold out", 400));
+      return;
+    }
+
+    if (product?.sold) {
+      next(new ExpressError("Product is sold out", 400));
+      return;
+    }
+
+    const seller_id = product?.store;
+
+    const address = (
+      await firestore()
+        .collection("addresses")
+        .where("user", "==", seller_id)
+        .limit(1)
+        .get()
+    ).docs[0];
+
+    const pickup_postcode = address.data().pincode;
+
+    const response = await axios.get(SHIPROCKET_SERVICEABILITY, {
+      params: {
+        pickup_postcode,
+        delivery_postcode,
+        cod: 0,
+        weight: 1,
+      },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${config.data().shiprocket_access_token}`,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: response.data.data,
+    });
+  } catch (e) {
+    console.log(
+      "Getting delivery status failed>>",
+      (e as any).response?.data ?? e
+    );
+    res.status(500).json({
+      success: false,
+      message: "Could not get delivery status",
+      error: (e as any).response.data ?? e,
+    });
+  }
+};
