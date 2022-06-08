@@ -96,7 +96,7 @@ export const refresh_store_products: (
       }
       await auth().updateUser(storeId, {
         photoURL: profilePic,
-        displayName: store.full_name,
+        displayName: data.full_name ?? store.full_name,
       });
 
       await firestore().collection("stores").doc(storeId).set(
