@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { NextFunction, Request, Response } from "express";
 import { auth, firestore } from "firebase-admin";
 import { getInstaData } from "../helper/insta/get_insta_data";
+import { deleteObject, handler } from "../helper/s3/file_upload_s3";
+import { S3_BUCKET_NAME } from "../secrets";
 import ExpressError = require("../utils/ExpressError");
 
 export const createUser: (
@@ -85,17 +88,37 @@ export const addInstaUsername: (
 
     const data = await getInstaData(insta_username);
 
+    if (!data) {
+      next(new ExpressError("Invalid username", 400));
+      return;
+    }
+
+    await deleteObject({
+      bucket: S3_BUCKET_NAME,
+      fileName: `${id}-profile-pic.jpg`,
+    });
+
+    let profilePic = "";
+    if (data.profile_pic) {
+      // Upload to s3
+      profilePic = await handler({
+        fileUrl: data.profile_pic!.toString(),
+        fileName: `${id}-profile-pic.jpg`,
+        bucket: S3_BUCKET_NAME,
+      });
+    }
+
     const user = await firestore().collection("users").doc(id).set(
       {
         insta_username: insta_username,
         name: data.full_name,
-        imgUrl: data.profile_pic,
+        imgUrl: profilePic,
       },
       { merge: true }
     );
 
     await auth().updateUser(id, {
-      photoURL: data.profile_pic,
+      photoURL: profilePic,
       displayName: data.full_name,
     });
 

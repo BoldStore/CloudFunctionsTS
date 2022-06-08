@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { auth, firestore } from "firebase-admin";
 import { INSTAGRAM_GRAPH_API_URL, MEDIA_FIELDS } from "../../constants";
 import { getInstaData } from "./get_insta_data";
 import { analysePost } from "../product";
+import { S3_BUCKET_NAME } from "../../secrets";
+import { deleteObject, handler } from "../s3/file_upload_s3";
 
 interface getMediaResponse {
   success: boolean;
@@ -72,14 +75,29 @@ export const refresh_store_products: any = async (
 
     const data = await getInstaData(username);
 
+    // Delete if image exists
+    await deleteObject({
+      bucket: S3_BUCKET_NAME,
+      fileName: `${storeId}-profile-pic.jpg`,
+    });
+
+    let profilePic = "";
+    if (data.profile_pic) {
+      // Upload to s3
+      profilePic = await handler({
+        fileUrl: data.profile_pic!.toString(),
+        fileName: `${storeId}-profile-pic.jpg`,
+        bucket: S3_BUCKET_NAME,
+      });
+    }
     await auth().updateUser(storeId, {
-      photoURL: store.profile_pic,
+      photoURL: profilePic,
       displayName: store.full_name,
     });
 
     await firestore().collection("stores").doc(storeId).set(
       {
-        profile_pic: data.profile_pic,
+        profile_pic: profilePic,
         full_name: data.full_name,
         bio: data.bio,
         followers: data.followers,

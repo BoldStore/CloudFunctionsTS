@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { auth } from "firebase-admin";
@@ -7,7 +8,9 @@ import {
   MEDIA_FIELDS,
 } from "../../constants";
 import { Store, StoreType } from "../../models/store";
+import { S3_BUCKET_NAME } from "../../secrets";
 import { createProductTask } from "../../tasks/products";
+import { deleteObject, handler } from "../s3/file_upload_s3";
 import { getInstaData } from "./get_insta_data";
 
 export const getStoreData: (
@@ -39,6 +42,22 @@ export const getStoreData: (
 
     const data = await getInstaData(username);
 
+    // Delete if image exists
+    await deleteObject({
+      bucket: S3_BUCKET_NAME,
+      fileName: `${storeId}-profile-pic.jpg`,
+    });
+
+    let profilePic = "";
+    if (data.profile_pic) {
+      // Upload to s3
+      profilePic = await handler({
+        fileUrl: data.profile_pic!.toString(),
+        fileName: `${id}-profile-pic.jpg`,
+        bucket: S3_BUCKET_NAME,
+      });
+    }
+
     if (data.error) {
       error = data.error;
       return { store, error };
@@ -51,7 +70,7 @@ export const getStoreData: (
       new Date(),
       data.followers ?? "",
       data.following ?? "",
-      data.profile_pic ?? "",
+      profilePic ?? "",
       id,
       data.bio,
       false,
@@ -61,7 +80,7 @@ export const getStoreData: (
     );
 
     await auth().updateUser(storeId, {
-      photoURL: store.profile_pic ?? "",
+      photoURL: profilePic ?? "",
       displayName: store.full_name ?? "",
     });
 

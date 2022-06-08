@@ -9,6 +9,11 @@ interface CopyFileEvent {
   bucket?: string; // Destination S3 bucket.
 }
 
+interface DeleteObjectParam {
+  bucket: string;
+  fileName: string;
+}
+
 const uploadFromStream = (
   fileResponse: AxiosResponse,
   fileName: string,
@@ -57,4 +62,17 @@ export const handler = async (event: CopyFileEvent): Promise<string> => {
     .catch((e) => {
       throw e;
     });
+};
+
+export const deleteObject: (
+  params: DeleteObjectParam
+) => Promise<void> = async (params) => {
+  s3.deleteObject(
+    { Bucket: params.bucket, Key: params.fileName },
+    (err, data) => {
+      if (err) {
+        console.log(err, err.stack);
+      } else console.log(data);
+    }
+  );
 };
