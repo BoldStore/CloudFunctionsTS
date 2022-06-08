@@ -93,6 +93,22 @@ export const createShipment: (
   user: firestore.DocumentData
 ) => {
   let address = null;
+  let phone: number | null = null;
+
+  if (!user.phone) {
+    const paymentDetails = await firestore()
+      .collection("paymentDetails")
+      .doc(user.id)
+      .get();
+
+    if (!paymentDetails.exists) {
+      return {
+        success: false,
+        error: "No phone number found",
+      };
+    }
+    phone = paymentDetails.data()?.phone_number;
+  }
   const product = (
     await firestore().collection("products").doc(product_id).get()
   ).data();
@@ -154,7 +170,7 @@ export const createShipment: (
         billing_state: address?.state,
         billing_country: "India",
         billing_email: user.email,
-        billing_phone: user.phone ?? "9899999999",
+        billing_phone: user.phone ?? phone ?? "9899999999",
         shipping_is_billing: true,
         order_items: [
           {
