@@ -8,7 +8,7 @@ import * as userRoutes from "./user";
 import * as profileRoutes from "./profile";
 import * as productRoutes from "./product";
 import * as shiprocketRoutes from "./shiprocket";
-import * as orderRoutes from "./order";
+import * as orderRoutes from "./orders";
 // eslint-disable-next-line new-cap
 const router = Router();
 
