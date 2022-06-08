@@ -13,12 +13,12 @@ export const getProfile: (
 ) => {
   try {
     const authData = req.user;
-    const id = authData.user;
+    const id = authData.uid;
 
     const user = await firestore().collection("users").doc(id).get();
     const store = await firestore().collection("stores").doc(id).get();
 
-    if (user.exists) {
+    if (user?.exists) {
       res.status(200).json({
         success: true,
         data: user.data(),
@@ -27,7 +27,7 @@ export const getProfile: (
       return;
     }
 
-    if (store.exists) {
+    if (store?.exists) {
       let data = false;
       const address = (
         await firestore()
@@ -41,23 +41,23 @@ export const getProfile: (
         .doc(id)
         .get();
 
-      if (store.data()?.username) {
+      if (store?.data()?.username) {
         data = true;
       }
 
       //   Get percentage
       const percentage: number = getPercentage([
         data,
-        address.exists,
-        paymentDetails.exists,
+        address?.exists,
+        paymentDetails?.exists,
       ]);
 
       res.status(200).json({
         success: true,
-        data: store.data(),
+        data: store?.data(),
         isStore: true,
-        address: address.exists ? address.data() : null,
-        paymentDetails: paymentDetails.data(),
+        address: address?.data(),
+        paymentDetails: paymentDetails?.data(),
         percentage,
       });
       return;
@@ -65,6 +65,7 @@ export const getProfile: (
 
     next(new ExpressError("User not found", 404));
   } catch (e) {
+    console.log("Error in getting profile: ", e);
     next(new ExpressError("Cannot get profile", 500, e));
   }
 };
