@@ -19,10 +19,31 @@ export const getProfile: (
     const store = await firestore().collection("stores").doc(id).get();
 
     if (user?.exists) {
+      let name = false;
+      let phone = false;
+      const address = (
+        await firestore()
+          .collection("addresses")
+          .where("user", "==", id)
+          .limit(1)
+          .get()
+      ).docs[0];
+
+      if (user.data()?.name) {
+        name = true;
+      }
+
+      if (user.data()?.phone) {
+        phone = true;
+      }
+
+      const percentage: number = getPercentage([name, phone, address?.exists]);
+
       res.status(200).json({
         success: true,
         data: user.data(),
         isStore: false,
+        percentage,
       });
       return;
     }
