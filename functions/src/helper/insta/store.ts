@@ -4,7 +4,7 @@ import axios from "axios";
 import { auth, firestore } from "firebase-admin";
 import { INSTAGRAM_GRAPH_API_URL, MEDIA_FIELDS } from "../../constants";
 import { getInstaData } from "./get_insta_data";
-import { analysePost } from "../product";
+import { addProduct, analysePost } from "../product";
 import { S3_BUCKET_NAME } from "../../secrets";
 import { deleteObject, handler } from "../s3/file_upload_s3";
 
@@ -124,6 +124,7 @@ export const refresh_store_products: any = async (
 
     for (let i = 0; i < media.length; i++) {
       const post = media[i];
+      let newPost = true;
       for (let j = 0; j < products.docs.length; j++) {
         const product = products.docs[j];
         if (product.data().id === post.id) {
@@ -141,7 +142,14 @@ export const refresh_store_products: any = async (
               .doc(product.id)
               .update(updatedProduct);
           }
+          newPost = true;
+          break;
         }
+      }
+
+      // Add if new Post
+      if (newPost) {
+        addProduct(storeId, post);
       }
     }
 
