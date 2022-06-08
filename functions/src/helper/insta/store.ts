@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { auth, firestore } from "firebase-admin";
-import { INSTAGRAM_GRAPH_API_URL, MEDIA_FIELDS } from "../constants";
+import { INSTAGRAM_GRAPH_API_URL, MEDIA_FIELDS } from "../../constants";
 import { getInstaData } from "./get_insta_data";
-import { analysePost } from "./product";
+import { analysePost } from "../product";
 
 interface getMediaResponse {
   success: boolean;

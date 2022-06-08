@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHmac } from "crypto";
 import { firestore } from "firebase-admin";
-import { RAZORPAY_SECRET } from "../secrets";
-import { sendMail } from "./mails";
+import { RAZORPAY_SECRET } from "../../secrets";
+import { sendMail } from "../mails";
 import { createShipment } from "./shipping";
 
 interface ConfirmOrderResponse {

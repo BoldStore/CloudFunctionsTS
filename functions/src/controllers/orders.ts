@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
 import { razorpayInstance } from "..";
 import { SHIPROCKET_SERVICEABILITY } from "../constants";
-import { confirmOrder } from "../helper/order";
+import { confirmOrder } from "../helper/order/order";
 import { Order, OrderType } from "../models/orders";
 import ExpressError = require("../utils/ExpressError");
 

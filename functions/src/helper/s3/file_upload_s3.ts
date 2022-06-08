@@ -1,7 +1,7 @@
 import { S3 } from "aws-sdk";
 import axios, { AxiosResponse } from "axios";
 import { Stream, PassThrough } from "stream";
-import s3 from "../s3";
+import s3 from "../../s3";
 
 interface CopyFileEvent {
   fileUrl: string;

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
-import { handler } from "../helper/file_upload_s3";
+import { handler } from "../helper/s3/file_upload_s3";
 import { analysePost } from "../helper/product";
 import { S3_BUCKET_NAME } from "../secrets";
 import ExpressError = require("../utils/ExpressError");

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
-import { INSTAGRAM_ACCESS_TOKEN } from "../constants";
+import { INSTAGRAM_ACCESS_TOKEN } from "../../constants";
 import { stringify } from "qs";
 import { firestore } from "firebase-admin";
 

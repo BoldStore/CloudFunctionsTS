@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { auth, firestore } from "firebase-admin";
-import { getInstaData } from "../helper/get_insta_data";
+import { getInstaData } from "../helper/insta/get_insta_data";
 import ExpressError = require("../utils/ExpressError");
 
 export const createUser: (

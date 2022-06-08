@@ -1,8 +1,8 @@
 import axios from "axios";
 import { firestore } from "firebase-admin";
 import { pubsub } from "firebase-functions/v1";
-import { refreshToken } from "./helper/get_access_token";
-import { refresh_all_products } from "./helper/store";
+import { refreshToken } from "./helper/insta/get_access_token";
+import { refresh_all_products } from "./helper/insta/store";
 
 exports.refershServices = pubsub
   .schedule("every day 00:00")

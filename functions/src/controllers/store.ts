@@ -4,10 +4,10 @@ import { auth, firestore } from "firebase-admin";
 import {
   getAccessToken,
   getLongLivedAccessToken,
-} from "../helper/get_access_token";
-import { getStoreData } from "../helper/get_store_data";
+} from "../helper/insta/get_access_token";
+import { getStoreData } from "../helper/insta/get_store_data";
 import { APP_NAME, transporter } from "../helper/mails";
-import { refresh_store_products } from "../helper/store";
+import { refresh_store_products } from "../helper/insta/store";
 import { StoreType } from "../models/store";
 import { AVI_MAIL, BOLD_MAIL, JAYESH_MAIL } from "../secrets";
 import ExpressError = require("../utils/ExpressError");

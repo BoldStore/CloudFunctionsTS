@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { firestore } from "firebase-admin";
-import { InstaData } from "../interfaces/insta_data";
+import { InstaData } from "../../interfaces/insta_data";
 
 export const getInstaData: (username: string) => Promise<InstaData> = async (
   username: string

@@ -5,9 +5,9 @@ import {
   BASIC_FIELDS,
   INSTAGRAM_GRAPH_API_URL,
   MEDIA_FIELDS,
-} from "../constants";
-import { Store, StoreType } from "../models/store";
-import { createProductTask } from "../tasks/products";
+} from "../../constants";
+import { Store, StoreType } from "../../models/store";
+import { createProductTask } from "../../tasks/products";
 import { getInstaData } from "./get_insta_data";
 
 export const getStoreData: (

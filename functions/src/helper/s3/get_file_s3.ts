@@ -9,7 +9,7 @@ import {
   CLOUDFRONT_ACCESS_KEY_ID,
   CLOUDFRONT_PRIVATE_KEY_PATH,
   CLOUDFRONT_URL,
-} from "../secrets";
+} from "../../secrets";
 
 export function getFileLink(filename: string): Promise<any> {
   return new Promise(function (resolve, _reject) {

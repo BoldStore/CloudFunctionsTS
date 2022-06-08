@@ -2,8 +2,12 @@
 /* eslint-disable operator-linebreak */
 import axios from "axios";
 import { firestore } from "firebase-admin";
-import { CREATE_SHIPMENT, NEW_PICKUP, SHIPROCKET_CHANNELS } from "../constants";
-import { AddressType } from "../models/Address";
+import {
+  CREATE_SHIPMENT,
+  NEW_PICKUP,
+  SHIPROCKET_CHANNELS,
+} from "../../constants";
+import { AddressType } from "../../models/Address";
 
 export const addPickup: (
   name: string,
