@@ -47,9 +47,12 @@ export const getMedia: (
   }
 };
 
-export const refresh_store_products: any = async (
+export const refresh_store_products: (
   storeId: string,
   storeFromDb?: FirebaseFirestore.DocumentData | undefined
+) => Promise<{ success: boolean; message?: string; error: any }> = async (
+  storeId,
+  storeFromDb
 ) => {
   try {
     let store: FirebaseFirestore.DocumentData | undefined;
@@ -59,7 +62,7 @@ export const refresh_store_products: any = async (
         await firestore().collection("stores").doc(storeId).get()
       ).data();
     } else {
-      store = storeFromDb.data();
+      store = storeFromDb;
     }
 
     if (!store) {
@@ -75,42 +78,45 @@ export const refresh_store_products: any = async (
 
     const data = await getInstaData(username);
 
-    // Delete if image exists
-    await deleteObject({
-      bucket: S3_BUCKET_NAME,
-      fileName: `${storeId}-profile-pic.jpg`,
-    });
-
-    let profilePic = "";
-    if (data.profile_pic) {
-      // Upload to s3
-      profilePic = await handler({
-        fileUrl: data.profile_pic!.toString(),
-        fileName: `${storeId}-profile-pic.jpg`,
+    if (!data.error) {
+      // Delete if image exists
+      await deleteObject({
         bucket: S3_BUCKET_NAME,
+        fileName: `${storeId}-profile-pic.jpg`,
       });
-    }
-    await auth().updateUser(storeId, {
-      photoURL: profilePic,
-      displayName: store.full_name,
-    });
 
-    await firestore().collection("stores").doc(storeId).set(
-      {
-        profile_pic: profilePic,
-        full_name: data.full_name,
-        bio: data.bio,
-        followers: data.followers,
-        following: data.following,
-      },
-      { merge: true }
-    );
+      let profilePic = "";
+      if (data.profile_pic) {
+        // Upload to s3
+        profilePic = await handler({
+          fileUrl: data.profile_pic!.toString(),
+          fileName: `${storeId}-profile-pic.jpg`,
+          bucket: S3_BUCKET_NAME,
+        });
+      }
+      await auth().updateUser(storeId, {
+        photoURL: profilePic,
+        displayName: store.full_name,
+      });
+
+      await firestore().collection("stores").doc(storeId).set(
+        {
+          profile_pic: profilePic,
+          full_name: data.full_name,
+          bio: data.bio,
+          followers: data.followers,
+          following: data.following,
+        },
+        { merge: true }
+      );
+    }
 
     const storeData = await getMedia(store, access_token);
 
     if (!storeData.success) {
       return {
         success: false,
+        message: "Could not get store Media",
         error: storeData.error,
       };
     }
