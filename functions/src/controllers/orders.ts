@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
 import { razorpayInstance } from "..";
+import { confirmOrder } from "../helper/order";
 import { Order, OrderType } from "../models/orders";
 import ExpressError = require("../utils/ExpressError");
 
@@ -56,6 +57,7 @@ export const createOrder: (
           product.data()?.store,
           undefined,
           new Date(),
+          undefined,
           id
         );
 
@@ -78,13 +80,92 @@ export const verify: (
   req: Request,
   res: Response,
   next: NextFunction
-) => Promise<void> = async (req, res, next) => {};
+) => Promise<void> = async (req, res, next) => {
+  try {
+    const id = req.user.uid;
+    const paymentId = req.body.razorpay_payment_id;
+    const orderId = req.body.razorpay_order_id;
+    const razorpaySignature = req.body.razorpay_signature;
+
+    const user = (await firestore().collection("users").doc(id).get()).data();
+    const store = (await firestore().collection("stores").doc(id).get()).data();
+
+    if (user?.exists && store?.exists) {
+      next(new ExpressError("User doesn't exists", 400));
+    }
+
+    const response = await confirmOrder(
+      paymentId,
+      orderId,
+      razorpaySignature,
+      id,
+      user?.exists ? user : store
+    );
+
+    if (response.success) {
+      res.status(200).json({
+        success: true,
+        message: "Order confirmed",
+      });
+    } else {
+      next(new ExpressError(response.message, 400));
+    }
+  } catch (e) {
+    console.log("Could not verify the order", e);
+    next(new ExpressError("Could not verify the order", 500, e));
+  }
+};
 
 export const callback: (
   req: Request,
   res: Response,
   next: NextFunction
-) => Promise<void> = async (req, res, next) => {};
+) => Promise<void> = async (req, res, next) => {
+  try {
+    const id = req.query.id;
+    const paymentId = req.body.razorpay_payment_id;
+    const orderId = req.body.razorpay_order_id;
+    const razorpaySignature = req.body.razorpay_signature;
+
+    if (!id) {
+      next(new ExpressError("Invalid request - ID is required", 400));
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const userId: string = id!.toString();
+
+    const user = (
+      await firestore().collection("users").doc(userId).get()
+    ).data();
+    const store = (
+      await firestore().collection("stores").doc(userId).get()
+    ).data();
+
+    if (user?.exists && store?.exists) {
+      next(new ExpressError("User doesn't exists", 400));
+    }
+
+    const response = await confirmOrder(
+      paymentId,
+      orderId,
+      razorpaySignature,
+      userId,
+      user?.exists ? user : store
+    );
+
+    if (response.success) {
+      res.status(200).json({
+        success: true,
+        message: "Order confirmed",
+      });
+    } else {
+      next(new ExpressError(response.message, 400));
+    }
+  } catch (e) {
+    console.log("Could not verify the order", e);
+    next(new ExpressError("Could not verify the order", 500, e));
+  }
+};
 
 export const checkForDelivery: (
   req: Request,

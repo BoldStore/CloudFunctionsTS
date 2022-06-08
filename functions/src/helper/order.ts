@@ -33,6 +33,8 @@ export const confirmOrder: (
         .collection("orders")
         .where("orderId", "==", orderId)
         .where("user", "==", userId)
+        .where("status", "==", "pending")
+        .limit(1)
         .get()
     ).docs[0];
 
@@ -40,14 +42,6 @@ export const confirmOrder: (
       return {
         success: false,
         message: "Order not found",
-      };
-    }
-
-    if (order?.data().confirmed) {
-      return {
-        success: true,
-        message: "Order already confirmed",
-        order,
       };
     }
 
@@ -64,7 +58,8 @@ export const confirmOrder: (
       await firestore().collection("orders").doc(order?.id).set(
         {
           paymentId: paymentId,
-          confirmed: true,
+          status: "confirmed",
+          confirmedOn: new Date(),
         },
         { merge: true }
       );
