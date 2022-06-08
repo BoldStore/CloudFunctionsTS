@@ -8,7 +8,7 @@ export class Order {
   currency: string;
   store: string;
   createdAt: Date;
-  confirmedAt?: Date | null;
+  confirmedOn?: Date | null;
   paymentId?: string | null;
   user?: string | null;
   label_url?: string | null;
@@ -42,7 +42,7 @@ export class Order {
     store: string,
     paymentId: string | null = null,
     createdAt: Date = new Date(),
-    confirmedAt: Date | null = null,
+    confirmedOn: Date | null = null,
     user: string | null = null,
     label_url: string | null = null,
     manifest_url: string | null = null,
@@ -73,7 +73,7 @@ export class Order {
     this.currency = currency;
     this.store = store;
     this.createdAt = createdAt;
-    this.confirmedAt = confirmedAt;
+    this.confirmedOn = confirmedOn;
     this.paymentId = paymentId;
     this.user = user;
     this.label_url = label_url;

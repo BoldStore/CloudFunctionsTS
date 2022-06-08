@@ -8,8 +8,8 @@ import { createShipment } from "./shipping";
 interface ConfirmOrderResponse {
   success: boolean;
   message: string;
-  order?: firestore.QueryDocumentSnapshot<any>;
   error?: any;
+  order?: any;
 }
 
 export const confirmOrder: (
@@ -25,6 +25,7 @@ export const confirmOrder: (
   userId: string,
   user: any
 ) => {
+  let orderData = null;
   try {
     const keySecret: string = RAZORPAY_SECRET?.toString();
 
@@ -55,15 +56,6 @@ export const confirmOrder: (
     const generatedSignature = hmac.digest("hex");
 
     if (razorpaySignature === generatedSignature) {
-      await firestore().collection("orders").doc(order?.id).set(
-        {
-          paymentId: paymentId,
-          status: "confirmed",
-          confirmedOn: new Date(),
-        },
-        { merge: true }
-      );
-
       const data = await createShipment(
         order?.data().address,
         orderId,
@@ -73,6 +65,16 @@ export const confirmOrder: (
       );
 
       if (data.error) {
+        // TODO: Handle orders with shipping errors
+        await firestore().collection("orders").doc(order?.id).set(
+          {
+            paymentId: paymentId,
+            status: "error",
+            confirmedOn: new Date(),
+            error: data.error,
+          },
+          { merge: true }
+        );
         return {
           success: false,
           message: "Error creating shipment",
@@ -80,12 +82,36 @@ export const confirmOrder: (
         };
       }
 
+      await firestore().collection("orders").doc(order?.id).set(
+        {
+          paymentId: paymentId,
+          status: "confirmed",
+          confirmedOn: new Date(),
+          label_url: data.data?.label_url,
+          manifest_url: data.data?.manifest_url,
+          pickup_schedule_date: data.data?.pickup_schedule_date,
+          shiprocket_order_id: data.data?.order_id,
+          shipment_id: data.data?.shipment_id,
+          awb_code: data.data?.awb_code,
+          courier_company_id: data.data?.courier_company_id,
+          courier_name: data.data?.courier_name,
+          assigned_date_time: data.data?.assigned_date_time,
+          routing_code: data.data?.routing_code,
+          pickup_token_number: data.data?.pickup_token_number,
+          applied_weight: data.data?.applied_weight,
+        },
+        { merge: true }
+      );
+
       await firestore()
         .collection("products")
         .doc(order?.data().product)
         .update({
           sold: true,
         });
+
+      // Get Order
+      orderData = await firestore().collection("orders").doc(order?.id).get();
 
       await sendMail(
         user.email,
@@ -102,7 +128,7 @@ export const confirmOrder: (
     return {
       success: true,
       message: "Order confirmed",
-      order,
+      order: orderData,
     };
   } catch (e) {
     console.log("Error>>>", e);
