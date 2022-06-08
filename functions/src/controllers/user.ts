@@ -162,6 +162,11 @@ export const updateUser: (
       phone,
     });
 
+    await auth().updateUser(id, {
+      displayName: name,
+      phoneNumber: phone,
+    });
+
     res.status(200).json({
       success: true,
       user,
