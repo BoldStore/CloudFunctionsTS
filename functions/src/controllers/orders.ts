@@ -74,7 +74,28 @@ export const previousOrders: (
   req: Request,
   res: Response,
   next: NextFunction
-) => Promise<void> = async (req, res, next) => {};
+) => Promise<void> = async (req, res, next) => {
+  try {
+    const id = req.user.uid;
+
+    const orders = await firestore()
+      .collection("orders")
+      .where("user", "==", id)
+      .limit(10)
+      .get();
+
+    res.status(200).json({
+      success: true,
+      orders: orders.docs.map((order) => ({
+        ...order.data(),
+        id: order.id,
+      })),
+    });
+  } catch (e) {
+    console.log("Error getting previous orders>>", e);
+    next(new ExpressError("Could not get previous orders", 500, e));
+  }
+};
 
 export const verify: (
   req: Request,
