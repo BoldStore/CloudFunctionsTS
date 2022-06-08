@@ -44,13 +44,3 @@ app.use(
 );
 
 exports.app = https.onRequest(app);
-
-exports.users = require("./users");
-exports.addresses = require("./address");
-exports.products = require("./products");
-exports.stores = require("./store");
-exports.orders = require("./orders");
-exports.shipping = require("./shipping");
-exports.codes = require("./codes");
-exports.tests = require("./test");
-exports.pages = require("./pages");
