@@ -43,7 +43,7 @@ export const addAddress: (
     const addressFromDb = (
       await firestore()
         .collection("addresses")
-        .where("userId", "==", userId)
+        .where("user", "==", userId)
         .get()
     ).docs[0];
 
