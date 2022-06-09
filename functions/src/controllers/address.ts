@@ -15,6 +15,7 @@ export const addAddress: (
 ) => {
   try {
     const userId = req.user.uid;
+    let update = false;
 
     const store = await firestore().collection("stores").doc(userId).get();
 
@@ -48,25 +49,35 @@ export const addAddress: (
     ).docs[0];
 
     if (addressFromDb?.exists) {
-      next(new ExpressError("Address already exists", 400));
-      return;
+      // Update
+      update = true;
+      await firestore()
+        .collection("addresses")
+        .doc(addressFromDb.id)
+        .set(address_model, { merge: true });
+
+      address_model.id = addressFromDb.id;
     }
 
-    const address = await firestore()
-      .collection("addresses")
-      .add(address_model);
+    if (!update) {
+      const address = await firestore()
+        .collection("addresses")
+        .add(address_model);
 
-    address_model.id = address.id;
+      address_model.id = address.id;
+
+      if (store?.exists) {
+        await addPickup(
+          title,
+          store.data()?.email,
+          store.data()?.phone,
+          address_model,
+          store.id
+        );
+      }
+    }
 
     if (store?.exists) {
-      await addPickup(
-        title,
-        store.data()?.email,
-        store.data()?.phone,
-        address_model,
-        store.id
-      );
-
       // Check if completed
       const paymentDetails = await firestore()
         .collection("paymentDetails")
@@ -83,7 +94,7 @@ export const addAddress: (
       }
     }
 
-    res.status(201).json({
+    res.status(update ? 200 : 201).json({
       success: true,
       address: address_model,
     });
