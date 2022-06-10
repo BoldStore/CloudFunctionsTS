@@ -187,6 +187,7 @@ export const updateUser: (
       const userDb = (
         await firestore()
           .collection("users")
+          .where("insta_username", "!=", null)
           .where("insta_username", "==", insta_username)
           .limit(1)
           .get()
@@ -221,32 +222,46 @@ export const updateUser: (
     }
 
     if (!profilePic) {
-      user = await firestore().collection("users").doc(id).update({
-        name,
-        birthday,
-        sizePreference,
-        phone,
-      });
+      user = await firestore()
+        .collection("users")
+        .doc(id)
+        .update({
+          name: name ?? "",
+          birthday: birthday ?? null,
+          sizePreference: sizePreference ?? null,
+          phone: phone ?? null,
+          insta_username: insta_username ?? null,
+        });
 
       await auth().updateUser(id, {
         displayName: name,
         phoneNumber: phone,
       });
     } else {
-      user = await firestore().collection("users").doc(id).update({
-        name,
-        birthday,
-        sizePreference,
-        phone,
-        insta_username,
-        imgUrl: profilePic,
-      });
+      user = await firestore()
+        .collection("users")
+        .doc(id)
+        .update({
+          name: name ? name : "",
+          birthday: birthday ? birthday : null,
+          sizePreference: sizePreference ? sizePreference : null,
+          phone: phone ? phone : null,
+          insta_username: insta_username ? insta_username : null,
+          imgUrl: profilePic,
+        });
 
-      await auth().updateUser(id, {
-        displayName: name,
-        phoneNumber: phone,
-        photoURL: profilePic,
-      });
+      if (phone) {
+        await auth().updateUser(id, {
+          displayName: name ?? "",
+          phoneNumber: phone,
+          photoURL: profilePic,
+        });
+      } else {
+        await auth().updateUser(id, {
+          displayName: name ?? "",
+          photoURL: profilePic,
+        });
+      }
     }
 
     res.status(200).json({
