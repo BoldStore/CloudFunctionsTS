@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
 import { addPickup } from "../helper/order/shipping";
 import ExpressError = require("../utils/ExpressError");
-import Address, { AddressType } from "../models/Address";
+import { Address, AddressType } from "../models/address";
 
 export const addAddress: (
   req: Request,

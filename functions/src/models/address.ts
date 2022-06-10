@@ -1,5 +1,5 @@
 /* eslint-disable require-jsdoc */
-export default class Address {
+export class Address {
   id: string | null;
   address: string;
   title: string;
