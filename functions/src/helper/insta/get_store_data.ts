@@ -13,6 +13,8 @@ import { createProductTask } from "../../tasks/products";
 import { deleteObject, handler } from "../s3/file_upload_s3";
 import { getInstaData } from "./get_insta_data";
 
+// TODO: Add a check in store if all products fetched
+
 export const getStoreData: (
   user_id: string,
   user_id_orignal: string,
@@ -84,7 +86,7 @@ export const getStoreData: (
       displayName: store.full_name ?? "",
     });
 
-    // getStoreMedia(user_id, access_token, storeId);
+    getStoreMedia(user_id, access_token, storeId);
   } catch (e) {
     if ((e as any).response.data.error.code == 100 && !tryAgain) {
       return await getStoreData(

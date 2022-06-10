@@ -33,56 +33,61 @@ export const addProduct: (storeId: string, post: any) => Promise<void> = async (
   storeId,
   post
 ) => {
-  // TODO: Do not upload if not product,
-  // That is, if the caption does not contain
-  // price or sold
+  try {
+    // TODO: Do not upload if not product,
+    // That is, if the caption does not contain
+    // price or sold
 
-  // For now, testing purposes, I've commented it out
+    // For now, testing purposes, I've commented it out
 
-  // if (!post.caption) {
-  //   return;
-  // }
-  const prod_data = analysePost(post.caption);
+    // if (!post.caption) {
+    //   return;
+    // }
+    const prod_data = analysePost(post.caption ?? "");
 
-  // if (
-  //   !prod_data.price &&
-  //   !(post.caption as string).toLowerCase().includes("sold")
-  // ) {
-  //   return;
-  // }
+    // if (
+    //   !prod_data.price &&
+    //   !(post.caption as string).toLowerCase().includes("sold")
+    // ) {
+    //   return;
+    // }
 
-  const file_name = (
-    post.id + new Date().getUTCMilliseconds().toString()
-  ).toString();
+    const file_name = (
+      post.id + new Date().getUTCMilliseconds().toString()
+    ).toString();
 
-  const post_url = await handler({
-    fileUrl: post.media_url,
-    fileName: file_name,
-    bucket: S3_BUCKET_NAME,
-  });
+    const post_url = await handler({
+      fileUrl: post.media_url,
+      fileName: file_name,
+      bucket: S3_BUCKET_NAME,
+    });
 
-  const product = {
-    name: prod_data.name,
-    size: "",
-    sold: prod_data.sold,
-    postedOn: post.timestamp,
-    amount: prod_data.price,
-    likes: "",
-    comments: "",
-    store: storeId,
-    color: "",
-    soldOn: null,
-    file_name: file_name,
-    imgUrl: post_url,
-    caption: post?.caption ?? null,
-    permalink: post.permalink,
-    id: post.id,
-  };
+    const product = {
+      name: prod_data.name,
+      size: "",
+      sold: prod_data.sold,
+      postedOn: post.timestamp,
+      amount: prod_data.price,
+      likes: "",
+      comments: "",
+      store: storeId,
+      color: "",
+      soldOn: null,
+      file_name: file_name,
+      imgUrl: post_url,
+      caption: post?.caption ?? null,
+      permalink: post.permalink,
+      id: post.id,
+    };
 
-  //   Add to firebase
-  await firestore().collection("products").add(product);
+    //   Add to firebase
+    await firestore().collection("products").add(product);
 
-  return;
+    return;
+  } catch (e) {
+    console.log("Error in adding post", e);
+    return;
+  }
 };
 
 const getName = (caption: string) => {

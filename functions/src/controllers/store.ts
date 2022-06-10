@@ -155,6 +155,8 @@ export const saveStoreData: (
       return;
     }
 
+    console.log("STORE>>>", data.store);
+
     // Save to db
     if (data.store) {
       await firestore()
