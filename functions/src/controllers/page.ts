@@ -96,18 +96,29 @@ export const storePage: (
   next: NextFunction
 ) => {
   try {
-    const storeId = req.query.storeId?.toString();
+    const username = req.query.username?.toString();
 
-    if (!storeId) {
-      next(new ExpressError("Store id is required", 400));
+    if (!username) {
+      next(new ExpressError("Store username is required", 400));
       return;
     }
 
-    const store = await firestore().collection("stores").doc(storeId).get();
+    const store = (
+      await firestore()
+        .collection("stores")
+        .where("username", "==", username)
+        .limit(1)
+        .get()
+    ).docs[0];
+
+    if (!store || !store?.exists) {
+      next(new ExpressError("Store not found", 404));
+      return;
+    }
 
     const products = await firestore()
       .collection("products")
-      .where("store", "==", storeId)
+      .where("store", "==", store.id)
       .limit(30)
       .get();
 
