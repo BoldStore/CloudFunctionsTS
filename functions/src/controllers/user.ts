@@ -174,23 +174,80 @@ export const updateUser: (
 ) => {
   try {
     const id = req.user.uid;
+    let user;
+    let profilePic = "";
 
     const name = req.body.name;
     const birthday = req.body.birthday;
     const sizePreference = req.body.sizePreference;
     const phone = req.body.phone;
+    const insta_username = req.body.insta_username;
 
-    const user = await firestore().collection("users").doc(id).update({
-      name,
-      birthday,
-      sizePreference,
-      phone,
-    });
+    if (insta_username) {
+      const userDb = (
+        await firestore()
+          .collection("users")
+          .where("insta_username", "==", insta_username)
+          .limit(1)
+          .get()
+      ).docs;
 
-    await auth().updateUser(id, {
-      displayName: name,
-      phoneNumber: phone,
-    });
+      if (userDb.length > 0) {
+        if (userDb[0].id !== id) {
+          next(new ExpressError("Instagram username already exists", 400));
+          return;
+        }
+      }
+
+      const data = await getInstaData(insta_username);
+
+      if (!data) {
+        next(new ExpressError("Invalid username", 400));
+        return;
+      }
+      await deleteObject({
+        bucket: S3_BUCKET_NAME,
+        fileName: `${id}-profile-pic.jpg`,
+      });
+
+      if (data.profile_pic) {
+        // Upload to s3
+        profilePic = await handler({
+          fileUrl: data.profile_pic!.toString(),
+          fileName: `${id}-profile-pic.jpg`,
+          bucket: S3_BUCKET_NAME,
+        });
+      }
+    }
+
+    if (!profilePic) {
+      user = await firestore().collection("users").doc(id).update({
+        name,
+        birthday,
+        sizePreference,
+        phone,
+      });
+
+      await auth().updateUser(id, {
+        displayName: name,
+        phoneNumber: phone,
+      });
+    } else {
+      user = await firestore().collection("users").doc(id).update({
+        name,
+        birthday,
+        sizePreference,
+        phone,
+        insta_username,
+        imgUrl: profilePic,
+      });
+
+      await auth().updateUser(id, {
+        displayName: name,
+        phoneNumber: phone,
+        photoURL: profilePic,
+      });
+    }
 
     res.status(200).json({
       success: true,
