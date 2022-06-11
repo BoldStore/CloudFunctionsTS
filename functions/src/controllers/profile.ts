@@ -45,6 +45,8 @@ export const getProfile: (
         isStore: false,
         percentage,
         address: address?.data(),
+        name,
+        phone,
       });
       return;
     }
