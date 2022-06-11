@@ -42,7 +42,7 @@ export const homePage: (
           productsResponse.push({
             ...product.data(),
             id: product.id,
-            store: store,
+            store: store.data(),
           });
         }
       } else {
