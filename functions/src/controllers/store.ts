@@ -165,7 +165,14 @@ export const saveStoreData: (
       await firestore()
         .collection("stores")
         .doc(id)
-        .set(data.store, { merge: true });
+        .set(
+          {
+            ...data.store,
+            access_token:
+              access_token_data?.access_token ?? auth_data?.access_token ?? "",
+          },
+          { merge: true }
+        );
     }
 
     res.status(200).json({
