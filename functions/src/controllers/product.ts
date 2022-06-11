@@ -39,3 +39,40 @@ export const getProductData: (
     next(new ExpressError("Could not get Store Posts", 500, e));
   }
 };
+
+export const getProduct: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (req, res, next) => {
+  try {
+    if (!req.query.productId) {
+      next(new ExpressError("Product ID is required", 400));
+      return;
+    }
+    const productId: string = req.query.productId.toString();
+
+    const product = await firestore()
+      .collection("products")
+      .doc(productId)
+      .get();
+
+    if (!product || !product.exists) {
+      next(new ExpressError("Product does not exist", 404));
+      return;
+    }
+
+    const store = await firestore()
+      .collection("stores")
+      .doc(product.data()?.store)
+      .get();
+
+    res.status(200).json({
+      success: true,
+      product: product.data(),
+      store: store.data(),
+    });
+  } catch (e) {
+    next(new ExpressError("Could not get Store Posts", 500, e));
+  }
+};

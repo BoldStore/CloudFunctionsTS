@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { getProductData } from "../controllers/product";
+import { getProductData, getProduct } from "../controllers/product";
 // eslint-disable-next-line new-cap
 const router = Router();
 
-router.route("/").post(getProductData);
+router.route("/").get(getProduct).post(getProductData);
 
 export = router;
