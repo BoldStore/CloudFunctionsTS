@@ -130,9 +130,12 @@ export const saveStoreData: (
       auth_data.access_token
     );
 
+    console.log("AUTH>>", auth_data);
+    console.log("LONG>>", access_token_data);
+
     let data: { store: StoreType | null; error: any } | null = null;
 
-    if (access_token_data.error) {
+    if (access_token_data.error || !access_token_data.access_token) {
       // Get store data
       data = await getStoreData(
         auth_data.user_id,

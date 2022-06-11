@@ -21,16 +21,23 @@ export const getStoreData: (
   expires_in?: number,
   tryAgain?: boolean
 ) => Promise<{ store: StoreType | null; error: any }> = async (
-  user_id: string,
-  user_id_orignal: string,
-  access_token: string,
-  storeId: string,
+  user_id,
+  user_id_orignal,
+  access_token,
+  storeId,
   expires_in = 3600,
   tryAgain = false
 ) => {
   let store: StoreType | null = null;
   let error: any;
   const insta_id: string = tryAgain ? user_id : user_id_orignal;
+
+  if (!access_token) {
+    return {
+      store,
+      error: "No access token",
+    };
+  }
 
   try {
     const response = await axios.get(
@@ -75,7 +82,7 @@ export const getStoreData: (
       data.bio,
       false,
       expires_in,
-      user_id,
+      insta_id,
       access_token
     );
 
@@ -84,7 +91,7 @@ export const getStoreData: (
       displayName: store.full_name ?? "",
     });
 
-    getStoreMedia(user_id, access_token, storeId);
+    getStoreMedia(insta_id, access_token, storeId);
   } catch (e) {
     if ((e as any).response.data.error.code == 100 && !tryAgain) {
       return await getStoreData(
