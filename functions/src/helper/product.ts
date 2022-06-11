@@ -34,6 +34,8 @@ export const addProduct: (storeId: string, post: any) => Promise<void> = async (
   post
 ) => {
   try {
+    let file_name = "";
+    let post_url = "";
     // TODO: Do not upload if not product,
     // That is, if the caption does not contain
     // price or sold
@@ -52,15 +54,34 @@ export const addProduct: (storeId: string, post: any) => Promise<void> = async (
     //   return;
     // }
 
-    const file_name = (
-      post.id + new Date().getUTCMilliseconds().toString()
-    ).toString();
+    // Check if the product is already in the database
+    const productInDb = await firestore()
+      .collection("products")
+      .doc(post.id)
+      .get();
 
-    const post_url = await handler({
-      fileUrl: post.media_url,
-      fileName: file_name,
-      bucket: S3_BUCKET_NAME,
-    });
+    if (productInDb.data()?.sold) {
+      return;
+    }
+
+    if (productInDb.data()?.price == prod_data.price) {
+      return;
+    }
+
+    if (!productInDb.exists) {
+      file_name = (
+        post.id + new Date().getUTCMilliseconds().toString()
+      ).toString();
+
+      post_url = await handler({
+        fileUrl: post.media_url,
+        fileName: file_name,
+        bucket: S3_BUCKET_NAME,
+      });
+    } else {
+      file_name = productInDb.data()?.file_name;
+      post_url = productInDb.data()?.imgUrl;
+    }
 
     const product = {
       name: prod_data.name,
@@ -81,7 +102,10 @@ export const addProduct: (storeId: string, post: any) => Promise<void> = async (
     };
 
     //   Add to firebase
-    await firestore().collection("products").add(product);
+    await firestore()
+      .collection("products")
+      .doc(post.id)
+      .set(product, { merge: true });
 
     return;
   } catch (e) {
