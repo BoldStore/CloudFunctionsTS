@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
@@ -12,25 +13,54 @@ export const homePage: (
   res: Response,
   next: NextFunction
 ) => {
+  const storesArray: Array<firestore.DocumentData> = [];
+  const productsResponse: Array<any> = [];
   try {
     const products = await firestore()
       .collection("products")
       .where("sold", "!=", true)
-      .limit(15)
+      .limit(50)
       .get();
 
-    const stores = await firestore().collection("stores").limit(50).get();
+    // Get Stores with products
+    for (let i = 0; i < products.docs.length; i++) {
+      const product = products.docs[i];
+      const storeIndex = storesArray.findIndex(
+        (store) => store.id === product.data().store
+      );
+      let store;
+
+      // Check if we already got the store
+      if (storeIndex === -1) {
+        store = await firestore()
+          .collection("stores")
+          .doc(product.data().store)
+          .get();
+
+        if (store.exists && store.data()) {
+          storesArray.push(store.data()!);
+          productsResponse.push({
+            ...product.data(),
+            id: product.id,
+            store: store,
+          });
+        }
+      } else {
+        productsResponse.push({
+          ...product.data(),
+          id: product.id,
+          store: storesArray[storeIndex],
+        });
+      }
+    }
+
+    // const stores = await firestore().collection("stores").limit(50).get();
+    // For now, Only send stores which have products
 
     res.status(200).json({
       success: true,
-      products: products.docs.map((product) => ({
-        id: product.id,
-        ...product.data(),
-      })),
-      stores: stores.docs.map((store) => ({
-        id: store.id,
-        ...store.data(),
-      })),
+      products: productsResponse,
+      stores: storesArray,
     });
   } catch (e) {
     console.log("Error getting home>>", e);

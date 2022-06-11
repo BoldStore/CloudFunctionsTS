@@ -13,8 +13,6 @@ import { createProductTask } from "../../tasks/products";
 import { deleteObject, handler } from "../s3/file_upload_s3";
 import { getInstaData } from "./get_insta_data";
 
-// TODO: Get store in post, think of an optimal solution
-
 export const getStoreData: (
   user_id: string,
   user_id_orignal: string,
