@@ -13,7 +13,6 @@ import { createProductTask } from "../../tasks/products";
 import { deleteObject, handler } from "../s3/file_upload_s3";
 import { getInstaData } from "./get_insta_data";
 
-// TODO: Add a check in store if all products fetched
 // TODO: Get store in post, think of an optimal solution
 
 export const getStoreData: (
