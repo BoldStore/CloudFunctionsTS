@@ -4,6 +4,8 @@ import { addPickup } from "../helper/order/shipping";
 import ExpressError = require("../utils/ExpressError");
 import { Address, AddressType } from "../models/address";
 
+// TODO: Only get posts and caraousels (not videos)
+
 export const addAddress: (
   req: Request,
   res: Response,
