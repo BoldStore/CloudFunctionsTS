@@ -78,6 +78,12 @@ export const addAddress: (
     }
 
     if (store?.exists) {
+      // Update city in store
+      await firestore().collection("stores").doc(store.id).update({
+        city: address_model.city,
+        pincode: address_model.pincode,
+      });
+
       // Check if completed
       const paymentDetails = await firestore()
         .collection("paymentDetails")
@@ -92,6 +98,11 @@ export const addAddress: (
           { merge: true }
         );
       }
+    } else {
+      await firestore().collection("users").doc(userId).update({
+        city: address_model.city,
+        pincode: address_model.pincode,
+      });
     }
 
     res.status(update ? 200 : 201).json({
