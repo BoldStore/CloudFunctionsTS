@@ -2,7 +2,6 @@
 import axios from "axios";
 import { firestore } from "firebase-admin";
 import { onRequest, Request } from "firebase-functions/v1/https";
-import { StoreType } from "../models/store";
 import { MEILI_API_KEY, MEILI_API_URL } from "../secrets";
 
 exports.importStoresToMeili = onRequest(async (req: Request, res) => {
@@ -41,11 +40,24 @@ exports.importStoresToMeili = onRequest(async (req: Request, res) => {
   }
 });
 
-exports.addOrUpdateStore = async (store: StoreType) => {
+export const addOrUpdateStore: (
+  store: FirebaseFirestore.DocumentData,
+  storeId: string
+) => Promise<{ success: boolean; error: any }> = async (store, storeId) => {
   try {
-    await axios.post(`${MEILI_API_URL}/indexes/stores/documents`, store, {
-      headers: { "X-Meili-API-Key": MEILI_API_KEY },
-    });
+    await axios.post(
+      `${MEILI_API_URL}/indexes/stores/documents`,
+      {
+        id: storeId,
+        name: store.full_name,
+        username: store.username,
+        profile_pic: store.profile_pic,
+        city: store.city,
+      },
+      {
+        headers: { "X-Meili-API-Key": MEILI_API_KEY },
+      }
+    );
     return {
       success: true,
       error: null,
@@ -59,7 +71,9 @@ exports.addOrUpdateStore = async (store: StoreType) => {
   }
 };
 
-exports.deleteStore = async (storeId: string) => {
+export const deleteStore: (
+  storeId: string
+) => Promise<{ success: boolean; error: any }> = async (storeId) => {
   try {
     await axios.delete(`${MEILI_API_URL}/indexes/users/documents/${storeId}`, {
       headers: { "X-Meili-API-Key": MEILI_API_KEY },
@@ -85,7 +99,7 @@ exports.importProductsToMeili = onRequest(async (req: Request, res) => {
       const product = doc.data();
       return {
         id: doc.id,
-        name: product.full_name,
+        name: product.name,
         caption: product.caption,
         imgUrl: product.imgUrl,
         permalink: product.permalink,
@@ -119,11 +133,26 @@ exports.importProductsToMeili = onRequest(async (req: Request, res) => {
   }
 });
 
-exports.addOrUpdateProduct = async (product: any) => {
+export const addOrUpdateProduct: (
+  product: FirebaseFirestore.DocumentData,
+  productId: string
+) => Promise<{ success: boolean; error: any }> = async (product, productId) => {
   try {
-    await axios.post(`${MEILI_API_URL}/indexes/products/documents`, product, {
-      headers: { "X-Meili-API-Key": MEILI_API_KEY },
-    });
+    await axios.post(
+      `${MEILI_API_URL}/indexes/products/documents`,
+      {
+        id: productId,
+        name: product.name,
+        caption: product.caption,
+        imgUrl: product.imgUrl,
+        permalink: product.permalink,
+        store: product.store,
+        size: product.size,
+      },
+      {
+        headers: { "X-Meili-API-Key": MEILI_API_KEY },
+      }
+    );
     return {
       success: true,
       error: null,
@@ -137,7 +166,9 @@ exports.addOrUpdateProduct = async (product: any) => {
   }
 };
 
-exports.deleteProduct = async (productId: string) => {
+export const deleteProduct: (
+  productId: string
+) => Promise<{ success: boolean; error: any }> = async (productId) => {
   try {
     await axios.delete(
       `${MEILI_API_URL}/indexes/users/documents/${productId}`,
