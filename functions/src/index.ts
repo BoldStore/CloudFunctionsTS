@@ -44,3 +44,5 @@ app.use(
 );
 
 exports.app = https.onRequest(app);
+exports.triggers = require("./triggers");
+exports.meili = require("./meili");
