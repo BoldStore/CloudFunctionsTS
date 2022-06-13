@@ -155,7 +155,7 @@ export const refresh_store_products: (
 
       // Add if new Post
       if (newPost) {
-        addProduct(storeId, post);
+        addProduct(storeId, post, access_token);
       }
     }
 

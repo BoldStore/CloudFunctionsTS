@@ -2,6 +2,7 @@
 import { firestore } from "firebase-admin";
 import { listOfClothes } from "../data/listOfClothes";
 import { S3_BUCKET_NAME } from "../secrets";
+import { getCaraouselMedia } from "./insta/get_insta_data";
 import { handler } from "./s3/file_upload_s3";
 
 interface PostData {
@@ -29,13 +30,16 @@ export const analysePost: (captionString: string) => PostData = (
   };
 };
 
-export const addProduct: (storeId: string, post: any) => Promise<void> = async (
-  storeId,
-  post
-) => {
+export const addProduct: (
+  storeId: string,
+  post: any,
+  access_token?: string
+) => Promise<void> = async (storeId, post, access_token) => {
   try {
     let file_name = "";
     let post_url = "";
+    let images: Array<{ id: string; file_name: string; imgUrl: string }> = [];
+    let token = access_token ?? "";
     // TODO: Do not upload if not product,
     // That is, if the caption does not contain
     // price or sold
@@ -45,6 +49,11 @@ export const addProduct: (storeId: string, post: any) => Promise<void> = async (
     // if (!post.caption) {
     //   return;
     // }
+
+    // Do not save if video
+    if (post.media_type === "VIDEO") {
+      return;
+    }
     const prod_data = analysePost(post.caption ?? "");
 
     // if (
@@ -69,16 +78,52 @@ export const addProduct: (storeId: string, post: any) => Promise<void> = async (
     }
 
     if (!productInDb.exists) {
-      file_name = (
-        post.id + new Date().getUTCMilliseconds().toString()
-      ).toString();
+      if (post.media_type === "CAROUSEL_ALBUM") {
+        if (!token) {
+          const store = await firestore()
+            .collection("stores")
+            .doc(storeId)
+            .get();
+          token = store.data()?.access_token;
+        }
+        // Handle caraousel
+        const data = await getCaraouselMedia(post.id, token);
+        if (data.error) {
+          return;
+        }
+        for (let i = 0; i < data.data.length; i++) {
+          const media = data.data[i];
 
-      post_url = await handler({
-        fileUrl: post.media_url,
-        fileName: file_name,
-        bucket: S3_BUCKET_NAME,
-      });
+          // Upload to S3
+          file_name = (
+            media.id + new Date().getUTCMilliseconds().toString()
+          ).toString();
+
+          const media_s3 = await handler({
+            fileUrl: media.media_url,
+            fileName: file_name,
+            bucket: S3_BUCKET_NAME,
+          });
+
+          images.push({
+            id: media.id,
+            file_name: file_name,
+            imgUrl: media_s3,
+          });
+        }
+      } else {
+        file_name = (
+          post.id + new Date().getUTCMilliseconds().toString()
+        ).toString();
+
+        post_url = await handler({
+          fileUrl: post.media_url,
+          fileName: file_name,
+          bucket: S3_BUCKET_NAME,
+        });
+      }
     } else {
+      images = productInDb.data()?.images ?? [];
       file_name = productInDb.data()?.file_name;
       post_url = productInDb.data()?.imgUrl;
     }
@@ -99,6 +144,9 @@ export const addProduct: (storeId: string, post: any) => Promise<void> = async (
       caption: post?.caption ?? null,
       permalink: post.permalink,
       id: post.id,
+      type: post.media_type,
+      store_username: post.username,
+      images,
     };
 
     //   Add to firebase

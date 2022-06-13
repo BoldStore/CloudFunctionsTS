@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { firestore } from "firebase-admin";
+import { CHILDREN_FIELDS, INSTAGRAM_GRAPH_API_URL } from "../../constants";
 import { InstaData } from "../../interfaces/insta_data";
 
 export const getInstaData: (username: string) => Promise<InstaData> = async (
@@ -51,6 +52,31 @@ export const getInstaData: (username: string) => Promise<InstaData> = async (
     bio,
     followers,
     following,
+    error,
+  };
+};
+
+export const getCaraouselMedia: (
+  postId: string,
+  access_token: string
+) => Promise<{ data: any; error: any }> = async (
+  postId: string,
+  access_token: string
+) => {
+  let error = null;
+  let data = null;
+  try {
+    const response = await axios.get(
+      `${INSTAGRAM_GRAPH_API_URL}/${postId}/children?access_token=${access_token}&fields=${CHILDREN_FIELDS}`
+    );
+
+    data = response.data;
+  } catch (e) {
+    error = (e as any).response.data ?? e;
+  }
+
+  return {
+    data,
     error,
   };
 };
