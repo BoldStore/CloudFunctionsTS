@@ -90,6 +90,20 @@ export const saveProduct: (
     }
     const productId: string = req.body.productId.toString();
 
+    const saved = (
+      await firestore()
+        .collection("saved")
+        .where("user", "==", userId)
+        .where("product", "==", productId)
+        .limit(1)
+        .get()
+    ).docs;
+
+    if (saved.length > 0) {
+      next(new ExpressError("Product already saved", 400));
+      return;
+    }
+
     const product = await firestore()
       .collection("products")
       .doc(productId)
@@ -149,5 +163,44 @@ export const getSavedProducts: (
     });
   } catch (e) {
     next(new ExpressError("Could not get Save product", 500, e));
+  }
+};
+
+export const deleteSavedProduct: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (req, res, next) => {
+  try {
+    const userId = req.user.uid;
+    if (!req.query.productId) {
+      next(new ExpressError("Product ID is required", 400));
+      return;
+    }
+    const productId: string = req.query.productId.toString();
+
+    const saved = (
+      await firestore()
+        .collection("saved")
+        .where("user", "==", userId)
+        .where("product", "==", productId)
+        .limit(1)
+        .get()
+    ).docs;
+
+    if (saved.length === 0) {
+      next(new ExpressError("Product not saved", 400));
+      return;
+    }
+
+    const savedId = saved[0].id;
+
+    await firestore().collection("saved").doc(savedId).delete();
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (e) {
+    next(new ExpressError("Could not delete Save product", 500, e));
   }
 };

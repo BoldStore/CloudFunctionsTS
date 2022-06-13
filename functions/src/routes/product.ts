@@ -4,6 +4,7 @@ import {
   getProduct,
   saveProduct,
   getSavedProducts,
+  deleteSavedProduct,
 } from "../controllers/product";
 import { validateFirebaseIdToken } from "../middlewares/auth";
 // eslint-disable-next-line new-cap
@@ -13,6 +14,7 @@ router.route("/").get(getProduct).post(getProductData);
 router
   .route("/save")
   .get(validateFirebaseIdToken, getSavedProducts)
-  .post(validateFirebaseIdToken, saveProduct);
+  .post(validateFirebaseIdToken, saveProduct)
+  .delete(validateFirebaseIdToken, deleteSavedProduct);
 
 export = router;
