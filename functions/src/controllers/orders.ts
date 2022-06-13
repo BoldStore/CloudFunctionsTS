@@ -4,6 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
 import { razorpayInstance } from "..";
 import { SHIPROCKET_SERVICEABILITY } from "../constants";
+import { checkIfAvailable } from "../helper/insta/get_insta_data";
 import { confirmOrder } from "../helper/order/order";
 import { Order, OrderType } from "../models/orders";
 import ExpressError = require("../utils/ExpressError");
@@ -76,7 +77,32 @@ export const createOrder: (
       next(new ExpressError("Store is not completed", 400));
       return;
     }
-    // TODO: Check if product is available on insta
+
+    const data = await checkIfAvailable(
+      product.data()?.insta_id,
+      store.data()?.access_token
+    );
+
+    if (data.data?.sold) {
+      await firestore().collection("products").doc(product_id).update({
+        sold: true,
+      });
+      next(new ExpressError("Product is sold out", 400));
+      return;
+    }
+
+    if (data.data?.price !== product.data()?.price) {
+      await firestore().collection("products").doc(product_id).update({
+        amount: data.data?.price,
+      });
+      next(
+        new ExpressError(
+          "Product price changed. Are you sure you want to continue?",
+          400
+        )
+      );
+      return;
+    }
 
     // Make the product unavailable
     await firestore().collection("products").doc(product.id).update({

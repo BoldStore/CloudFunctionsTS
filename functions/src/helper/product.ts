@@ -5,7 +5,7 @@ import { S3_BUCKET_NAME } from "../secrets";
 import { getCaraouselMedia } from "./insta/get_insta_data";
 import { handler } from "./s3/file_upload_s3";
 
-interface PostData {
+export interface PostData {
   price: string;
   name: string;
   sold: boolean;

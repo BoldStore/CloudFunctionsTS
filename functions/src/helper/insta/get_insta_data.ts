@@ -1,8 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { firestore } from "firebase-admin";
-import { CHILDREN_FIELDS, INSTAGRAM_GRAPH_API_URL } from "../../constants";
+import {
+  CHILDREN_FIELDS,
+  INSTAGRAM_GRAPH_API_URL,
+  MEDIA_FIELDS,
+} from "../../constants";
 import { InstaData } from "../../interfaces/insta_data";
+import { analysePost, PostData } from "../product";
 
 export const getInstaData: (username: string) => Promise<InstaData> = async (
   username: string
@@ -77,6 +82,32 @@ export const getCaraouselMedia: (
 
   return {
     data,
+    error,
+  };
+};
+
+export const checkIfAvailable: (
+  postId: string,
+  access_token: string
+) => Promise<{ data: PostData | null; error: any }> = async (
+  postId,
+  access_token
+) => {
+  let error = null;
+  let prod_data = null;
+  try {
+    const response = await axios.get(
+      `${INSTAGRAM_GRAPH_API_URL}/${postId}?access_token=${access_token}&fields=${MEDIA_FIELDS}`
+    );
+
+    const data = response.data;
+    prod_data = analysePost(data.caption);
+  } catch (e) {
+    error = (e as any).response.data ?? e;
+  }
+
+  return {
+    data: prod_data,
     error,
   };
 };
