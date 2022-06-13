@@ -76,3 +76,78 @@ export const getProduct: (
     next(new ExpressError("Could not get Store Posts", 500, e));
   }
 };
+
+export const saveProduct: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (req, res, next) => {
+  try {
+    const userId = req.user.uid;
+    if (!req.query.productId) {
+      next(new ExpressError("Product ID is required", 400));
+      return;
+    }
+    const productId: string = req.body.productId.toString();
+
+    const product = await firestore()
+      .collection("products")
+      .doc(productId)
+      .get();
+
+    if (!product || !product.exists) {
+      next(new ExpressError("Product does not exist", 404));
+      return;
+    }
+
+    // Get Store
+    const store = await firestore()
+      .collection("stores")
+      .doc(product.data()?.store)
+      .get();
+
+    await firestore().collection("saved").add({
+      user: userId,
+      product: productId,
+      name: product.data()?.name,
+      price: product.data()?.price,
+      image: product.data()?.imgUrl,
+      store: store.id,
+      username: store.data()?.username,
+      store_name: store.data()?.ful_name,
+      profile_pic: store.data()?.profile_pic,
+      city: store.data()?.city,
+    });
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (e) {
+    next(new ExpressError("Could not get Save product", 500, e));
+  }
+};
+
+export const getSavedProducts: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (req, res, next) => {
+  try {
+    const userId = req.user.uid;
+
+    const products = await firestore()
+      .collection("saved")
+      .where("user", "==", userId)
+      .limit(30)
+      .get();
+
+    res.status(200).json({
+      success: true,
+      products: products.docs.map((doc) => {
+        return { id: doc.id, ...doc.data() };
+      }),
+    });
+  } catch (e) {
+    next(new ExpressError("Could not get Save product", 500, e));
+  }
+};
