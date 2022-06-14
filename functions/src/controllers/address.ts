@@ -27,6 +27,7 @@ export const addAddress: (
     const state = req.body.state;
     const pincode = req.body.pincode;
     const notes = req.body.notes;
+    const phone = req.body.phone;
 
     const address_model: AddressType = new Address(
       null,
@@ -38,6 +39,7 @@ export const addAddress: (
       state,
       pincode,
       userId,
+      phone,
       notes
     );
 
@@ -70,7 +72,7 @@ export const addAddress: (
         await addPickup(
           title,
           store.data()?.email,
-          store.data()?.phone,
+          store.data()?.phone ?? phone,
           address_model,
           store.id
         );

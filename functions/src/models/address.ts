@@ -9,6 +9,7 @@ export class Address {
   state: string;
   pincode: number;
   user: string;
+  phone: string;
   notes?: string;
 
   constructor(
@@ -21,6 +22,7 @@ export class Address {
     state: string,
     pincode: number,
     user: string,
+    phone: string,
     notes?: string
   ) {
     this.id = id;
@@ -32,6 +34,7 @@ export class Address {
     this.state = state;
     this.pincode = pincode;
     this.user = user;
+    this.phone = phone;
     this.notes = notes;
 
     return {
@@ -44,6 +47,7 @@ export class Address {
       state: this.state,
       pincode: this.pincode,
       user: this.user,
+      phone: this.phone,
       notes: this.notes,
     };
   }
@@ -59,5 +63,6 @@ export interface AddressType {
   state: string;
   pincode: number;
   user: string;
+  phone: string;
   notes?: string;
 }
