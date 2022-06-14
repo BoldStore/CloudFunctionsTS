@@ -84,7 +84,7 @@ export const saveProduct: (
 ) => Promise<void> = async (req, res, next) => {
   try {
     const userId = req.user.uid;
-    if (!req.query.productId) {
+    if (!req.body.productId) {
       next(new ExpressError("Product ID is required", 400));
       return;
     }
