@@ -78,6 +78,7 @@ export const getCaraouselMedia: (
     data = response.data;
   } catch (e) {
     error = (e as any).response.data ?? e;
+    console.log("Error in getting caraosule media", error);
   }
 
   return {

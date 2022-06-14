@@ -60,6 +60,7 @@ export const handler = async (event: CopyFileEvent): Promise<string> => {
       return result.Location;
     })
     .catch((e) => {
+      console.log("ERROR Uploading to S3>>>", e);
       throw e;
     });
 };
