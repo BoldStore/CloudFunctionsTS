@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
 import { getInstaData } from "../helper/insta/get_insta_data";
+import { addProduct } from "../helper/product";
 import ExpressError = require("../utils/ExpressError");
 
 // Check if server is up
@@ -58,5 +60,43 @@ export const getInsta = async (
     });
   } catch (e) {
     next(new ExpressError("Error in checking login", 500, e));
+  }
+};
+
+export const saveProduct: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user.uid;
+    const post = req.body.post;
+
+    const store = await firestore().collection("stores").doc(userId).get();
+
+    if (!store.exists) {
+      next(new ExpressError("Store does not exist", 404));
+      return;
+    }
+
+    if (!store.data()?.access_token) {
+      next(new ExpressError("Store does not have access token", 400));
+      return;
+    }
+
+    const access_token = store.data()?.access_token;
+
+    addProduct(userId, post, access_token);
+
+    res.status(200).json({
+      success: true,
+      message: "Product added",
+    });
+  } catch (e) {
+    next(new ExpressError("Error in saving store data", 500, e));
   }
 };

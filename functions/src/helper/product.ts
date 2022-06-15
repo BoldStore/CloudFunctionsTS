@@ -91,8 +91,8 @@ export const addProduct: (
         if (data.error) {
           return;
         }
-        for (let i = 0; i < data.data.length; i++) {
-          const media = data.data[i];
+        for (let i = 0; i < data?.data?.data?.length; i++) {
+          const media = data?.data?.data[i];
 
           // Upload to S3
           file_name = (
