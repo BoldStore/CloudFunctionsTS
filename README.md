@@ -25,3 +25,7 @@ This project uses cloud functions and express like server for calls, the firebas
 We can deploy to the google server simply by doing, in the functions directory
 
 `npm run deploy`
+
+## References
+
+- [Firebase performace when writing multiple documents](https://stackoverflow.com/a/58897275)
