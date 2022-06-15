@@ -321,6 +321,7 @@ export const addPotentialStore: (
     await firestore().collection("potentialStores").add({
       insta_username,
       email,
+      createdAt: new Date(),
     });
 
     const emails = `${JAYESH_MAIL}, ${AVI_MAIL}, ${BOLD_MAIL}`;
