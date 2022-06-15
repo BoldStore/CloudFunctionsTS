@@ -71,7 +71,7 @@ type ProductType = {
   comments: string;
   store: string;
   color?: string;
-  soldOn?: Date;
+  soldOn?: Date | null;
   filename?: string;
   imgUrl?: string;
   seller: string;

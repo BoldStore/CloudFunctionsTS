@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
-import { addProduct } from "../helper/product";
+import { addProduct } from "../helper/product/product";
+import { addProducts } from "../helper/product/products";
 import ExpressError = require("../utils/ExpressError");
 
 export const getProductData: (
@@ -22,10 +23,7 @@ export const getProductData: (
       postsStatus: "fetching",
     });
 
-    for (let i = 0; i < posts?.length; i++) {
-      const post = posts[i];
-      await addProduct(storeId, post);
-    }
+    await addProducts(storeId, posts);
 
     // Update the post status to completed
     await firestore().collection("stores").doc(storeId).update({

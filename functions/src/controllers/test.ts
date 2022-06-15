@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
 import { deleteStore } from "../helper/deletion/store";
 import { getInstaData } from "../helper/insta/get_insta_data";
-import { addProduct } from "../helper/product";
+import { addProduct } from "../helper/product/product";
 import ExpressError = require("../utils/ExpressError");
 
 // Check if server is up
@@ -91,7 +91,7 @@ export const saveProduct: (
 
     const access_token = store.data()?.access_token;
 
-    addProduct(userId, post, access_token);
+    addProduct(userId, post, access_token, true);
 
     res.status(200).json({
       success: true,

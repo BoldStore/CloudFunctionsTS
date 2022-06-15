@@ -4,7 +4,7 @@ import axios from "axios";
 import { auth, firestore } from "firebase-admin";
 import { INSTAGRAM_GRAPH_API_URL, MEDIA_FIELDS } from "../../constants";
 import { getInstaData } from "./get_insta_data";
-import { addProduct, analysePost } from "../product";
+import { addProduct, analysePost } from "../product/product";
 import { S3_BUCKET_NAME } from "../../secrets";
 import { deleteObject, handler } from "../s3/file_upload_s3";
 
@@ -155,7 +155,7 @@ export const refresh_store_products: (
 
       // Add if new Post
       if (newPost) {
-        addProduct(storeId, post, access_token);
+        addProduct(storeId, post, access_token, true);
       }
     }
 

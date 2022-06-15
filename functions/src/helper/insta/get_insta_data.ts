@@ -7,7 +7,7 @@ import {
   MEDIA_FIELDS,
 } from "../../constants";
 import { InstaData } from "../../interfaces/insta_data";
-import { analysePost, PostData } from "../product";
+import { analysePost, PostData } from "../product/product";
 
 export const getInstaData: (username: string) => Promise<InstaData> = async (
   username: string

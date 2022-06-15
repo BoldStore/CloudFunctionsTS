@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { firestore } from "firebase-admin";
-import { listOfClothes } from "../data/listOfClothes";
-import { S3_BUCKET_NAME } from "../secrets";
-import { getCaraouselMedia } from "./insta/get_insta_data";
-import { handler } from "./s3/file_upload_s3";
+import { listOfClothes } from "../../data/listOfClothes";
+import { S3_BUCKET_NAME } from "../../secrets";
+import { getCaraouselMedia } from "../insta/get_insta_data";
+import { handler } from "../s3/file_upload_s3";
 
 export interface PostData {
   price: string;
@@ -33,8 +33,9 @@ export const analysePost: (captionString: string) => PostData = (
 export const addProduct: (
   storeId: string,
   post: any,
-  access_token?: string
-) => Promise<void> = async (storeId, post, access_token) => {
+  access_token?: string,
+  newPost?: boolean
+) => Promise<any> = async (storeId, post, access_token, newPost = false) => {
   try {
     let file_name = "";
     let post_url = "";
@@ -154,15 +155,23 @@ export const addProduct: (
     };
 
     //   Add to firebase
-    await firestore()
-      .collection("products")
-      .doc(post.id)
-      .set(product, { merge: true });
+    if (newPost) {
+      await firestore()
+        .collection("products")
+        .doc(post.id)
+        .set(product, { merge: true });
+    }
 
-    return;
+    return {
+      product,
+      error: null,
+    };
   } catch (e) {
     console.log("Error in adding post", e);
-    return;
+    return {
+      product: null,
+      error: e,
+    };
   }
 };
 
