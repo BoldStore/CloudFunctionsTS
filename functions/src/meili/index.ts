@@ -21,7 +21,7 @@ exports.importStoresToMeili = onRequest(async (req: Request, res) => {
     });
 
     await axios.post(`${MEILI_API_URL}/indexes/stores/documents`, stores, {
-      headers: { "X-Meili-API-Key": MEILI_API_KEY },
+      headers: { Authorization: `Bearer ${MEILI_API_KEY}` },
     });
     await axios.post(
       `${MEILI_API_URL}/indexes/stores/settings`,
@@ -30,7 +30,7 @@ exports.importStoresToMeili = onRequest(async (req: Request, res) => {
         filterableAttributes: ["isCompleted"],
       },
       {
-        headers: { "X-Meili-API-Key": MEILI_API_KEY },
+        headers: { Authorization: `Bearer ${MEILI_API_KEY}` },
       }
     );
     res.status(200).send({
@@ -57,7 +57,7 @@ export const addOrUpdateStore: (
         city: store.city,
       },
       {
-        headers: { "X-Meili-API-Key": MEILI_API_KEY },
+        headers: { Authorization: `Bearer ${MEILI_API_KEY}` },
       }
     );
     return {
@@ -78,7 +78,7 @@ export const deleteStore: (
 ) => Promise<{ success: boolean; error: any }> = async (storeId) => {
   try {
     await axios.delete(`${MEILI_API_URL}/indexes/users/documents/${storeId}`, {
-      headers: { "X-Meili-API-Key": MEILI_API_KEY },
+      headers: { Authorization: `Bearer ${MEILI_API_KEY}` },
     });
     return {
       success: true,
@@ -111,7 +111,7 @@ exports.importProductsToMeili = onRequest(async (req: Request, res) => {
     });
 
     await axios.post(`${MEILI_API_URL}/indexes/products/documents`, products, {
-      headers: { "X-Meili-API-Key": MEILI_API_KEY },
+      headers: { Authorization: `Bearer ${MEILI_API_KEY}` },
     });
     await axios.post(
       `${MEILI_API_URL}/indexes/products/settings`,
@@ -120,7 +120,7 @@ exports.importProductsToMeili = onRequest(async (req: Request, res) => {
         searchableAttributes: ["name", "caption"],
       },
       {
-        headers: { "X-Meili-API-Key": MEILI_API_KEY },
+        headers: { Authorization: `Bearer ${MEILI_API_KEY}` },
       }
     );
     res.status(200).send({
@@ -152,7 +152,7 @@ export const addOrUpdateProduct: (
         size: product.size,
       },
       {
-        headers: { "X-Meili-API-Key": MEILI_API_KEY },
+        headers: { Authorization: `Bearer ${MEILI_API_KEY}` },
       }
     );
     return {
@@ -175,7 +175,7 @@ export const deleteProduct: (
     await axios.delete(
       `${MEILI_API_URL}/indexes/users/documents/${productId}`,
       {
-        headers: { "X-Meili-API-Key": MEILI_API_KEY },
+        headers: { Authorization: `Bearer ${MEILI_API_KEY}` },
       }
     );
     return {
