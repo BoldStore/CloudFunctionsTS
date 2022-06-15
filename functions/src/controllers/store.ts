@@ -397,3 +397,30 @@ export const checkIfStore: (
     next(new ExpressError("There was an error", 500, e));
   }
 };
+
+// TODO: Delete stores cron
+export const deleteStore: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const id = req.user.uid;
+
+    const store = await firestore().collection("stores").doc(id).update({
+      deletedOn: new Date(),
+    });
+
+    res.status(200).json({
+      success: true,
+      store,
+    });
+  } catch (e) {
+    console.log("Error in deleting store", e);
+    next(new ExpressError("Could not delete store", 500, e));
+  }
+};
