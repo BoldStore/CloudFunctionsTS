@@ -18,6 +18,6 @@ router.route("/getInstaData").post(getInsta);
 
 router.route("/caraousel").post(validateFirebaseIdToken, saveProduct);
 
-router.route("/deleteStore").get(validateFirebaseIdToken, deleteStoreData);
+router.route("/deleteStore").post(deleteStoreData);
 
 export = router;
