@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   checkLogin,
+  deleteStoreData,
   getInsta,
   respond,
   saveProduct,
@@ -16,5 +17,7 @@ router.route("/checkLogin").post(validateFirebaseIdToken, checkLogin);
 router.route("/getInstaData").post(getInsta);
 
 router.route("/caraousel").post(validateFirebaseIdToken, saveProduct);
+
+router.route("/deleteStore").get(validateFirebaseIdToken, deleteStoreData);
 
 export = router;
