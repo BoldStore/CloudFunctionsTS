@@ -16,6 +16,7 @@ exports.importStoresToMeili = onRequest(async (req: Request, res) => {
         username: store.username,
         profile_pic: store.profile_pic,
         city: store.city,
+        isCompleted: store.isCompleted,
       };
     });
 
@@ -26,6 +27,7 @@ exports.importStoresToMeili = onRequest(async (req: Request, res) => {
       `${MEILI_API_URL}/indexes/stores/settings`,
       {
         searchableAttributes: ["name", "username", "city"],
+        filterableAttributes: ["isCompleted"],
       },
       {
         headers: { "X-Meili-API-Key": MEILI_API_KEY },
