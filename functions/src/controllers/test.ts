@@ -112,7 +112,7 @@ export const deleteStoreData: (
   next: NextFunction
 ) => {
   try {
-    const userId = req.user.uid;
+    const userId = req.body.id;
 
     const store = await firestore().collection("stores").doc(userId).get();
 

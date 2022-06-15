@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
-import { addProduct } from "../helper/product/product";
 import { addProducts } from "../helper/product/products";
 import ExpressError = require("../utils/ExpressError");
 
