@@ -8,7 +8,7 @@ import {
   MEDIA_FIELDS,
 } from "../../constants";
 import { Store, StoreType } from "../../models/store";
-import { S3_BUCKET_NAME } from "../../secrets";
+import { S3_BUCKET_NAME_PROFILE } from "../../secrets";
 import { createProductTask } from "../../tasks/products";
 import { deleteObject, handler } from "../s3/file_upload_s3";
 import { getInstaData } from "./get_insta_data";
@@ -51,7 +51,7 @@ export const getStoreData: (
 
     // Delete if image exists
     await deleteObject({
-      bucket: S3_BUCKET_NAME,
+      bucket: S3_BUCKET_NAME_PROFILE,
       fileName: `${storeId}-profile-pic.jpg`,
     });
 
@@ -61,7 +61,7 @@ export const getStoreData: (
       profilePic = await handler({
         fileUrl: data.profile_pic!.toString(),
         fileName: `${id}-profile-pic.jpg`,
-        bucket: S3_BUCKET_NAME,
+        bucket: S3_BUCKET_NAME_PROFILE,
       });
     }
 

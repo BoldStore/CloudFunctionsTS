@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { auth, firestore } from "firebase-admin";
 import { getInstaData } from "../helper/insta/get_insta_data";
 import { deleteObject, handler } from "../helper/s3/file_upload_s3";
-import { S3_BUCKET_NAME } from "../secrets";
+import { S3_BUCKET_NAME_PROFILE } from "../secrets";
 import ExpressError = require("../utils/ExpressError");
 
 export const createUser: (
@@ -96,7 +96,7 @@ export const addInstaUsername: (
     }
 
     await deleteObject({
-      bucket: S3_BUCKET_NAME,
+      bucket: S3_BUCKET_NAME_PROFILE,
       fileName: `${id}-profile-pic.jpg`,
     });
 
@@ -106,7 +106,7 @@ export const addInstaUsername: (
       profilePic = await handler({
         fileUrl: data.profile_pic!.toString(),
         fileName: `${id}-profile-pic.jpg`,
-        bucket: S3_BUCKET_NAME,
+        bucket: S3_BUCKET_NAME_PROFILE,
       });
     }
 
@@ -207,7 +207,7 @@ export const updateUser: (
         return;
       }
       await deleteObject({
-        bucket: S3_BUCKET_NAME,
+        bucket: S3_BUCKET_NAME_PROFILE,
         fileName: `${id}-profile-pic.jpg`,
       });
 
@@ -216,7 +216,7 @@ export const updateUser: (
         profilePic = await handler({
           fileUrl: data.profile_pic!.toString(),
           fileName: `${id}-profile-pic.jpg`,
-          bucket: S3_BUCKET_NAME,
+          bucket: S3_BUCKET_NAME_PROFILE,
         });
       }
     }

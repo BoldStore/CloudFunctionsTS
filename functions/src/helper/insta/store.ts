@@ -5,7 +5,7 @@ import { auth, firestore } from "firebase-admin";
 import { INSTAGRAM_GRAPH_API_URL, MEDIA_FIELDS } from "../../constants";
 import { getInstaData } from "./get_insta_data";
 import { addProduct, analysePost } from "../product/product";
-import { S3_BUCKET_NAME } from "../../secrets";
+import { S3_BUCKET_NAME_PROFILE } from "../../secrets";
 import { deleteObject, handler } from "../s3/file_upload_s3";
 
 interface getMediaResponse {
@@ -81,7 +81,7 @@ export const refresh_store_products: (
     if (!data.error) {
       // Delete if image exists
       await deleteObject({
-        bucket: S3_BUCKET_NAME,
+        bucket: S3_BUCKET_NAME_PROFILE,
         fileName: `${storeId}-profile-pic.jpg`,
       });
 
@@ -91,7 +91,7 @@ export const refresh_store_products: (
         profilePic = await handler({
           fileUrl: data.profile_pic!.toString(),
           fileName: `${storeId}-profile-pic.jpg`,
-          bucket: S3_BUCKET_NAME,
+          bucket: S3_BUCKET_NAME_PROFILE,
         });
       }
       await auth().updateUser(storeId, {
