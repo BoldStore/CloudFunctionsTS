@@ -5,6 +5,8 @@ import { addProduct } from "../helper/product/product";
 // import { addProducts } from "../helper/product/products";
 import ExpressError = require("../utils/ExpressError");
 
+// TODO: Delete from S3
+
 export const getProductData: (
   req: Request,
   res: Response,
@@ -18,8 +20,6 @@ export const getProductData: (
     const storeId: string = req.query.storeId.toString();
 
     const posts = req.body.posts;
-
-    console.log("POSTS", posts);
 
     // Get store and add a post status
     await firestore().collection("stores").doc(storeId).update({
