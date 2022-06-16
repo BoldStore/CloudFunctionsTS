@@ -100,15 +100,11 @@ export const addProduct: (
             media.id + new Date().getUTCMilliseconds().toString()
           ).toString();
 
-          console.log("MEDIA>>>", media);
-
           const media_s3 = await handler({
             fileUrl: media.media_url,
             fileName: file_name,
             bucket: S3_BUCKET_NAME,
           });
-
-          console.log("MEDIA_S3>>>", media_s3);
 
           images.push({
             id: media.id,

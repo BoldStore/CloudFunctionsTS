@@ -7,25 +7,28 @@ export const addProducts: (
   posts: Array<any>,
   access_token?: string
 ) => Promise<void> = async (storeId, posts, access_token) => {
-  const collection = firestore().collection("products");
-  let token: string = access_token ?? "";
-  const products: Array<any> = [];
+  try {
+    const collection = firestore().collection("products");
+    let token: string = access_token ?? "";
+    const products: Array<any> = [];
 
-  if (!access_token) {
-    const store = await firestore().collection("stores").doc(storeId).get();
-    token = store.data()?.access_token;
-  }
-  for (let i = 0; i < posts.length; i++) {
-    const post = posts[i];
-    const productData = await addProduct(storeId, post, token);
-
-    if (productData.product) {
-      products.push(productData.product);
+    if (!access_token) {
+      const store = await firestore().collection("stores").doc(storeId).get();
+      token = store.data()?.access_token;
     }
+    for (let i = 0; i < posts.length; i++) {
+      const post = posts[i];
+      const productData = await addProduct(storeId, post, token);
+
+      if (productData.product) {
+        products.push(productData.product);
+      }
+    }
+
+    //   For faster write times
+    await Promise.all(products.map((data) => collection.add(data)));
+  } catch (e) {
+    console.log("There was an error saving products", e);
   }
-
-  //   For faster write times
-  await Promise.all(products.map((data) => collection.add(data)));
-
   return;
 };
