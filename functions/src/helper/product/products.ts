@@ -8,6 +8,7 @@ export const addProducts: (
   access_token?: string
 ) => Promise<void> = async (storeId, posts, access_token) => {
   try {
+    console.log("ADD PRODS");
     const collection = firestore().collection("products");
     let token: string = access_token ?? "";
     const products: Array<any> = [];
@@ -18,6 +19,7 @@ export const addProducts: (
     }
     for (let i = 0; i < posts.length; i++) {
       const post = posts[i];
+      console.log("POST>>", post);
       const productData = await addProduct(storeId, post, token);
 
       if (productData.product) {
