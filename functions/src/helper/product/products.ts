@@ -25,7 +25,9 @@ export const addProducts: (
       }
     }
     //   For faster write times
-    await Promise.all(products.map((data) => collection.add(data)));
+    await Promise.all(
+      products.map((data) => collection.doc(data.id).set(data))
+    );
   } catch (e) {
     console.log("There was an error saving products", e);
   }

@@ -46,7 +46,9 @@ exports.addData = runWith({
 
       console.log("PRODS>>", products.length);
       //   For faster write times
-      await Promise.all(products.map((data) => collection.add(data)));
+      await Promise.all(
+        products.map((data) => collection.doc(data.id).set(data))
+      );
 
       // Update the post status to completed
       await firestore().collection("stores").doc(storeId).update({
