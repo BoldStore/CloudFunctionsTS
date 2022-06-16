@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { credential, initializeApp } from "firebase-admin";
-import { https } from "firebase-functions/v1";
+import { runWith } from "firebase-functions/v1";
 import { Razorpay } from "razorpay-typescript";
 import { RAZORPAY_KEY, RAZORPAY_SECRET } from "./secrets";
 
@@ -43,6 +43,8 @@ app.use(
   }
 );
 
-exports.app = https.onRequest(app);
+exports.app = runWith({ memory: "2GB", timeoutSeconds: 360 }).https.onRequest(
+  app
+);
 exports.triggers = require("./triggers");
 exports.meili = require("./meili");
