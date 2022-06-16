@@ -91,7 +91,7 @@ export const getStoreData: (
       displayName: store.full_name ?? "",
     });
 
-    // getStoreMedia(insta_id, access_token, storeId);
+    getStoreMedia(insta_id, access_token, storeId);
   } catch (e) {
     if ((e as any).response.data.error.code == 100 && !tryAgain) {
       return await getStoreData(
