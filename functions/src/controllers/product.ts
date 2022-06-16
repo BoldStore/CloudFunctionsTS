@@ -33,6 +33,7 @@ export const getProductData: (
       success: true,
     });
   } catch (e) {
+    console.log("Error saving products>>>", e);
     next(new ExpressError("Could not get Store Posts", 500, e));
   }
 };
