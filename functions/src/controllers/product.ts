@@ -36,7 +36,7 @@ export const getProductData: (
       const post = posts[i];
       const productData = await addProduct(storeId, post, token);
 
-      console.log("PROD DATA>>", productData.product.id);
+      console.log("PROD DATA>>", productData?.product?.id);
 
       if (productData?.product) {
         products.push(productData.product);
