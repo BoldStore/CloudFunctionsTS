@@ -96,9 +96,7 @@ export const addProduct: (
           const media = data?.data?.data[i];
 
           // Upload to S3
-          file_name = (
-            media.id + new Date().getUTCMilliseconds().toString()
-          ).toString();
+          file_name = media.id.toString();
 
           const media_s3 = await handler({
             fileUrl: media.media_url,
@@ -113,9 +111,7 @@ export const addProduct: (
           });
         }
       } else {
-        file_name = (
-          post.id + new Date().getUTCMilliseconds().toString()
-        ).toString();
+        file_name = post.id.toString();
 
         post_url = await handler({
           fileUrl: post.media_url,

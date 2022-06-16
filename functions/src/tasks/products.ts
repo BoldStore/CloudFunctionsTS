@@ -64,7 +64,10 @@ export const createProductTask: (
   }
 
   try {
-    const [response] = await client.createTask({ parent, task });
+    const [response] = await client.createTask(
+      { parent, task },
+      { timeout: 300 }
+    );
     console.log(`Created task ${response.name}`);
     return response.name;
   } catch (error) {

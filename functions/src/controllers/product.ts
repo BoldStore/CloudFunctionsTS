@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
-import { addProducts } from "../helper/product/products";
+import { addProduct } from "../helper/product/product";
+// import { addProducts } from "../helper/product/products";
 import ExpressError = require("../utils/ExpressError");
 
 export const getProductData: (
@@ -24,7 +26,24 @@ export const getProductData: (
       postsStatus: "fetching",
     });
 
-    await addProducts(storeId, posts);
+    // await addProducts(storeId, posts);
+    const collection = firestore().collection("products");
+    const products: Array<any> = [];
+
+    const store = await firestore().collection("stores").doc(storeId).get();
+    const token = store.data()?.access_token;
+    for (let i = 0; i < posts.length; i++) {
+      const post = posts[i];
+      const productData = await addProduct(storeId, post, token);
+
+      if (productData.product) {
+        products.push(productData.product);
+      }
+    }
+
+    console.log("PRODS>>", products.length);
+    //   For faster write times
+    await Promise.all(products.map((data) => collection.add(data)));
 
     // Update the post status to completed
     await firestore().collection("stores").doc(storeId).update({
