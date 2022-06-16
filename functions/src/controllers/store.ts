@@ -135,23 +135,14 @@ export const saveStoreData: (
 
     let data: { store: StoreType | null; error: any } | null = null;
 
-    if (access_token_data.error || !access_token_data.access_token) {
-      // Get store data
-      data = await getStoreData(
-        auth_data.user_id,
-        auth_data.user_id_orignal,
-        auth_data.access_token,
-        store.id
-      );
-    } else {
-      data = await getStoreData(
-        auth_data.user_id,
-        auth_data.user_id_orignal,
-        access_token_data.access_token,
-        store.id,
-        access_token_data.expires_in
-      );
-    }
+    // Get store data
+    data = await getStoreData(
+      auth_data.user_id,
+      auth_data.user_id_orignal,
+      access_token_data.access_token ?? auth_data.access_token,
+      store.id,
+      access_token_data.expires_in ?? undefined
+    );
 
     if (data.error) {
       next(new ExpressError("Could not get store data", 400, data.error));
