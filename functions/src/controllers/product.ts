@@ -2,23 +2,19 @@
 import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
 import { addProduct } from "../helper/product/product";
-// import { addProducts } from "../helper/product/products";
 import ExpressError = require("../utils/ExpressError");
-
-// TODO: Delete from S3
 
 export const getProductData: (
   req: Request,
   res: Response,
   next: NextFunction
 ) => Promise<void> = async (req, res, next) => {
+  if (!req.query.storeId) {
+    next(new ExpressError("Store id is required", 400));
+    return;
+  }
+  const storeId: string = req.query.storeId.toString();
   try {
-    if (!req.query.storeId) {
-      next(new ExpressError("Store id is required", 400));
-      return;
-    }
-    const storeId: string = req.query.storeId.toString();
-
     const posts = req.body.posts;
 
     // Get store and add a post status
@@ -59,6 +55,11 @@ export const getProductData: (
     });
   } catch (e) {
     console.log("Error saving products>>>", e);
+    await firestore().collection("stores").doc(storeId).update({
+      postsStatus: "error",
+      failedOn: new Date(),
+      error: e,
+    });
     next(new ExpressError("Could not get Store Posts", 500, e));
   }
 };

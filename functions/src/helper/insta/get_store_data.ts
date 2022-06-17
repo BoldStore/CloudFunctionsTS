@@ -91,7 +91,7 @@ export const getStoreData: (
       displayName: store.full_name ?? "",
     });
 
-    getStoreMedia(insta_id, access_token, storeId);
+    await getStoreMedia(insta_id, access_token, storeId);
   } catch (e) {
     if ((e as any).response.data.error.code == 100 && !tryAgain) {
       return await getStoreData(
@@ -131,7 +131,7 @@ export const getStoreMedia: (
     }
 
     const storeMedia: Array<any> = response.data.data;
-    createProductTask(storeMedia, storeId);
+    await createProductTask(storeMedia, storeId);
 
     return true;
   } catch (e) {
