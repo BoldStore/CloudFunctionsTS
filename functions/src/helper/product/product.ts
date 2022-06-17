@@ -95,6 +95,10 @@ export const addProduct: (
         for (let i = 0; i < data?.data?.data?.length; i++) {
           const media = data?.data?.data[i];
 
+          if (media.media_type === "VIDEO") {
+            continue;
+          }
+
           // Upload to S3
           file_name = media.id.toString();
 
