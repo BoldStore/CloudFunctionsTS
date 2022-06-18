@@ -23,15 +23,6 @@ export const getMedia: (
       `${INSTAGRAM_GRAPH_API_URL}/${store.instagram_id}/media?access_token=${access_token}&fields=${MEDIA_FIELDS}`
     );
 
-    if (response.status !== 200) {
-      console.log("There was an error getting the store's products");
-      return {
-        success: false,
-        error: "There was an error getting the store's products",
-        media: [],
-      };
-    }
-
     const storeMedia: Array<any> = response.data.data;
     return {
       success: true,
@@ -111,6 +102,10 @@ export const refresh_store_products: (
       );
     }
 
+    await firestore().collection("stores").doc(storeId).update({
+      postsStatus: "fetching",
+    });
+
     const storeData = await getMedia(store, access_token);
 
     if (!storeData.success) {
@@ -148,7 +143,7 @@ export const refresh_store_products: (
               .doc(product.id)
               .update(updatedProduct);
           }
-          newPost = true;
+          newPost = false;
           break;
         }
       }
@@ -159,6 +154,10 @@ export const refresh_store_products: (
       }
     }
 
+    await firestore().collection("stores").doc(storeId).update({
+      postsStatus: "completed",
+    });
+
     return {
       success: true,
       error: null,
@@ -166,6 +165,11 @@ export const refresh_store_products: (
     };
   } catch (e) {
     console.log("Refresh products error: ", e);
+    await firestore().collection("stores").doc(storeId).update({
+      postsStatus: "error",
+      failedOn: new Date(),
+      error: e,
+    });
     return {
       success: false,
       error: e,
