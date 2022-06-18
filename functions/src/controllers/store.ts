@@ -41,6 +41,7 @@ export const createStore: (
     ).docs[0];
     if (!code.exists || !code.data()?.isActive) {
       next(new ExpressError("Invite code is not valid", 400));
+      return;
     }
 
     const user = await firestore().collection("users").doc(id).get();
