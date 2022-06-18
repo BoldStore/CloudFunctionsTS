@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { v2beta3 } from "@google-cloud/tasks";
+import { firestore } from "firebase-admin";
 import {
   GCP_LOCATION,
   GCP_PROJECT_NAME,
@@ -68,6 +69,10 @@ export const createProductTask: (
       { parent, task },
       { timeout: 300 }
     );
+    // Get store and add a post status
+    await firestore().collection("stores").doc(storeId).update({
+      postsStatus: "fetching",
+    });
     console.log(`Created task ${response.name}`);
     return response.name;
   } catch (error) {

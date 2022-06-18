@@ -108,7 +108,7 @@ export const saveStoreData: (
     }
 
     // Only save data once
-    if (store.data()?.isCompleted) {
+    if (store.data()?.postsStatus) {
       next(new ExpressError("Store already saved", 400));
       return;
     }
@@ -150,8 +150,6 @@ export const saveStoreData: (
       return;
     }
 
-    console.log("STORE>>>", data.store);
-
     // Save to db
     if (data.store) {
       await firestore()
@@ -192,6 +190,11 @@ export const updateStoreProducts: (
 
     if (!store.exists) {
       next(new ExpressError("Store does not exist", 400));
+      return;
+    }
+
+    if (store.data()?.postsStatus === "fetching") {
+      next(new ExpressError("Products are still fetching", 400));
       return;
     }
 

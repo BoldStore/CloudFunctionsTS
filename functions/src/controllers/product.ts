@@ -17,11 +17,6 @@ export const getProductData: (
   try {
     const posts = req.body.posts;
 
-    // Get store and add a post status
-    await firestore().collection("stores").doc(storeId).update({
-      postsStatus: "fetching",
-    });
-
     // await addProducts(storeId, posts);
     const collection = firestore().collection("products");
     const products: Array<any> = [];
