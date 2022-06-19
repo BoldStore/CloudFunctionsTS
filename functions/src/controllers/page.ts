@@ -27,6 +27,7 @@ export const homePage: (
     const productQuery = firestore()
       .collection("products")
       .where("sold", "!=", true)
+      .orderBy("sold")
       .orderBy("postedOn")
       .limit(numberPerPage);
     const stores = (
@@ -43,14 +44,14 @@ export const homePage: (
       products = await productQuery.get();
     }
 
-    lastDoc = products.docs[products.docs.length - 1].id;
-    end = products.docs.length === numberPerPage;
+    lastDoc = products?.docs[products?.docs?.length - 1]?.id;
+    end = products?.docs?.length < numberPerPage;
 
     // Get Stores with products
-    for (let i = 0; i < products.docs.length; i++) {
-      const product = products.docs[i];
+    for (let i = 0; i < products?.docs?.length; i++) {
+      const product = products?.docs[i];
       const storeIndex = storesArray.findIndex(
-        (store) => store.id === product.data().store
+        (store) => store?.id === product?.data()?.store
       );
       let store;
 
@@ -58,33 +59,30 @@ export const homePage: (
       if (storeIndex === -1) {
         store = await firestore()
           .collection("stores")
-          .doc(product.data().store)
+          .doc(product.data()?.store)
           .get();
 
-        if (store.exists && store.data()) {
+        if (store?.exists && store?.data()) {
           storesArray.push(store.data()!);
           productsResponse.push({
             ...product.data(),
-            id: product.id,
-            store: store.data(),
+            id: product?.id,
+            store: store?.data(),
           });
         }
       } else {
         productsResponse.push({
           ...product.data(),
-          id: product.id,
+          id: product?.id,
           store: storesArray[storeIndex],
         });
       }
     }
 
-    // const stores = await firestore().collection("stores").limit(50).get();
-    // For now, Only send stores which have products
-
     res.status(200).json({
       success: true,
       products: productsResponse,
-      stores,
+      stores: stores.map((store) => ({ id: store?.id, ...store?.data() })),
       end,
       lastDoc,
     });
@@ -193,7 +191,7 @@ export const storePage: (
     }
 
     lastDoc = products.docs[products.docs.length - 1].id;
-    end = products.docs.length === numberPerPage;
+    end = products.docs.length < numberPerPage;
 
     res.status(200).json({
       success: true,
