@@ -29,7 +29,6 @@ export const homePage: (
       .where("sold", "!=", true)
       .orderBy("postedOn")
       .limit(numberPerPage);
-    products = await productQuery.get();
     const stores = (
       await firestore()
         .collection("stores")
@@ -40,6 +39,8 @@ export const homePage: (
 
     if (cursor) {
       products = await productQuery.startAfter(cursor).get();
+    } else {
+      products = await productQuery.get();
     }
 
     lastDoc = products.docs[products.docs.length - 1].id;
@@ -152,6 +153,14 @@ export const storePage: (
 ) => {
   try {
     const username = req.query.username?.toString();
+    const cursor = req.query.cursor;
+    const numberPerPage: number = parseInt(
+      req.query.numberPerPage?.toString() ?? "30"
+    );
+
+    let products: firestore.QuerySnapshot<firestore.DocumentData>;
+    let end = false;
+    let lastDoc = null;
 
     if (!username) {
       next(new ExpressError("Store username is required", 400));
@@ -171,11 +180,20 @@ export const storePage: (
       return;
     }
 
-    const products = await firestore()
+    const productQuery = firestore()
       .collection("products")
       .where("store", "==", store.id)
-      .limit(30)
-      .get();
+      .orderBy("postedOn")
+      .limit(numberPerPage);
+
+    if (cursor) {
+      products = await productQuery.startAfter(cursor).get();
+    } else {
+      products = await productQuery.get();
+    }
+
+    lastDoc = products.docs[products.docs.length - 1].id;
+    end = products.docs.length === numberPerPage;
 
     res.status(200).json({
       success: true,
@@ -184,6 +202,8 @@ export const storePage: (
         id: product.id,
         ...product.data(),
       })),
+      end,
+      lastDoc,
     });
   } catch (e) {
     console.log("Error getting store>>", e);
