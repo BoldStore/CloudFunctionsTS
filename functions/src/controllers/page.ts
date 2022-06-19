@@ -13,14 +13,37 @@ export const homePage: (
   res: Response,
   next: NextFunction
 ) => {
+  const cursor = req.query.cursor;
+  const numberPerPage: number = parseInt(
+    req.query.numberPerPage?.toString() ?? "50"
+  );
+
   const storesArray: Array<firestore.DocumentData> = [];
   const productsResponse: Array<any> = [];
+  let products: firestore.QuerySnapshot<firestore.DocumentData>;
+  let end = false;
+  let lastDoc = null;
   try {
-    const products = await firestore()
+    const productQuery = firestore()
       .collection("products")
       .where("sold", "!=", true)
-      .limit(50)
-      .get();
+      .orderBy("postedOn")
+      .limit(numberPerPage);
+    products = await productQuery.get();
+    const stores = (
+      await firestore()
+        .collection("stores")
+        .orderBy("followers")
+        .limit(10)
+        .get()
+    ).docs;
+
+    if (cursor) {
+      products = await productQuery.startAfter(cursor).get();
+    }
+
+    lastDoc = products.docs[products.docs.length - 1].id;
+    end = products.docs.length === numberPerPage;
 
     // Get Stores with products
     for (let i = 0; i < products.docs.length; i++) {
@@ -60,7 +83,9 @@ export const homePage: (
     res.status(200).json({
       success: true,
       products: productsResponse,
-      stores: storesArray,
+      stores,
+      end,
+      lastDoc,
     });
   } catch (e) {
     console.log("Error getting home>>", e);
