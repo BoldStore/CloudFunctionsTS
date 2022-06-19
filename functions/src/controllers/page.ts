@@ -23,23 +23,31 @@ export const homePage: (
   let products: firestore.QuerySnapshot<firestore.DocumentData>;
   let end = false;
   let lastDoc = null;
+
   try {
     const productQuery = firestore()
       .collection("products")
       .where("sold", "!=", true)
       .orderBy("sold")
-      .orderBy("postedOn")
+      .orderBy("postedOn", "desc")
       .limit(numberPerPage);
+
     const stores = (
       await firestore()
         .collection("stores")
-        .orderBy("followers")
+        .where("isCompleted", "==", "true")
+        .orderBy("isCompleted")
+        .orderBy("followers", "desc")
         .limit(10)
         .get()
     ).docs;
 
     if (cursor) {
-      products = await productQuery.startAfter(cursor).get();
+      const lastProd = await firestore()
+        .collection("products")
+        .doc(cursor.toString())
+        .get();
+      products = await productQuery.startAfter(lastProd).get();
     } else {
       products = await productQuery.get();
     }
@@ -82,7 +90,7 @@ export const homePage: (
     res.status(200).json({
       success: true,
       products: productsResponse,
-      stores: stores.map((store) => ({ id: store?.id, ...store?.data() })),
+      stores: stores?.map((store) => ({ id: store?.id, ...store?.data() })),
       end,
       lastDoc,
     });
@@ -185,7 +193,11 @@ export const storePage: (
       .limit(numberPerPage);
 
     if (cursor) {
-      products = await productQuery.startAfter(cursor).get();
+      const lastProd = await firestore()
+        .collection("products")
+        .doc(cursor.toString())
+        .get();
+      products = await productQuery.startAfter(lastProd).get();
     } else {
       products = await productQuery.get();
     }
