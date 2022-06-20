@@ -35,7 +35,7 @@ export const homePage: (
     const stores = (
       await firestore()
         .collection("stores")
-        .where("isCompleted", "==", "true")
+        .where("isCompleted", "==", true)
         .orderBy("followers", "desc")
         .limit(10)
         .get()
