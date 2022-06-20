@@ -108,41 +108,65 @@ export const saveStoreData: (
     }
 
     // Only save data once
-    if (store.data()?.postsStatus) {
+    if (store.data()?.postsStatus || store.data()?.isCompleted) {
       next(new ExpressError("Store already saved", 400));
       return;
     }
 
-    // Get Insta access Token
-    const auth_data = await getAccessToken(insta_code);
+    let auth_data;
+    let access_token_data;
 
-    if (auth_data.error) {
-      next(
-        new ExpressError(
-          "There was an error saving store data",
-          400,
-          auth_data.error
-        )
-      );
-      return;
+    if (!(store.data()?.access_token && store.data()?.user_id)) {
+      // Get Insta access Token
+      auth_data = await getAccessToken(insta_code);
+
+      if (auth_data.error) {
+        next(
+          new ExpressError(
+            "There was an error saving store data",
+            400,
+            auth_data.error
+          )
+        );
+        return;
+      }
+
+      access_token_data = await getLongLivedAccessToken(auth_data.access_token);
+
+      console.log("AUTH>>", auth_data);
+      console.log("LONG>>", access_token_data);
+
+      // Save basic data to firestore
+      await firestore()
+        .collection("stores")
+        .doc(id)
+        .set(
+          {
+            access_token:
+              access_token_data?.access_token ?? auth_data?.access_token ?? "",
+            user_id: auth_data.user_id_orignal,
+          },
+          { merge: true }
+        );
     }
 
-    const access_token_data = await getLongLivedAccessToken(
-      auth_data.access_token
-    );
-
-    console.log("AUTH>>", auth_data);
-    console.log("LONG>>", access_token_data);
-
     let data: { store: StoreType | null; error: any } | null = null;
+    const user_id = store
+      .data()
+      ?.user_id.concat(
+        store.data()?.user_id.slice(0, -1),
+        (parseInt(store.data()?.user_id.slice(-1)) - 1).toString()
+      );
 
     // Get store data
     data = await getStoreData(
-      auth_data.user_id,
-      auth_data.user_id_orignal,
-      access_token_data.access_token ?? auth_data.access_token,
+      auth_data?.user_id ?? user_id,
+      auth_data?.user_id_orignal ?? store.data()?.user_id,
+      access_token_data?.access_token ??
+        auth_data?.access_token ??
+        store.data()?.access_token,
       store.id,
-      access_token_data.expires_in ?? undefined
+      access_token_data?.expires_in ?? undefined
     );
 
     if (data.error) {
@@ -159,7 +183,10 @@ export const saveStoreData: (
           {
             ...data.store,
             access_token:
-              access_token_data?.access_token ?? auth_data?.access_token ?? "",
+              access_token_data?.access_token ??
+              auth_data?.access_token ??
+              store.data()?.access_token ??
+              "",
           },
           { merge: true }
         );

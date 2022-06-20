@@ -19,18 +19,38 @@ export const getStoreData: (
   access_token: string,
   storeId: string,
   expires_in?: number,
-  tryAgain?: boolean
+  tryAgain?: number
 ) => Promise<{ store: StoreType | null; error: any }> = async (
   user_id,
   user_id_orignal,
   access_token,
   storeId,
   expires_in = 3600,
-  tryAgain = false
+  tryAgain = 0
 ) => {
   let store: StoreType | null = null;
   let error: any;
-  const insta_id: string = tryAgain ? user_id : user_id_orignal;
+  let insta_id = "";
+  switch (tryAgain) {
+    case 0:
+      insta_id = user_id_orignal;
+      break;
+    case 1:
+      insta_id = user_id;
+      break;
+    case 2:
+      insta_id = user_id_orignal.concat(
+        user_id_orignal.slice(0, -1),
+        (parseInt(user_id_orignal.slice(-1)) - 1).toString()
+      );
+      break;
+
+    default:
+      return {
+        store: null,
+        error: `Insta ID doesn't exist: ${user_id_orignal}`,
+      };
+  }
 
   if (!access_token) {
     return {
@@ -100,7 +120,7 @@ export const getStoreData: (
         access_token,
         storeId,
         expires_in,
-        true
+        tryAgain++
       );
     }
     error = (e as any)?.response?.data ?? e;
