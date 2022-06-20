@@ -155,7 +155,7 @@ export const saveStoreData: (
       .data()
       ?.user_id.concat(
         store.data()?.user_id.slice(0, -1),
-        (parseInt(store.data()?.user_id.slice(-1)) - 1).toString()
+        (parseInt(store.data()?.user_id.slice(-1)) + 1).toString()
       );
 
     // Get store data
