@@ -113,7 +113,7 @@ export const getStoreData: (
 
     await getStoreMedia(insta_id, access_token, storeId);
   } catch (e) {
-    if ((e as any).response.data.error.code == 100 && !tryAgain) {
+    if ((e as any).response.data.error.code == 100 && tryAgain <= 2) {
       return await getStoreData(
         user_id,
         user_id_orignal,
