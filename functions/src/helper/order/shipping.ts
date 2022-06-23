@@ -92,64 +92,64 @@ export const createShipment: (
   store_id: string,
   user
 ) => {
-  let address = null;
-  let phone: number | null = null;
+  try {
+    let address = null;
+    let phone: number | null = null;
 
-  if (!user?.phone) {
-    const paymentDetails = await firestore()
-      .collection("paymentDetails")
-      .doc(user?.id)
+    if (!user?.phone && user?.id) {
+      const paymentDetails = await firestore()
+        .collection("paymentDetails")
+        .doc(user?.id)
+        .get();
+
+      if (!paymentDetails.exists) {
+        return {
+          success: false,
+          error: "No phone number found",
+        };
+      }
+      phone = paymentDetails?.data()?.phone_number;
+    }
+    const product = (
+      await firestore().collection("products").doc(product_id).get()
+    ).data();
+
+    const addressFromDb = await firestore()
+      .collection("addresses")
+      .doc(address_id)
       .get();
 
-    if (!paymentDetails.exists) {
+    if (!addressFromDb || !addressFromDb?.exists) {
       return {
         success: false,
-        error: "No phone number found",
+        error: "Address not found",
       };
     }
-    phone = paymentDetails?.data()?.phone_number;
-  }
-  const product = (
-    await firestore().collection("products").doc(product_id).get()
-  ).data();
 
-  const addressFromDb = await firestore()
-    .collection("addresses")
-    .doc(address_id)
-    .get();
+    address = addressFromDb?.data();
 
-  if (!addressFromDb || !addressFromDb?.exists) {
-    return {
-      success: false,
-      error: "Address not found",
-    };
-  }
+    const seller = (
+      await firestore().collection("stores").doc(product?.store).get()
+    ).data();
 
-  address = addressFromDb?.data();
+    const config = (await firestore().collection("config").limit(1).get())
+      .docs[0];
+    const shiprocket_access_token = config.data().shiprocket_access_token;
+    const date = new Date();
+    const formatted_date = date.toISOString().slice(0, 10);
+    const formatted_time = `${date.getHours()}:${date.getMinutes()}`;
 
-  const seller = (
-    await firestore().collection("stores").doc(product?.store).get()
-  ).data();
+    const channel_id_data = await getChannelId(shiprocket_access_token);
 
-  const config = (await firestore().collection("config").limit(1).get())
-    .docs[0];
-  const shiprocket_access_token = config.data().shiprocket_access_token;
-  const date = new Date();
-  const formatted_date = date.toISOString().slice(0, 10);
-  const formatted_time = `${date.getHours()}:${date.getMinutes()}`;
+    if (channel_id_data.error) {
+      return {
+        success: false,
+        error: channel_id_data.error,
+      };
+    }
 
-  const channel_id_data = await getChannelId(shiprocket_access_token);
+    const channel_id = channel_id_data.channel_id;
 
-  if (channel_id_data.error) {
-    return {
-      success: false,
-      error: channel_id_data.error,
-    };
-  }
-
-  const channel_id = channel_id_data.channel_id;
-
-  try {
     const response = await axios.post(
       CREATE_SHIPMENT,
       {

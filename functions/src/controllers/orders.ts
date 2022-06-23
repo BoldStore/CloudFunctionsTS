@@ -195,6 +195,12 @@ export const verify: (
         message: "Order confirmed",
       });
     } else {
+      if (response.type == "SHIPMENT_ERROR") {
+        res.status(200).json({
+          success: true,
+          message: "Shipment Error",
+        });
+      }
       next(new ExpressError(response.message, 400));
     }
   } catch (e) {
