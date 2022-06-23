@@ -84,21 +84,21 @@ export const createShipment: (
   order_id: string,
   product_id: string,
   store_id: string,
-  user: firestore.DocumentData
+  user?: firestore.DocumentData
 ) => Promise<{ success: boolean; error: any; data?: any }> = async (
   address_id: string,
   order_id: string,
   product_id: string,
   store_id: string,
-  user: firestore.DocumentData
+  user
 ) => {
   let address = null;
   let phone: number | null = null;
 
-  if (!user.phone) {
+  if (!user?.phone) {
     const paymentDetails = await firestore()
       .collection("paymentDetails")
-      .doc(user.id)
+      .doc(user?.id)
       .get();
 
     if (!paymentDetails.exists) {
@@ -107,7 +107,7 @@ export const createShipment: (
         error: "No phone number found",
       };
     }
-    phone = paymentDetails.data()?.phone_number;
+    phone = paymentDetails?.data()?.phone_number;
   }
   const product = (
     await firestore().collection("products").doc(product_id).get()
@@ -156,21 +156,21 @@ export const createShipment: (
         order_id: order_id,
         order_date: `${formatted_date} ${formatted_time}`,
         channel_id: channel_id,
-        billing_customer_name: user.name ?? user.full_name,
-        billing_last_name: user.name
-          ? user.name?.split(" ").length >= 1
-            ? user.name?.split(" ")[1]
-            : ""
-          : user.full_name?.split(" ").length >= 1
-          ? user.full_name?.split(" ")[1]
-          : "",
+        billing_customer_name: user?.name ?? user?.full_name ?? "Name",
+        billing_last_name: user?.name
+          ? user?.name?.split(" ").length >= 1
+            ? user?.name?.split(" ")[1]
+            : "Last"
+          : user?.full_name?.split(" ").length >= 1
+          ? user?.full_name?.split(" ")[1]
+          : "Last",
         billing_address: address?.addressL1,
         billing_city: address?.city,
         billing_pincode: address?.pincode,
         billing_state: address?.state,
         billing_country: "India",
-        billing_email: user.email,
-        billing_phone: user.phone ?? phone ?? "9899999999",
+        billing_email: user?.email ?? "test@example.com",
+        billing_phone: user?.phone ?? address?.phone ?? phone ?? "9899999999",
         shipping_is_billing: true,
         order_items: [
           {

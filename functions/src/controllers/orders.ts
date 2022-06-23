@@ -31,7 +31,7 @@ export const createOrder: (
       return;
     }
 
-    if (product.data() && !product.data()?.sold) {
+    if (product.data() && product.data()?.sold) {
       next(new ExpressError("Product is sold out", 400));
       return;
     }
@@ -41,7 +41,7 @@ export const createOrder: (
       return;
     }
 
-    const userInDb = await firestore().collection("stores").doc(id).get();
+    const userInDb = await firestore().collection("users").doc(id).get();
 
     if (!userInDb?.exists) {
       const storeInDb = await firestore().collection("stores").doc(id).get();
@@ -57,15 +57,15 @@ export const createOrder: (
       }
     }
 
-    if (!userInDb.data()?.isCompleted) {
-      next(new ExpressError("Please complete your profile", 400));
-      return;
-    }
+    // if (!userInDb.data()?.isCompleted) {
+    //   next(new ExpressError("Please complete your profile", 400));
+    //   return;
+    // }
 
     // Check if store is completed
     const store = await firestore()
       .collection("stores")
-      .doc(product.data()?.seller)
+      .doc(product.data()?.store)
       .get();
 
     if (!store?.exists) {

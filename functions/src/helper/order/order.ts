@@ -17,13 +17,13 @@ export const confirmOrder: (
   orderId: string,
   razorpaySignature: string,
   userId: string,
-  user: any
+  user?: firestore.DocumentData
 ) => Promise<ConfirmOrderResponse> = async (
   paymentId: string,
   orderId: string,
   razorpaySignature: string,
   userId: string,
-  user: any
+  user
 ) => {
   let orderData = null;
   try {
@@ -34,7 +34,6 @@ export const confirmOrder: (
         .collection("orders")
         .where("orderId", "==", orderId)
         .where("user", "==", userId)
-        .where("status", "==", "pending")
         .limit(1)
         .get()
     ).docs[0];
@@ -43,6 +42,14 @@ export const confirmOrder: (
       return {
         success: false,
         message: "Order not found",
+      };
+    }
+
+    if (order.data().status === "completed") {
+      return {
+        success: true,
+        message: "Order already completed",
+        order: order.data(),
       };
     }
 
@@ -113,8 +120,9 @@ export const confirmOrder: (
       // Get Order
       orderData = await firestore().collection("orders").doc(order?.id).get();
 
+      // TODO: Send whatsapp message
       await sendMail(
-        user.email,
+        user?.email,
         "Product Bought",
         "You just bought a product",
         "/templates/product_bought.html"

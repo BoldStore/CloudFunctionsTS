@@ -12,8 +12,8 @@ const router = Router();
 
 router
   .route("/")
-  .get(validateFirebaseIdToken, createOrder)
-  .post(validateFirebaseIdToken, previousOrders);
+  .post(validateFirebaseIdToken, createOrder)
+  .get(validateFirebaseIdToken, previousOrders);
 
 router.route("/verify").post(validateFirebaseIdToken, verify);
 router.route("/callback").post(callback);
