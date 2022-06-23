@@ -83,6 +83,13 @@ export const confirmOrder: (
           },
           { merge: true }
         );
+
+        await firestore()
+          .collection("products")
+          .doc(order?.data().product)
+          .update({
+            sold: true,
+          });
         return {
           success: false,
           message: "Error creating shipment",
