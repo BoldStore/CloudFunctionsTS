@@ -101,10 +101,13 @@ export const addAddress: (
         );
       }
     } else {
-      await firestore().collection("users").doc(userId).update({
-        city: address_model.city,
-        pincode: address_model.pincode,
-      });
+      await firestore().collection("users").doc(userId).set(
+        {
+          city: address_model.city,
+          pincode: address_model.pincode,
+        },
+        { merge: true }
+      );
     }
 
     res.status(update ? 200 : 201).json({

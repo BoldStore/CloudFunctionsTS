@@ -109,6 +109,10 @@ export const refresh_store_products: (
     const storeData = await getMedia(store, access_token);
 
     if (!storeData.success) {
+      await firestore().collection("stores").doc(storeId).update({
+        postsStatus: "error",
+        error: storeData.error,
+      });
       return {
         success: false,
         message: "Could not get store Media",
