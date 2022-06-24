@@ -44,7 +44,9 @@ export const getProfile: (
         data: user.data(),
         isStore: false,
         percentage,
-        address: { ...address?.data(), id: address?.id },
+        address: address?.exists
+          ? { ...address?.data(), id: address?.id }
+          : null,
         name,
         phone,
       });
@@ -80,7 +82,9 @@ export const getProfile: (
         success: true,
         data: store?.data(),
         isStore: true,
-        address: { ...address?.data(), id: address?.id },
+        address: address?.exists
+          ? { ...address?.data(), id: address?.id }
+          : null,
         paymentDetails: paymentDetails?.data(),
         percentage,
       });

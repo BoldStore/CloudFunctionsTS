@@ -31,5 +31,15 @@ module.exports = {
     camelcase: [0],
     "@typescript-eslint/ban-ts-ignore": "off",
     "max-len": ["error", { code: 1000 }],
+    "operator-linebreak": [
+      "error",
+      "after",
+      {
+        overrides: {
+          ":": "before",
+          "?": "before",
+        },
+      },
+    ],
   },
 };
