@@ -169,7 +169,7 @@ export const createShipment: (
         billing_pincode: address?.pincode,
         billing_state: address?.state,
         billing_country: "India",
-        billing_email: user?.email ?? "test@example.com",
+        billing_email: user?.email ?? "boldcontact@gmail.com",
         billing_phone: user?.phone ?? address?.phone ?? phone ?? "9899999999",
         shipping_is_billing: true,
         order_items: [
