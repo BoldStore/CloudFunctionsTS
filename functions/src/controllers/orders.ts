@@ -21,6 +21,24 @@ export const createOrder: (
     const currency = "INR";
     const id = user.uid;
 
+    // Check if order exists
+    const order = (
+      await firestore()
+        .collection("orders")
+        .where("user", "==", id)
+        .where("product", "==", product_id)
+        .where("address", "==", address_id)
+        .limit(1)
+        .get()
+    ).docs;
+
+    if (order.length > 0) {
+      if (order[0].exists) {
+        res.status(201).json({ success: true, order: order[0].data() });
+        return;
+      }
+    }
+
     const product = await firestore()
       .collection("products")
       .doc(product_id)
