@@ -123,8 +123,9 @@ export const linkUser: (
     // Anonymous ID
     const userId = user.uid;
 
-    if (!user.isAnonymous) {
+    if (user.provider_id != "anonymous") {
       next(new ExpressError("User is not anonymous", 400));
+      return;
     }
 
     // Find addresses
