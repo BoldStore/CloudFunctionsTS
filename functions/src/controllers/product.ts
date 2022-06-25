@@ -177,7 +177,7 @@ export const getSavedProducts: (
       // Check if the store is already in the array
       for (let j = 0; j < storesArray?.length; j++) {
         const store = storesArray[j];
-        if (store?.id === item?.data()?.store) {
+        if (store?.id === product?.data()?.store) {
           exists = true;
           break;
         }
@@ -186,7 +186,7 @@ export const getSavedProducts: (
       if (!exists) {
         store = await firestore()
           .collection("stores")
-          .doc(item?.data()?.store)
+          .doc(product?.data()?.store)
           .get();
 
         // Add to array
