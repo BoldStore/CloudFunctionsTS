@@ -154,17 +154,56 @@ export const getSavedProducts: (
   try {
     const userId = req.user.uid;
 
-    const products = await firestore()
-      .collection("saved")
-      .where("user", "==", userId)
-      .limit(30)
-      .get();
+    const saved = (
+      await firestore()
+        .collection("saved")
+        .where("user", "==", userId)
+        .limit(30)
+        .get()
+    ).docs;
+
+    const storesArray: Array<any> = [];
+    const productsArray: Array<any> = [];
+
+    for (let i = 0; i < saved.length; i++) {
+      const item = saved[i];
+      let exists = false;
+      let store = storesArray[0];
+      const product = await firestore()
+        .collection("products")
+        .doc(item.data()?.product)
+        .get();
+
+      // Check if the store is already in the array
+      for (let j = 0; j < storesArray?.length; j++) {
+        const store = storesArray[j];
+        if (store?.id === item?.data()?.store) {
+          exists = true;
+          break;
+        }
+      }
+
+      if (!exists) {
+        store = await firestore()
+          .collection("stores")
+          .doc(item?.data()?.store)
+          .get();
+
+        // Add to array
+        storesArray.push({ id: store?.id, ...store?.data() });
+      }
+
+      // Add to products Array
+      productsArray.push({
+        id: product?.id,
+        ...product?.data(),
+        store,
+      });
+    }
 
     res.status(200).json({
       success: true,
-      products: products.docs.map((doc) => {
-        return { id: doc.id, ...doc.data() };
-      }),
+      products: productsArray,
     });
   } catch (e) {
     next(new ExpressError("Could not get Save product", 500, e));
