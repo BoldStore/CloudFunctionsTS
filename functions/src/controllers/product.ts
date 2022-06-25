@@ -189,7 +189,7 @@ export const getSavedProducts: (
           .doc(product?.data()?.store)
           .get();
 
-        store = { ...store?.data(), id: store?.id };
+        store = { ...storeData?.data(), id: storeData?.id };
 
         // Add to array
         storesArray.push({ ...storeData?.data(), id: storeData?.id });
