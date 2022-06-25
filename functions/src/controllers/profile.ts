@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { firestore } from "firebase-admin";
+import { auth, firestore } from "firebase-admin";
 import ExpressError = require("../utils/ExpressError");
 
 export const getProfile: (
@@ -108,4 +108,76 @@ const getPercentage: (values: Array<boolean>) => number = (
     return acc;
   }, 0);
   return (val / values.length) * 100;
+};
+
+export const linkUser: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (req, res, next) => {
+  try {
+    const user = req.user;
+    // UserID
+    const uid = req.query.userId;
+
+    // Anonymous ID
+    const userId = user.uid;
+
+    if (!user.isAnonymous) {
+      next(new ExpressError("User is not anonymous", 400));
+    }
+
+    // Find addresses
+    const addresses = await firestore()
+      .collection("addresses")
+      .where("user", "==", userId)
+      .get();
+
+    // Change the user
+    for (let i = 0; i < addresses?.docs?.length; i++) {
+      const address = addresses?.docs[i];
+      await firestore().collection("addresses").doc(address.id).update({
+        user: uid,
+      });
+    }
+
+    // Find Saved
+    const saved = await firestore()
+      .collection("saved")
+      .where("user", "==", userId)
+      .get();
+
+    // Change the user
+    for (let i = 0; i < saved?.docs?.length; i++) {
+      const saveDoc = saved?.docs[i];
+      await firestore().collection("saved").doc(saveDoc.id).update({
+        user: uid,
+      });
+    }
+
+    // Find orders
+    const orders = await firestore()
+      .collection("orders")
+      .where("user", "==", userId)
+      .get();
+
+    // Change the user
+    for (let i = 0; i < orders?.docs?.length; i++) {
+      const order = orders?.docs[i];
+      await firestore().collection("orders").doc(order.id).update({
+        user: uid,
+      });
+    }
+
+    // Delete anonymous user
+    await auth().deleteUser(userId);
+
+    res.status(200).json({
+      success: true,
+      message: "Link Successful",
+    });
+  } catch (e) {
+    console.log("Error in linking user: ", e);
+    next(new ExpressError("Cannot link user", 500, e));
+  }
 };
