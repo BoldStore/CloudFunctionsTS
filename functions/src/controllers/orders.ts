@@ -143,20 +143,39 @@ export const previousOrders: (
 ) => Promise<void> = async (req, res, next) => {
   try {
     const id = req.user.uid;
+    const cursor = req.query.cursor;
+    const numberPerPage: number = parseInt(
+      req.query.numberPerPage?.toString() ?? "10"
+    );
 
-    const orders = (
-      await firestore()
+    let orders: firestore.QuerySnapshot<firestore.DocumentData>;
+    let end = false;
+    let lastDoc = null;
+
+    const orderQuery = firestore()
+      .collection("orders")
+      .where("user", "==", id)
+      .orderBy("createdAt", "desc")
+      .limit(numberPerPage);
+
+    if (cursor) {
+      const lastProd = await firestore()
         .collection("orders")
-        .where("user", "==", id)
-        .limit(10)
-        .get()
-    ).docs;
+        .doc(cursor.toString())
+        .get();
+      orders = await orderQuery.startAfter(lastProd).get();
+    } else {
+      orders = await orderQuery.get();
+    }
+
+    lastDoc = orders?.docs[orders?.docs?.length - 1]?.id;
+    end = orders?.docs?.length < numberPerPage;
 
     const storesArray: Array<any> = [];
     const ordersArray: Array<any> = [];
 
-    for (let i = 0; i < orders?.length; i++) {
-      const order = orders[i];
+    for (let i = 0; i < orders?.docs?.length; i++) {
+      const order = orders?.docs[i];
       let exists = false;
       let store = storesArray[0];
       const product = await firestore()
@@ -200,6 +219,8 @@ export const previousOrders: (
     res.status(200).json({
       success: true,
       orders: ordersArray,
+      lastDoc,
+      end,
     });
   } catch (e) {
     console.log("Error getting previous orders>>", e);

@@ -153,20 +153,39 @@ export const getSavedProducts: (
 ) => Promise<void> = async (req, res, next) => {
   try {
     const userId = req.user.uid;
+    const cursor = req.query.cursor;
+    const numberPerPage: number = parseInt(
+      req.query.numberPerPage?.toString() ?? "30"
+    );
 
-    const saved = (
-      await firestore()
+    let saved: firestore.QuerySnapshot<firestore.DocumentData>;
+    let end = false;
+    let lastDoc = null;
+
+    const savedQuery = firestore()
+      .collection("saved")
+      .where("user", "==", userId)
+      .orderBy("savedOn", "desc")
+      .limit(numberPerPage);
+
+    if (cursor) {
+      const lastProd = await firestore()
         .collection("saved")
-        .where("user", "==", userId)
-        .limit(30)
-        .get()
-    ).docs;
+        .doc(cursor.toString())
+        .get();
+      saved = await savedQuery.startAfter(lastProd).get();
+    } else {
+      saved = await savedQuery.get();
+    }
+
+    lastDoc = saved?.docs[saved?.docs?.length - 1]?.id;
+    end = saved?.docs?.length < numberPerPage;
 
     const storesArray: Array<any> = [];
     const productsArray: Array<any> = [];
 
-    for (let i = 0; i < saved.length; i++) {
-      const item = saved[i];
+    for (let i = 0; i < saved?.docs?.length; i++) {
+      const item = saved?.docs[i];
       let exists = false;
       let store = storesArray[0];
       const product = await firestore()
@@ -206,6 +225,8 @@ export const getSavedProducts: (
     res.status(200).json({
       success: true,
       products: productsArray,
+      lastDoc,
+      end,
     });
   } catch (e) {
     next(new ExpressError("Could not get Save product", 500, e));
