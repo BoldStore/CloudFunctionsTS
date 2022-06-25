@@ -184,13 +184,15 @@ export const getSavedProducts: (
       }
 
       if (!exists) {
-        store = await firestore()
+        const storeData = await firestore()
           .collection("stores")
           .doc(product?.data()?.store)
           .get();
 
+        store = { ...store?.data(), id: store?.id };
+
         // Add to array
-        storesArray.push({ id: store?.id, ...store?.data() });
+        storesArray.push({ ...storeData?.data(), id: storeData?.id });
       }
 
       // Add to products Array
