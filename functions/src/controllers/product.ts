@@ -136,6 +136,7 @@ export const saveProduct: (
     await firestore().collection("saved").add({
       user: userId,
       product: productId,
+      savedOn: new Date(),
     });
 
     res.status(200).json({
@@ -155,7 +156,7 @@ export const getSavedProducts: (
     const userId = req.user.uid;
     const cursor = req.query.cursor;
     const numberPerPage: number = parseInt(
-      req.query.numberPerPage?.toString() ?? "30"
+      req.query.numberPerPage?.toString() ?? "10"
     );
 
     let saved: firestore.QuerySnapshot<firestore.DocumentData>;
