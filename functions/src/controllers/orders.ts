@@ -144,18 +144,62 @@ export const previousOrders: (
   try {
     const id = req.user.uid;
 
-    const orders = await firestore()
-      .collection("orders")
-      .where("user", "==", id)
-      .limit(10)
-      .get();
+    const orders = (
+      await firestore()
+        .collection("orders")
+        .where("user", "==", id)
+        .limit(10)
+        .get()
+    ).docs;
+
+    const storesArray: Array<any> = [];
+    const ordersArray: Array<any> = [];
+
+    for (let i = 0; i < orders?.length; i++) {
+      const order = orders[i];
+      let exists = false;
+      let store = storesArray[0];
+      const product = await firestore()
+        .collection("products")
+        .doc(order.data()?.product)
+        .get();
+
+      // Check if the store is already in the array
+      for (let j = 0; j < storesArray?.length; j++) {
+        const store = storesArray[j];
+        if (store?.id === order?.data()?.store) {
+          exists = true;
+          break;
+        }
+      }
+
+      if (!exists) {
+        const storeData = await firestore()
+          .collection("stores")
+          .doc(order?.data()?.store)
+          .get();
+
+        store = { ...storeData?.data(), id: storeData?.id };
+
+        // Add to array
+        storesArray.push({ ...storeData?.data(), id: storeData?.id });
+      }
+
+      // Add to products Array
+      ordersArray.push({
+        id: order?.id,
+        ...order?.data(),
+        store,
+        product: {
+          ...product?.data(),
+          id: product.id,
+        },
+      });
+    }
 
     res.status(200).json({
       success: true,
-      orders: orders.docs.map((order) => ({
-        ...order.data(),
-        id: order.id,
-      })),
+      orders: ordersArray,
     });
   } catch (e) {
     console.log("Error getting previous orders>>", e);
