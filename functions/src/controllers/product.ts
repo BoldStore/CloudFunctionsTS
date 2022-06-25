@@ -102,7 +102,7 @@ export const saveProduct: (
   next: NextFunction
 ) => Promise<void> = async (req, res, next) => {
   try {
-    const userId = req.user.uid;
+    const userId = req?.user?.uid;
     if (!req.body.productId) {
       next(new ExpressError("Product ID is required", 400));
       return;
@@ -116,9 +116,9 @@ export const saveProduct: (
         .where("product", "==", productId)
         .limit(1)
         .get()
-    ).docs;
+    )?.docs;
 
-    if (saved.length > 0) {
+    if (saved?.length > 0) {
       next(new ExpressError("Product already saved", 400));
       return;
     }
@@ -133,30 +133,16 @@ export const saveProduct: (
       return;
     }
 
-    // Get Store
-    const store = await firestore()
-      .collection("stores")
-      .doc(product.data()?.store)
-      .get();
-
     await firestore().collection("saved").add({
       user: userId,
       product: productId,
-      name: product.data()?.name,
-      price: product.data()?.price,
-      image: product.data()?.imgUrl,
-      store: store.id,
-      username: store.data()?.username,
-      store_name: store.data()?.ful_name,
-      profile_pic: store.data()?.profile_pic,
-      city: store.data()?.city,
     });
 
     res.status(200).json({
       success: true,
     });
   } catch (e) {
-    next(new ExpressError("Could not get Save product", 500, e));
+    next(new ExpressError("Could not Save product", 500, e));
   }
 };
 
