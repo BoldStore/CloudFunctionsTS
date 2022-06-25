@@ -2,7 +2,7 @@
 export class Address {
   id: string | null;
   address: string;
-  title: string;
+  name: string;
   addressL1: string;
   addressL2: string;
   city: string;
@@ -15,7 +15,7 @@ export class Address {
   constructor(
     id: string | null,
     address: string,
-    title: string,
+    name: string,
     addressL1: string,
     addressL2: string,
     city: string,
@@ -27,7 +27,7 @@ export class Address {
   ) {
     this.id = id;
     this.address = address;
-    this.title = title;
+    this.name = name;
     this.addressL1 = addressL1;
     this.addressL2 = addressL2;
     this.city = city;
@@ -40,7 +40,7 @@ export class Address {
     return {
       id: this.id,
       address: this.address,
-      title: this.title,
+      name: this.name,
       addressL1: this.addressL1,
       addressL2: this.addressL2,
       city: this.city,
@@ -56,7 +56,7 @@ export class Address {
 export interface AddressType {
   id: string | null;
   address: string;
-  title: string;
+  name: string;
   addressL1: string;
   addressL2: string;
   city: string;

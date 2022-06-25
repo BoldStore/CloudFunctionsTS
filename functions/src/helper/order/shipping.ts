@@ -156,14 +156,14 @@ export const createShipment: (
         order_id: order_id,
         order_date: `${formatted_date} ${formatted_time}`,
         channel_id: channel_id,
-        billing_customer_name: user?.name ?? user?.full_name ?? "Name",
+        billing_customer_name: user?.name ?? user?.full_name ?? address?.name,
         billing_last_name: user?.name
           ? user?.name?.split(" ").length >= 1
             ? user?.name?.split(" ")[1]
-            : "Last"
+            : address?.name
           : user?.full_name?.split(" ").length >= 1
           ? user?.full_name?.split(" ")[1]
-          : "Last",
+          : address?.name,
         billing_address: address?.addressL1,
         billing_city: address?.city,
         billing_pincode: address?.pincode,
@@ -179,7 +179,7 @@ export const createShipment: (
               : `Product by ${seller?.full_name}`,
             sku: product_id,
             units: 1,
-            selling_price: product?.amount ? product?.amount : 1000,
+            selling_price: product?.amount ?? 1000,
           },
         ],
         payment_method: "Prepaid",

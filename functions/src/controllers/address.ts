@@ -19,7 +19,7 @@ export const addAddress: (
 
     const store = await firestore().collection("stores").doc(userId).get();
 
-    const title = req.body.title;
+    const name = req.body.name;
     const address_string = req.body.address;
     const addressL1 = req.body.addressL1;
     const addressL2 = req.body.addressL2;
@@ -32,7 +32,7 @@ export const addAddress: (
     const address_model: AddressType = new Address(
       null,
       address_string,
-      title,
+      name,
       addressL1,
       addressL2,
       city,
@@ -70,7 +70,7 @@ export const addAddress: (
 
       if (store?.exists) {
         await addPickup(
-          title,
+          name,
           store.data()?.email,
           store.data()?.phone ?? phone,
           address_model,
@@ -161,7 +161,7 @@ export const updateAddress: (
     const id: string = req.body.id?.toString();
     const userId = req.user.uid;
 
-    const title = req.body.title;
+    const name = req.body.name;
     const address_string = req.body.address;
     const addressL1 = req.body.addressL1;
     const addressL2 = req.body.addressL2;
@@ -173,7 +173,7 @@ export const updateAddress: (
     const address_model = new Address(
       null,
       address_string,
-      title,
+      name,
       addressL1,
       addressL2,
       city,
