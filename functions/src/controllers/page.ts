@@ -187,7 +187,7 @@ export const storePage: (
 
     const productQuery = firestore()
       .collection("products")
-      .where("store", "==", store.id)
+      .where("store", "==", store?.id)
       .orderBy("postedOn")
       .limit(numberPerPage);
 
@@ -201,15 +201,15 @@ export const storePage: (
       products = await productQuery.get();
     }
 
-    lastDoc = products.docs[products.docs.length - 1].id;
-    end = products.docs.length < numberPerPage;
+    lastDoc = products?.docs[products?.docs?.length - 1]?.id;
+    end = products?.docs?.length < numberPerPage;
 
     res.status(200).json({
       success: true,
-      store: store.data(),
+      store: store?.data(),
       products: products.docs.map((product) => ({
-        id: product.id,
-        ...product.data(),
+        id: product?.id,
+        ...product?.data(),
       })),
       end,
       lastDoc,
