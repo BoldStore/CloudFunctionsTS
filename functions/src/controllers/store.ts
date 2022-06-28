@@ -151,12 +151,10 @@ export const saveStoreData: (
     }
 
     let data: { store: StoreType | null; error: any } | null = null;
-    const user_id = store
-      .data()
-      ?.user_id.concat(
-        store.data()?.user_id.slice(0, -1),
-        (parseInt(store.data()?.user_id.slice(-1)) + 1).toString()
-      );
+    const user_id = "".concat(
+      store.data()?.user_id.slice(0, -1),
+      (parseInt(store.data()?.user_id.slice(-1)) + 1).toString()
+    );
 
     // Get store data
     data = await getStoreData(
