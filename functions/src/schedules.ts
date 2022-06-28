@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import axios from "axios";
 import { firestore } from "firebase-admin";
 import { pubsub } from "firebase-functions/v1";
