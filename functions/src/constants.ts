@@ -23,6 +23,3 @@ export const CREATE_SHIPMENT =
 
 export const SHIPROCKET_ADDRESSES =
   SHIPROCKET_API_URL + "/external/settings/company/pickup";
-
-export const CLOUD_FUNCTIONS_URL =
-  "https://us-central1-bold-96a92.cloudfunctions.net";
