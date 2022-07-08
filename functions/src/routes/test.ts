@@ -3,6 +3,7 @@ import {
   checkLogin,
   deleteStoreData,
   getInsta,
+  getMedia,
   respond,
   saveProduct,
 } from "../controllers/test";
@@ -19,5 +20,7 @@ router.route("/getInstaData").post(getInsta);
 router.route("/caraousel").post(validateFirebaseIdToken, saveProduct);
 
 router.route("/deleteStore").post(deleteStoreData);
+
+router.route("/saveMedia").get(getMedia);
 
 export = router;
