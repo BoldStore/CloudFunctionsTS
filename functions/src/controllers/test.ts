@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { firestore } from "firebase-admin";
 import { deleteStore } from "../helper/deletion/store";
 import { getInstaData } from "../helper/insta/get_insta_data";
+import { getStoreMedia } from "../helper/insta/get_store_data";
 import { addProduct } from "../helper/product/product";
 import ExpressError = require("../utils/ExpressError");
 
@@ -126,6 +127,36 @@ export const deleteStoreData: (
     res.status(200).json({
       success: true,
       message: "Store deleted",
+    });
+  } catch (e) {
+    next(new ExpressError("Error in saving store data", 500, e));
+  }
+};
+
+export const getMedia: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (req, res, next) => {
+  try {
+    const storeId: string = req.query.storeId?.toString() ?? "storeId";
+
+    const store = await firestore().collection("stores").doc(storeId).get();
+
+    if (!store.exists) {
+      next(new ExpressError("Store does not exist", 404));
+      return;
+    }
+
+    const data = await getStoreMedia(
+      store.data()?.instagram_id,
+      store.data()?.access_token,
+      storeId
+    );
+
+    res.status(200).json({
+      success: data,
+      message: data ? "Saved media woho" : "Oh no error",
     });
   } catch (e) {
     next(new ExpressError("Error in saving store data", 500, e));
