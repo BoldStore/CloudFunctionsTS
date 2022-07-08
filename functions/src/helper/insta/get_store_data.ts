@@ -141,7 +141,8 @@ export const getStoreMedia: (
   try {
     const url = `${INSTAGRAM_GRAPH_API_URL}/${user_id}/media?access_token=${access_token}&fields=${MEDIA_FIELDS}`;
     const media = await fetchMedia(url);
-    await createProductTask([media], storeId);
+    console.log("Media: ", media.length);
+    await createProductTask(media, storeId);
     return true;
   } catch (e) {
     console.log("There was an error>>>>: ", (e as any).response.data);
