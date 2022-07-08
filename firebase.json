@@ -6,10 +6,7 @@
     ],
     "source": "functions"
   },
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
+  "firestore": {},
   "emulators": {
     "auth": {
       "port": 9099
