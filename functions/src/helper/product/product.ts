@@ -47,9 +47,9 @@ export const addProduct: (
 
     // For now, testing purposes, I've commented it out
 
-    // if (!post.caption) {
-    //   return;
-    // }
+    if (!post.caption) {
+      return;
+    }
 
     // Do not save if video
     if (post.media_type === "VIDEO") {
@@ -57,12 +57,12 @@ export const addProduct: (
     }
     const prod_data = analysePost(post.caption ?? "");
 
-    // if (
-    //   !prod_data.price &&
-    //   !(post.caption as string).toLowerCase().includes("sold")
-    // ) {
-    //   return;
-    // }
+    if (
+      !prod_data.price &&
+      !(post.caption as string).toLowerCase().includes("sold")
+    ) {
+      return;
+    }
 
     // Check if the product is already in the database
     const productInDb = await firestore()
