@@ -6,7 +6,7 @@
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
     "start": "npm run shell",
-    "deploy": "firebase use bold-96a92 && firebase deploy --only functions",
+    "deploy": "firebase use bold-a1e8e && firebase deploy --only functions",
     "deploy-dev": "firebase use bold-96a92 && firebase deploy --only functions",
     "deploy-prod": "firebase use bold-a1e8e && firebase deploy --only functions",
     "logs": "firebase functions:log",
