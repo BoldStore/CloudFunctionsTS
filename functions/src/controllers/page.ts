@@ -188,7 +188,7 @@ export const storePage: (
     const productQuery = firestore()
       .collection("products")
       .where("store", "==", store?.id)
-      .orderBy("postedOn", "asc")
+      .orderBy("postedOn", "desc")
       .limit(numberPerPage);
 
     if (cursor) {
