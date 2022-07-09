@@ -5,7 +5,7 @@ import { addProduct } from "./helper/product/product";
 
 exports.addData = runWith({
   memory: "2GB",
-  timeoutSeconds: 720,
+  timeoutSeconds: 540,
 }).https.onRequest(async (req: Request, res: Response<unknown>) => {
   if (!req.query.storeId) {
     res.json(400).json({
