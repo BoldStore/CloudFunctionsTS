@@ -107,6 +107,7 @@ exports.importProductsToMeili = onRequest(async (req: Request, res) => {
         permalink: product.permalink,
         store: product.store,
         size: product.size,
+        images: product.images,
       };
     });
 
@@ -150,6 +151,7 @@ export const addOrUpdateProduct: (
         permalink: product.permalink,
         store: product.store,
         size: product.size,
+        images: product.images,
       },
       {
         headers: { Authorization: `Bearer ${MEILI_API_KEY}` },
