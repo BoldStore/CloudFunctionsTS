@@ -41,11 +41,6 @@ export const addProduct: (
     let post_url = "";
     let images: Array<{ id: string; file_name: string; imgUrl: string }> = [];
     let token = access_token ?? "";
-    // TODO: Do not upload if not product,
-    // That is, if the caption does not contain
-    // price or sold
-
-    // For now, testing purposes, I've commented it out
 
     if (!post.caption) {
       return;
