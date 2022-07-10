@@ -152,8 +152,8 @@ export const saveStoreData: (
 
     let data: { store: StoreType | null; error: any } | null = null;
     const user_id = "".concat(
-      store.data()?.user_id.slice(0, -1),
-      (parseInt(store.data()?.user_id.slice(-1)) + 1).toString()
+      store.data()?.user_id?.slice(0, -1),
+      (parseInt(store.data()?.user_id?.slice(-1)) + 1).toString()
     );
 
     // Get store data
@@ -195,6 +195,7 @@ export const saveStoreData: (
       store: data.store,
     });
   } catch (e) {
+    console.log("SAVE STORE DATA ERROR>>>", e);
     next(new ExpressError("Could not store save store data", 500, e));
   }
 };
