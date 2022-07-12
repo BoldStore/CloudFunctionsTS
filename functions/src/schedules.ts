@@ -2,6 +2,7 @@
 import axios from "axios";
 import { firestore } from "firebase-admin";
 import { pubsub } from "firebase-functions/v1";
+import { subMinutes } from "./helper/date";
 import { refreshToken } from "./helper/insta/get_access_token";
 import { refresh_all_products } from "./helper/insta/store";
 
@@ -49,5 +50,29 @@ exports.refreshStoreTokens = pubsub
           expires_in: auth_data.expires_in,
         });
       }
+    }
+  });
+
+exports.removeExpiredOrders = pubsub
+  .schedule("every minute")
+  .onRun(async (_) => {
+    const orders = await firestore()
+      .collection("orders")
+      .where("status", "==", "pending")
+      .where("createdAt", ">=", subMinutes(new Date(), 30))
+      .get();
+
+    for (let i = 0; i < orders.docs.length; i++) {
+      const order = orders.docs[i];
+      await firestore().collection("orders").doc(order.id).update({
+        status: "expired",
+      });
+
+      await firestore()
+        .collection("products")
+        .doc(order.data().productId)
+        .update({
+          available: true,
+        });
     }
   });
