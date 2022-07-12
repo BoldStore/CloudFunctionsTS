@@ -54,7 +54,7 @@ export const createOrder: (
       return;
     }
 
-    if (product.data() && product.data()?.available) {
+    if (!product.data()?.available) {
       next(new ExpressError("Product is not available", 400));
       return;
     }
