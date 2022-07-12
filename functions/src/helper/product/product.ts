@@ -142,6 +142,7 @@ export const addProduct: (
       id: post.id,
       type: post.media_type,
       store_username: post.username,
+      available: true,
       images,
     };
 
