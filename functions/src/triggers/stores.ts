@@ -1,6 +1,7 @@
 import { auth, firestore } from "firebase-admin";
 import { document } from "firebase-functions/v1/firestore";
 import { deleteByBatching } from "../helper/deletion/batching";
+import { sendMail } from "../helper/mails";
 import { deleteObject } from "../helper/s3/file_upload_s3";
 import { addOrUpdateStore, deleteStore } from "../meili/index";
 import { S3_BUCKET_NAME_PROFILE } from "../secrets";
@@ -43,6 +44,12 @@ exports.storeDeleted = document("stores/{storeId}").onDelete(
 exports.storeCreated = document("stores/{storeId}").onCreate(
   async (snapshot, context) => {
     const store = snapshot.data();
+    sendMail(
+      store?.email,
+      "Get Started with Bold",
+      "You just signed up as a store on Bold!",
+      "/templates/store_signup.html"
+    );
     addOrUpdateStore(store, context.params.storeId);
   }
 );
