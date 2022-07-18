@@ -108,7 +108,7 @@ export const saveStoreData: (
     }
 
     // Only save data once
-    if (store.data()?.postsStatus || store.data()?.isCompleted) {
+    if (store?.data()?.postsStatus || store?.data()?.isCompleted) {
       next(new ExpressError("Store already saved", 400));
       return;
     }
@@ -116,7 +116,7 @@ export const saveStoreData: (
     let auth_data;
     let access_token_data;
 
-    if (!(store.data()?.access_token && store.data()?.user_id)) {
+    if (!(store?.data()?.access_token && store?.data()?.user_id)) {
       // Get Insta access Token
       auth_data = await getAccessToken(insta_code);
 
@@ -144,7 +144,7 @@ export const saveStoreData: (
           {
             access_token:
               access_token_data?.access_token ?? auth_data?.access_token ?? "",
-            user_id: auth_data.user_id_orignal,
+            user_id: auth_data?.user_id_orignal,
           },
           { merge: true }
         );
@@ -152,18 +152,18 @@ export const saveStoreData: (
 
     let data: { store: StoreType | null; error: any } | null = null;
     const user_id = "".concat(
-      store.data()?.user_id?.slice(0, -1),
-      (parseInt(store.data()?.user_id?.slice(-1)) + 1).toString()
+      store?.data()?.user_id?.slice(0, -1),
+      (parseInt(store?.data()?.user_id?.slice(-1)) + 1).toString()
     );
 
     // Get store data
     data = await getStoreData(
       auth_data?.user_id ?? user_id,
-      auth_data?.user_id_orignal ?? store.data()?.user_id,
+      auth_data?.user_id_orignal ?? store?.data()?.user_id,
       access_token_data?.access_token ??
         auth_data?.access_token ??
-        store.data()?.access_token,
-      store.id,
+        store?.data()?.access_token,
+      store?.id,
       access_token_data?.expires_in ?? undefined
     );
 
@@ -173,17 +173,17 @@ export const saveStoreData: (
     }
 
     // Save to db
-    if (data.store) {
+    if (data?.store) {
       await firestore()
         .collection("stores")
         .doc(id)
         .set(
           {
-            ...data.store,
+            ...data?.store,
             access_token:
               access_token_data?.access_token ??
               auth_data?.access_token ??
-              store.data()?.access_token ??
+              store?.data()?.access_token ??
               "",
           },
           { merge: true }
