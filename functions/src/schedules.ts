@@ -2,6 +2,7 @@
 import axios from "axios";
 import { firestore } from "firebase-admin";
 import { pubsub } from "firebase-functions/v1";
+import { SHIPROCKET_LOGIN } from "./constants";
 import { subMinutes } from "./helper/date";
 import { refreshToken } from "./helper/insta/get_access_token";
 import { refresh_all_products } from "./helper/insta/store";
@@ -10,9 +11,12 @@ exports.refershServices = pubsub
   .schedule("every day 00:00")
   .onRun(async (context) => {
     try {
-      const response = await axios.get("/shipping-getShiprocketAccessToken");
-      const access_token = response.data.access_token;
       const config = (await firestore().collection("config").get()).docs[0];
+      const response = await axios.post(SHIPROCKET_LOGIN, {
+        email: config.data().shiprocket_email,
+        password: config.data().shiprocket_password,
+      });
+      const access_token = response.data.token;
 
       await firestore().collection("config").doc(config.id).update({
         shiprocket_access_token: access_token,
