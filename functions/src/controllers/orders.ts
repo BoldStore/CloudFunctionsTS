@@ -129,11 +129,11 @@ export const createOrder: (
 
     // Add to razorpay
     await razorpayInstance.orders
-      .create({ amount: product.data()?.price ?? 1000, currency: currency })
+      .create({ amount: product.data()?.amount ?? 1000, currency: currency })
       .then(async (order) => {
         const order_obj: OrderType = new Order(
           product.id,
-          product.data()?.price ?? 1000,
+          product.data()?.amount ?? 1000,
           undefined,
           order.id,
           address_id,
@@ -243,6 +243,71 @@ export const previousOrders: (
   } catch (e) {
     console.log("Error getting previous orders>>", e);
     next(new ExpressError("Could not get previous orders", 500, e));
+  }
+};
+
+export const getOrder: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (req, res, next) => {
+  try {
+    const id = req.user.uid;
+    if (!req.query.orderId) {
+      next(new ExpressError("Order id is required", 400));
+    }
+
+    const orderId: string = req.query.orderId?.toString() ?? "";
+
+    const order = await firestore().collection("orders").doc(orderId).get();
+
+    if (!order.exists) {
+      next(new ExpressError("Order not found", 400));
+    }
+
+    if (order.data()?.user !== id) {
+      if (order.data()?.store !== id) {
+        next(
+          new ExpressError("You are not authorized to view this order", 400)
+        );
+      }
+    }
+
+    const product = await firestore()
+      .collection("products")
+      .doc(order.data()?.product)
+      .get();
+
+    const store = await firestore()
+      .collection("stores")
+      .doc(product.data()?.store)
+      .get();
+
+    const store_products = await firestore()
+      .collection("products")
+      .where("store", "==", order.data()?.store)
+      .where("id", "!=", order.data()?.product)
+      .limit(8)
+      .get();
+
+    res.status(200).json({
+      success: true,
+      order: {
+        ...order.data(),
+        id: order.id,
+        store: store.data(),
+        product: product.data(),
+      },
+      products: store_products.docs.map((doc) => {
+        return {
+          ...doc.data(),
+          id: doc.id,
+          store: store.data(),
+        };
+      }),
+    });
+  } catch (e) {
+    next(new ExpressError("Could not verify the order", 500, e));
   }
 };
 
