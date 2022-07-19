@@ -4,7 +4,7 @@ import { firestore } from "firebase-admin";
 import { addProduct } from "./helper/product/product";
 
 exports.adddata = onRequest(
-  { timeoutSeconds: 1800, region: ["us-east1"] },
+  { timeoutSeconds: 1800, region: ["us-central1"] },
   async (req, res) => {
     if (!req.query.storeId) {
       res.json(400).json({
