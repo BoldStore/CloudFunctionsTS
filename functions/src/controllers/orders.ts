@@ -279,7 +279,7 @@ export const getOrder: (
       .get();
 
     const store = await firestore()
-      .collection("store")
+      .collection("stores")
       .doc(product.data()?.store)
       .get();
 
@@ -287,6 +287,7 @@ export const getOrder: (
       .collection("products")
       .where("store", "==", order.data()?.store)
       .where("id", "!=", order.data()?.product)
+      .limit(8)
       .get();
 
     res.status(200).json({
