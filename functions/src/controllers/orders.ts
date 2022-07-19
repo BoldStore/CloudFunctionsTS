@@ -273,14 +273,14 @@ export const getOrder: (
       }
     }
 
-    const store = await firestore()
-      .collection("store")
-      .doc(order.data()?.store)
-      .get();
-
     const product = await firestore()
       .collection("products")
       .doc(order.data()?.product)
+      .get();
+
+    const store = await firestore()
+      .collection("store")
+      .doc(product.data()?.store)
       .get();
 
     const store_products = await firestore()
@@ -295,7 +295,7 @@ export const getOrder: (
         ...order.data(),
         id: order.id,
         store: store.data(),
-        product,
+        product: product.data(),
       },
       products: store_products.docs.map((doc) => {
         return {
