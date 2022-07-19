@@ -129,11 +129,11 @@ export const createOrder: (
 
     // Add to razorpay
     await razorpayInstance.orders
-      .create({ amount: product.data()?.price ?? 1000, currency: currency })
+      .create({ amount: product.data()?.amount ?? 1000, currency: currency })
       .then(async (order) => {
         const order_obj: OrderType = new Order(
           product.id,
-          product.data()?.price ?? 1000,
+          product.data()?.amount ?? 1000,
           undefined,
           order.id,
           address_id,
