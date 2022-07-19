@@ -3,6 +3,7 @@ import {
   callback,
   checkForDelivery,
   createOrder,
+  getOrder,
   previousOrders,
   verify,
 } from "../controllers/orders";
@@ -14,6 +15,8 @@ router
   .route("/")
   .post(validateFirebaseIdToken, createOrder)
   .get(validateFirebaseIdToken, previousOrders);
+
+router.route("/get").get(validateFirebaseIdToken, getOrder);
 
 router.route("/verify").post(validateFirebaseIdToken, verify);
 router.route("/callback").post(callback);

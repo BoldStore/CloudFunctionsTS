@@ -246,6 +246,70 @@ export const previousOrders: (
   }
 };
 
+export const getOrder: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (req, res, next) => {
+  try {
+    const id = req.user.uid;
+    if (!req.query.orderId) {
+      next(new ExpressError("Order id is required", 400));
+    }
+
+    const orderId: string = req.query.orderId?.toString() ?? "";
+
+    const order = await firestore().collection("orders").doc(orderId).get();
+
+    if (!order.exists) {
+      next(new ExpressError("Order not found", 400));
+    }
+
+    if (order.data()?.user !== id) {
+      if (order.data()?.store !== id) {
+        next(
+          new ExpressError("You are not authorized to view this order", 400)
+        );
+      }
+    }
+
+    const store = await firestore()
+      .collection("store")
+      .doc(order.data()?.store)
+      .get();
+
+    const product = await firestore()
+      .collection("products")
+      .doc(order.data()?.product)
+      .get();
+
+    const store_products = await firestore()
+      .collection("products")
+      .where("store", "==", order.data()?.store)
+      .where("id", "!=", order.data()?.product)
+      .get();
+
+    res.status(200).json({
+      success: true,
+      order: {
+        ...order.data(),
+        id: order.id,
+        store: store.data(),
+        product,
+      },
+      products: store_products.docs.map((doc) => {
+        return {
+          ...doc.data(),
+          id: doc.id,
+          store: store.data(),
+        };
+      }),
+    });
+  } catch (e) {
+    next(new ExpressError("Could not verify the order", 500, e));
+  }
+};
+
 export const verify: (
   req: Request,
   res: Response,
