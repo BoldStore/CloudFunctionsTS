@@ -4,6 +4,7 @@ import { SHIPROCKET_ADDRESSES, SHIPROCKET_LOGIN } from "../constants";
 import { firestore } from "firebase-admin";
 import { NextFunction, Request, Response } from "express";
 import ExpressError = require("../utils/ExpressError");
+import { createShipment } from "../helper/order/shipping";
 
 export const getAccessToken: (
   req: Request,
@@ -35,6 +36,55 @@ export const getAccessToken: (
     next(
       new ExpressError(
         "Could not get access token",
+        500,
+        (e as any).response.data ?? e
+      )
+    );
+  }
+};
+
+export const triggerShipment: (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => Promise<void> = async (req, res, next) => {
+  try {
+    if (!req.query.orderId) {
+      next(new ExpressError("Order ID is required", 400));
+    }
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const orderId: string = req.query.orderId!.toString();
+    const order = await firestore().collection("orders").doc(orderId).get();
+
+    if (!order.exists) {
+      next(new ExpressError("Order not found", 404));
+    }
+
+    const product = await firestore()
+      .collection("products")
+      .doc(order.data()?.product)
+      .get();
+
+    if (!product.exists) {
+      next(new ExpressError("Product not found", 404));
+    }
+
+    const data = await createShipment(
+      order.data()?.address_id,
+      orderId,
+      order.data()?.product,
+      product.data()?.store,
+      order.data()?.user
+    );
+
+    res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (e) {
+    next(
+      new ExpressError(
+        "Could not get trigger order",
         500,
         (e as any).response.data ?? e
       )
