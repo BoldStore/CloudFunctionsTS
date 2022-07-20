@@ -4,6 +4,7 @@ import { firestore } from "firebase-admin";
 import { pubsub } from "firebase-functions/v1";
 import { SHIPROCKET_LOGIN } from "./constants";
 import { subMinutes } from "./helper/date";
+import { deleteAnonymousUser } from "./helper/deletion/user";
 import { refreshToken } from "./helper/insta/get_access_token";
 import { refresh_all_products } from "./helper/insta/store";
 
@@ -79,4 +80,10 @@ exports.removeExpiredOrders = pubsub
           available: true,
         });
     }
+  });
+
+exports.removeAnonymousUsers = pubsub
+  .schedule("every 12 hours")
+  .onRun(async (_) => {
+    await deleteAnonymousUser();
   });
