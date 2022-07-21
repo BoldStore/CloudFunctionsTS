@@ -5,7 +5,7 @@ import { firestore } from "firebase-admin";
 import { NextFunction, Request, Response } from "express";
 import ExpressError = require("../utils/ExpressError");
 import { addPickup, createShipment } from "../helper/order/shipping";
-import { Address, AddressType } from "../models/Address";
+import { Address, AddressType } from "../models/address";
 
 export const getAccessToken: (
   req: Request,

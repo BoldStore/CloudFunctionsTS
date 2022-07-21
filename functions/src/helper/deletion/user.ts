@@ -5,11 +5,11 @@ export const deleteAnonymousUser: (
   results?: number
 ) => Promise<void> = async (next_token, results = 1000) => {
   const anonymousUsers: string[] = [];
-  await auth()
+  auth()
     .listUsers(results, next_token)
     .then(async (usersResult) => {
-      for (let i = 0; i < usersResult.users.length; i++) {
-        const record = usersResult.users[i];
+      for (let i = 0; i < usersResult?.users?.length; i++) {
+        const record = usersResult?.users[i];
 
         if (record.providerData.length == 0) {
           // Check if user has any data
@@ -29,12 +29,14 @@ export const deleteAnonymousUser: (
         }
       }
 
-      await auth()
+      auth()
         .deleteUsers(anonymousUsers)
         .then(async () => {
-          if (usersResult.pageToken) {
-            await deleteAnonymousUser(usersResult.pageToken, results);
+          if (usersResult?.pageToken) {
+            await deleteAnonymousUser(usersResult?.pageToken, results);
           }
         });
     });
+
+  return;
 };

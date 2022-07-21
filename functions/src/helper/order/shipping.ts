@@ -7,7 +7,7 @@ import {
   NEW_PICKUP,
   SHIPROCKET_CHANNELS,
 } from "../../constants";
-import { AddressType } from "../../models/Address";
+import { AddressType } from "../../models/address";
 
 export const addPickup: (
   name: string,

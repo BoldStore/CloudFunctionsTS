@@ -56,6 +56,7 @@ exports.refreshStoreTokens = pubsub
         });
       }
     }
+    return;
   });
 
 exports.removeExpiredOrders = pubsub
@@ -80,10 +81,12 @@ exports.removeExpiredOrders = pubsub
           available: true,
         });
     }
+    return;
   });
 
 exports.removeAnonymousUsers = pubsub
   .schedule("every 12 hours")
   .onRun(async (_) => {
     await deleteAnonymousUser();
+    return;
   });
