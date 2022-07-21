@@ -71,7 +71,7 @@ export const triggerShipment: (
     }
 
     const data = await createShipment(
-      order.data()?.address_id,
+      order.data()?.address,
       orderId,
       order.data()?.product,
       product.data()?.store,
