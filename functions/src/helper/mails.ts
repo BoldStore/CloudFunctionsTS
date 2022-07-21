@@ -1,17 +1,36 @@
 import { createTransport } from "nodemailer";
 import { readFile } from "fs";
-import { EMAIL, PASSWORD } from "../secrets";
+import {
+  EMAIL,
+  OAUTH_CLIENT_ID,
+  OAUTH_CLIENT_SECRET,
+  OAUTH_REFRESH_TOKEN,
+} from "../secrets";
 
-const email = EMAIL;
-const password = PASSWORD;
+// export const transporter = createTransport({
+//   host: "smtp.gmail.com",
+//   port: 465,
+//   secure: true,
+//   auth: {
+//     type: "OAuth2",
+//     user: EMAIL,
+//     pass: PASSWORD,
+//     clientId: OAUTH_CLIENT_ID,
+//     clientSecret: OAUTH_CLIENT_SECRET,
+//     refreshToken: OAUTH_REFRESH_TOKEN,
+//   },
+// });
 
 export const transporter = createTransport({
   host: "smtp.gmail.com",
   port: 465,
   secure: true,
   auth: {
-    user: email,
-    pass: password,
+    type: "OAuth2",
+    user: EMAIL,
+    clientId: OAUTH_CLIENT_ID,
+    clientSecret: OAUTH_CLIENT_SECRET,
+    refreshToken: OAUTH_REFRESH_TOKEN,
   },
 });
 
