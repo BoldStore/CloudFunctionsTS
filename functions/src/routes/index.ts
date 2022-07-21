@@ -19,7 +19,7 @@ router.use("/store", storeRoutes);
 router.use("/user", userRoutes);
 router.use("/profile", profileRoutes);
 router.use("/product", productRoutes);
-router.use("/shiptocket", shiprocketRoutes);
+router.use("/shiprocket", shiprocketRoutes);
 router.use("/order", orderRoutes);
 router.use("/test", testRoutes);
 

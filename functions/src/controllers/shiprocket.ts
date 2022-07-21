@@ -104,10 +104,10 @@ export const addressToShiprocket: (
     }
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const storeId: string = req.query.storeId!.toString();
-    const store = await firestore().collection("orders").doc(storeId).get();
+    const store = await firestore().collection("stores").doc(storeId).get();
 
     if (!store.exists) {
-      next(new ExpressError("Order not found", 404));
+      next(new ExpressError("Store not found", 404));
     }
 
     const address = await firestore()
@@ -149,7 +149,7 @@ export const addressToShiprocket: (
   } catch (e) {
     next(
       new ExpressError(
-        "Could not get trigger order",
+        "Could not add address to shpirocket",
         500,
         (e as any).response.data ?? e
       )

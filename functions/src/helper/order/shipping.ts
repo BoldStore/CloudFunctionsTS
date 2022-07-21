@@ -47,9 +47,9 @@ export const addPickup: (
       }
     );
 
-    return response.data.success;
+    return response?.data?.success;
   } catch (e) {
-    console.log("Shiprocket pickup error: ", (e as any).response.data);
+    console.log("Shiprocket pickup error: ", (e as any)?.response?.data ?? e);
     return false;
   }
 };
