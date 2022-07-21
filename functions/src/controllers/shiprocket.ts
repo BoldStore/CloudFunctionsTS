@@ -78,6 +78,29 @@ export const triggerShipment: (
       order.data()?.user
     );
 
+    await firestore()
+      .collection("orders")
+      .doc(order?.id)
+      .set(
+        {
+          status: "confirmed",
+          confirmedOn: new Date(),
+          label_url: data?.data?.payload?.label_url ?? "",
+          manifest_url: data?.data?.payload?.manifest_url ?? "",
+          pickup_schedule_date: data?.data?.payload?.pickup_schedule_date ?? "",
+          shiprocket_order_id: data?.data?.payload?.order_id ?? "",
+          shipment_id: data?.data?.payload?.shipment_id ?? "",
+          awb_code: data?.data?.payload?.awb_code ?? "",
+          courier_company_id: data?.data?.payload?.courier_company_id ?? "",
+          courier_name: data?.data?.payload?.courier_name ?? "",
+          assigned_date_time: data?.data?.payload?.assigned_date_time ?? "",
+          routing_code: data?.data?.payload?.routing_code ?? "",
+          pickup_token_number: data?.data?.payload?.pickup_token_number ?? "",
+          applied_weight: data?.data?.payload?.applied_weight ?? "",
+        },
+        { merge: true }
+      );
+
     res.status(200).json({
       success: true,
       data,

@@ -133,7 +133,7 @@ export const createOrder: (
       .then(async (order) => {
         const order_obj: OrderType = new Order(
           product.id,
-          product.data()?.amount ?? 1000,
+          ((parseInt(product.data()?.amount) ?? 1000) * 100).toString(),
           undefined,
           order.id,
           address_id,
