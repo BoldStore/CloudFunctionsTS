@@ -71,9 +71,9 @@ export const getChannelId: (shiprocket_access_token: string) => Promise<{
       error: null,
     };
   } catch (e) {
-    console.log("Shiprocket channel error: ", (e as any).response.data);
+    console.log("Shiprocket channel error: ", (e as any)?.response?.data ?? e);
     return {
-      error: (e as any).response.data,
+      error: (e as any)?.response?.data ?? e,
       channel_id: null,
     };
   }
@@ -213,10 +213,10 @@ export const createShipment: (
       data: response.data,
     };
   } catch (e) {
-    console.log("Shiprocket shipment error: ", (e as any).response.data);
+    console.log("Shiprocket shipment error: ", (e as any)?.response?.data ?? e);
     return {
       success: false,
-      error: (e as any).response.data,
+      error: (e as any)?.response?.data ?? e,
     };
   }
 };

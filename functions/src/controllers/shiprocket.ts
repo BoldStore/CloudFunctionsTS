@@ -38,7 +38,7 @@ export const getAccessToken: (
       new ExpressError(
         "Could not get access token",
         500,
-        (e as any).response.data ?? e
+        (e as any)?.response?.data ?? e
       )
     );
   }
@@ -83,13 +83,7 @@ export const triggerShipment: (
       data,
     });
   } catch (e) {
-    next(
-      new ExpressError(
-        "Could not get trigger order",
-        500,
-        (e as any).response.data ?? e
-      )
-    );
+    next(new ExpressError("Could not get trigger order", 500, e));
   }
 };
 
@@ -151,7 +145,7 @@ export const addressToShiprocket: (
       new ExpressError(
         "Could not add address to shpirocket",
         500,
-        (e as any).response.data ?? e
+        (e as any)?.response?.data ?? e
       )
     );
   }
@@ -181,7 +175,7 @@ export const getAddresses: (
       new ExpressError(
         "Could not get access token",
         500,
-        (e as any).response.data ?? e
+        (e as any)?.response?.data ?? e
       )
     );
   }
