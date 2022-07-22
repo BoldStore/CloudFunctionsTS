@@ -32,7 +32,7 @@ export const createPayout: (
   try {
     const body = {
       account_number: RAZORPAY_ACCOUNT,
-      amount: order.data()?.amount,
+      amount: order.data()?.amount ?? 1 * 100,
       currency: order.data()?.currency,
       mode: "UPI",
       purpose: "payout",
