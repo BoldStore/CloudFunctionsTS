@@ -23,3 +23,5 @@ export const CREATE_SHIPMENT =
 
 export const SHIPROCKET_ADDRESSES =
   SHIPROCKET_API_URL + "/external/settings/company/pickup";
+
+export const RAZORPAY_URL = "https://api.razorpay.com/v1";

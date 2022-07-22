@@ -3,6 +3,7 @@ import { createHmac } from "crypto";
 import { firestore } from "firebase-admin";
 import { RAZORPAY_SECRET } from "../../secrets";
 import { sendMail } from "../mails";
+import { createPayout } from "../payments";
 import { createShipment } from "./shipping";
 
 interface ConfirmOrderResponse {
@@ -72,17 +73,22 @@ export const confirmOrder: (
         user
       );
 
+      const transaction = await createPayout(order.id);
+
       if (data.error) {
         // TODO: Handle orders with shipping errors
-        await firestore().collection("orders").doc(order?.id).set(
-          {
-            paymentId: paymentId,
-            status: "error",
-            confirmedOn: new Date(),
-            error: data.error,
-          },
-          { merge: true }
-        );
+        const send_data = {
+          paymentId: paymentId,
+          status: "error",
+          confirmedOn: new Date(),
+          error: data.error,
+          transaction_id: transaction?.data?.id,
+          transaction_error: transaction.error,
+        };
+        await firestore()
+          .collection("orders")
+          .doc(order?.id)
+          .set(send_data, { merge: true });
 
         await firestore()
           .collection("products")
@@ -90,6 +96,7 @@ export const confirmOrder: (
           .update({
             sold: true,
           });
+
         return {
           success: false,
           message: "Error creating shipment",
@@ -119,6 +126,8 @@ export const confirmOrder: (
             routing_code: data?.data?.payload?.routing_code ?? "",
             pickup_token_number: data?.data?.payload?.pickup_token_number ?? "",
             applied_weight: data?.data?.payload?.applied_weight ?? "",
+            transaction_id: transaction?.data?.id,
+            transaction_error: transaction.error,
           },
           { merge: true }
         );
