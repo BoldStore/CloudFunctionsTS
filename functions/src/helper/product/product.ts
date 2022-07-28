@@ -42,6 +42,8 @@ export const addProduct: (
     let images: Array<{ id: string; file_name: string; imgUrl: string }> = [];
     let token = access_token ?? "";
 
+    const config = (await firestore().collection("config").get()).docs[0];
+
     if (!post.caption) {
       return;
     }
@@ -50,13 +52,16 @@ export const addProduct: (
     if (post.media_type === "VIDEO") {
       return;
     }
+
     const prod_data = analysePost(post.caption ?? "");
 
-    if (
-      !prod_data.price &&
-      !(post.caption as string).toLowerCase().includes("sold")
-    ) {
-      return;
+    if (config.data()?.env == "prod") {
+      if (
+        !prod_data.price &&
+        !(post.caption as string).toLowerCase().includes("sold")
+      ) {
+        return;
+      }
     }
 
     // Check if the product is already in the database
