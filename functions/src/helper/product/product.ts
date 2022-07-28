@@ -55,7 +55,7 @@ export const addProduct: (
 
     const prod_data = analysePost(post.caption ?? "");
 
-    if (config.data()?.env == "prod") {
+    if (config?.data()?.env == "prod") {
       if (
         !prod_data.price &&
         !(post.caption as string).toLowerCase().includes("sold")

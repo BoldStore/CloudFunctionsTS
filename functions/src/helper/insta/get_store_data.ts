@@ -64,8 +64,8 @@ export const getStoreData: (
       `${INSTAGRAM_GRAPH_API_URL}/${insta_id}?access_token=${access_token}&fields=${BASIC_FIELDS}`
     );
 
-    const username: string = response.data.username;
-    const id: string = response.data.id;
+    const username: string = response?.data?.username;
+    const id: string = response?.data?.id;
 
     const data = await getInstaData(username);
 
@@ -76,30 +76,30 @@ export const getStoreData: (
     });
 
     let profilePic = "";
-    if (data.profile_pic) {
+    if (data?.profile_pic) {
       // Upload to s3
       profilePic = await handler({
-        fileUrl: data.profile_pic!.toString(),
+        fileUrl: data?.profile_pic!.toString(),
         fileName: `${id}-profile-pic.jpg`,
         bucket: S3_BUCKET_NAME_PROFILE,
       });
     }
 
-    if (data.error) {
-      error = data.error;
+    if (data?.error) {
+      error = data?.error;
       return { store, error };
     }
 
     store = new Store(
-      data.full_name ?? "",
+      data?.full_name ?? "",
       username,
       storeId,
       new Date(),
-      data.followers ?? "",
-      data.following ?? "",
+      data?.followers ?? "",
+      data?.following ?? "",
       profilePic ?? "",
       id,
-      data.bio,
+      data?.bio,
       false,
       expires_in,
       insta_id,
