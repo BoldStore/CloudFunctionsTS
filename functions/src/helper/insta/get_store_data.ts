@@ -79,7 +79,7 @@ export const getStoreData: (
     if (data?.profile_pic) {
       // Upload to s3
       profilePic = await handler({
-        fileUrl: data?.profile_pic!.toString(),
+        fileUrl: data?.profile_pic?.toString(),
         fileName: `${id}-profile-pic.jpg`,
         bucket: S3_BUCKET_NAME_PROFILE,
       });
@@ -99,7 +99,7 @@ export const getStoreData: (
       data?.following ?? "",
       profilePic ?? "",
       id,
-      data?.bio,
+      data?.bio ?? "",
       false,
       expires_in,
       insta_id,
@@ -107,13 +107,16 @@ export const getStoreData: (
     );
 
     await auth().updateUser(storeId, {
-      photoURL: profilePic ?? "",
-      displayName: store.full_name ?? "",
+      photoURL:
+        profilePic === "" || profilePic === undefined || profilePic === null
+          ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+          : profilePic,
+      displayName: store?.full_name ?? "",
     });
 
     await getStoreMedia(insta_id, access_token, storeId);
   } catch (e) {
-    if ((e as any).response.data.error.code == 100 && tryAgain <= 2) {
+    if ((e as any)?.response?.data?.error?.code == 100 && tryAgain <= 2) {
       const again = tryAgain + 1;
       return await getStoreData(
         user_id,

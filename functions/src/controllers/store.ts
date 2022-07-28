@@ -39,7 +39,7 @@ export const createStore: (
         .where("code", "==", inviteCode)
         .get()
     ).docs[0];
-    if (!code.exists || !code.data()?.isActive) {
+    if (!code?.exists || !code.data()?.isActive) {
       next(new ExpressError("Invite code is not valid", 400));
       return;
     }

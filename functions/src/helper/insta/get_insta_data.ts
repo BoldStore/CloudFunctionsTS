@@ -40,7 +40,7 @@ export const getInstaData: (username: string) => Promise<InstaData> = async (
       }
     );
 
-    const data = response.data.data;
+    const data = response?.data?.data;
 
     profile_pic = data?.user?.profile_pic_url_hd;
     full_name = data?.user?.full_name;
@@ -48,7 +48,7 @@ export const getInstaData: (username: string) => Promise<InstaData> = async (
     followers = data?.user?.edge_followed_by.count;
     following = data?.user?.edge_follow.count;
   } catch (e) {
-    error = (e as any).response.data ?? e;
+    error = (e as any)?.response?.data ?? e;
   }
 
   return {
