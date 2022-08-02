@@ -32,7 +32,7 @@ export const getMedia: (
   } catch (e) {
     return {
       success: false,
-      error: (e as any).response.data,
+      error: (e as any)?.response?.data,
       media: [],
     };
   }

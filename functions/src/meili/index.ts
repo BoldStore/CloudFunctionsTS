@@ -37,7 +37,10 @@ exports.importStoresToMeili = onRequest(async (req: Request, res) => {
       success: true,
     });
   } catch (e) {
-    console.error("Failed to import stores to Meili", (e as any).response.data);
+    console.error(
+      "Failed to import stores to Meili",
+      (e as any)?.response?.data
+    );
     res.status(500).json({ error: (e as any)?.response?.data ?? e });
   }
 });
@@ -185,10 +188,10 @@ export const deleteProduct: (
       error: null,
     };
   } catch (e) {
-    console.error("Failed to delete Meili user", (e as any).response.data);
+    console.error("Failed to delete Meili user", (e as any)?.response?.data);
     return {
       success: false,
-      error: (e as any).response.data,
+      error: (e as any)?.response?.data,
     };
   }
 };

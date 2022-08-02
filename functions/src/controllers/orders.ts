@@ -471,12 +471,12 @@ export const checkForDelivery: (
   } catch (e) {
     console.log(
       "Getting delivery status failed>>",
-      (e as any).response?.data ?? e
+      (e as any)?.response?.data ?? e
     );
     res.status(500).json({
       success: false,
       message: "Could not get delivery status",
-      error: (e as any).response.data ?? e,
+      error: (e as any)?.response?.data ?? e,
     });
   }
 };

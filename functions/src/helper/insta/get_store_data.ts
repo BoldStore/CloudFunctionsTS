@@ -148,7 +148,7 @@ export const getStoreMedia: (
     await createProductTask(media, storeId);
     return true;
   } catch (e) {
-    console.log("There was an error>>>>: ", (e as any).response.data);
+    console.log("There was an error>>>>: ", (e as any)?.response?.data);
     return false;
   }
 };
@@ -165,7 +165,7 @@ const fetchMedia: (url?: string) => Promise<Array<any>> = async (url) => {
     console.log(
       "There was an error fetching the data at>>>>: ",
       url,
-      (e as any).response.data
+      (e as any)?.response?.data
     );
     return [];
   }

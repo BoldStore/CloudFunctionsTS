@@ -77,7 +77,7 @@ export const getCaraouselMedia: (
 
     data = response.data;
   } catch (e) {
-    error = (e as any).response.data ?? e;
+    error = (e as any)?.response?.data ?? e;
     console.log("Error in getting caraosule media", error);
   }
 
@@ -104,7 +104,7 @@ export const checkIfAvailable: (
     const data = response.data;
     prod_data = analysePost(data.caption);
   } catch (e) {
-    error = (e as any).response.data ?? e;
+    error = (e as any)?.response?.data ?? e;
   }
 
   return {
