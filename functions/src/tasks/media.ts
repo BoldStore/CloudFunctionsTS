@@ -1,22 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { v2beta3 } from "@google-cloud/tasks";
-import { firestore } from "firebase-admin";
-import { CHUNK_SIZE } from "../constants";
-import { chunkArray } from "../helper/arrays";
 import {
   GCP_LOCATION,
   GCP_PROJECT_NAME,
-  PRODUCT_DATA_URL,
+  MEDIA_URL,
   SERVICE_ACCOUNT_EMAIL,
 } from "../secrets";
 
-export const createProductTask: (
-  posts: Array<any>,
-  storeId: string
-) => Promise<any> = async (posts = [], storeId) => {
+export const createMediaTask: (
+  files: Array<{ file_name: string; url: string }>
+) => Promise<any> = async (files) => {
   const client = new v2beta3.CloudTasksClient();
 
-  const queueName = "product-queue";
+  const queueName = "media-queue";
 
   const parent = client.queuePath(
     GCP_PROJECT_NAME.toString(),
@@ -25,20 +21,21 @@ export const createProductTask: (
   );
 
   // Create multiple tasks for more images
-  const chunks = chunkArray(posts, CHUNK_SIZE);
+  const chunks = chunkArray(files, 50);
 
   for (let i = 0; i < chunks.length; i++) {
     const chunk = chunks[i];
     const payload = {
-      posts: chunk,
+      files: chunk,
     };
+
     // Convert message to buffer.
     const convertedPayload = JSON.stringify(payload);
     const body = Buffer.from(convertedPayload).toString("base64");
 
     let url = "";
 
-    url = PRODUCT_DATA_URL.toString() + "?storeId=" + storeId;
+    url = MEDIA_URL;
 
     const task: any = {
       httpRequest: {
@@ -75,16 +72,17 @@ export const createProductTask: (
         { parent, task },
         { timeout: 300 }
       );
-      // Get store and add a post status
-      await firestore().collection("stores").doc(storeId).update({
-        postsStatus: "fetching",
-      });
-      console.log(`Created task ${response.name}`);
+      console.log(`Created task - Media - ${response.name}`);
       return response.name;
     } catch (error) {
-      console.log("There was an error");
+      console.log("There was an error in creating media task");
       console.error(error);
       return error;
     }
   }
 };
+
+const chunkArray: (arr: any[], size: number) => any[] = (arr, size) =>
+  arr.length > size
+    ? [arr.slice(0, size), ...chunkArray(arr.slice(size), size)]
+    : [arr];

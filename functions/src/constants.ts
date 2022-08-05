@@ -25,3 +25,6 @@ export const SHIPROCKET_ADDRESSES =
   SHIPROCKET_API_URL + "/external/settings/company/pickup";
 
 export const RAZORPAY_URL = "https://api.razorpay.com/v1";
+
+export const S3_URL = "https://products-boldstore.s3.ap-south-1.amazonaws.com";
+export const CHUNK_SIZE = 20;

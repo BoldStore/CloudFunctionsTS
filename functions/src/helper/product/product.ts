@@ -88,32 +88,11 @@ export const addProduct: (
           token = store.data()?.access_token;
         }
         // Handle caraousel
-        const data = await getCaraouselMedia(post.id, token);
-        if (data.error) {
+        const caraousel = await handleCaraousel(post, token);
+        if (caraousel.error) {
           return;
         }
-        for (let i = 0; i < data?.data?.data?.length; i++) {
-          const media = data?.data?.data[i];
-
-          if (media.media_type === "VIDEO") {
-            continue;
-          }
-
-          // Upload to S3
-          file_name = media.id.toString();
-
-          const media_s3 = await handler({
-            fileUrl: media.media_url,
-            fileName: file_name,
-            bucket: S3_BUCKET_NAME,
-          });
-
-          images.push({
-            id: media.id,
-            file_name: file_name,
-            imgUrl: media_s3,
-          });
-        }
+        images.push(...caraousel.images);
       } else {
         file_name = post.id.toString();
 
@@ -218,4 +197,48 @@ const getPrice = (caption: string) => {
     }
   }
   return price;
+};
+
+const handleCaraousel: (
+  post: any,
+  access_token: string
+) => Promise<{
+  images: Array<{ id: string; file_name: string; imgUrl: string }>;
+  error: any;
+}> = async (post, access_token) => {
+  let file_name = "";
+  const images: any = [];
+  let error = null;
+
+  const data = await getCaraouselMedia(post.id, access_token);
+  if (data.error) {
+    error = data.error;
+  }
+  for (let i = 0; i < data?.data?.data?.length; i++) {
+    const media = data?.data?.data[i];
+
+    if (media.media_type === "VIDEO") {
+      continue;
+    }
+
+    // Upload to S3
+    file_name = media.id.toString();
+
+    const media_s3 = await handler({
+      fileUrl: media.media_url,
+      fileName: file_name,
+      bucket: S3_BUCKET_NAME,
+    });
+
+    images.push({
+      id: media.id,
+      file_name: file_name,
+      imgUrl: media_s3,
+    });
+  }
+
+  return {
+    images,
+    error,
+  };
 };

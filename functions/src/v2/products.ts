@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { onRequest } from "firebase-functions/v2/https";
 import { firestore } from "firebase-admin";
-import { addProduct } from "./helper/product/product";
+import { addProduct } from "../helper/product/product";
 
 exports.adddata = onRequest(
   { timeoutSeconds: 1800, region: ["us-east1"] },
@@ -17,7 +17,6 @@ exports.adddata = onRequest(
     try {
       const posts = req.body.posts;
 
-      // await addProducts(storeId, posts);
       const collection = firestore().collection("products");
       const products: Array<any> = [];
 
