@@ -3,8 +3,8 @@ import { onRequest } from "firebase-functions/v2/https";
 import { handler } from "../helper/s3/file_upload_s3";
 import { S3_BUCKET_NAME } from "../secrets";
 
-exports.addMedia = onRequest(
-  { timeoutSeconds: 3600, region: ["us-east1"] },
+exports.addmedia = onRequest(
+  { timeoutSeconds: 1800, region: ["us-east1"] },
   async (req, res) => {
     const files = req.body.files;
     if (!files || files.length === 0) {
