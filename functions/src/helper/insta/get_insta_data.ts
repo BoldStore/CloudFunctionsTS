@@ -24,6 +24,7 @@ export const getInstaData: (username: string) => Promise<InstaData> = async (
 
     const configData = configs.docs[0].data();
     const ig_app_id = configData.ig_app_id;
+    const cookie = configData.ig_cookie;
 
     const response = await axios.get(
       `https://i.instagram.com/api/v1/users/web_profile_info/?username=${username}`,
@@ -36,6 +37,7 @@ export const getInstaData: (username: string) => Promise<InstaData> = async (
           "X-Requested-With": "XMLHttpRequest",
           Connection: "keep-alive",
           "X-IG-App-ID": ig_app_id,
+          Cookie: cookie,
         },
       }
     );
