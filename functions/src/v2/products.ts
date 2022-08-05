@@ -7,7 +7,7 @@ exports.adddata = onRequest(
   { timeoutSeconds: 1800, region: ["us-east1"] },
   async (req, res) => {
     if (!req.query.storeId) {
-      res.json(400).json({
+      res.status(400).json({
         success: false,
         message: "Store id is required",
       });
