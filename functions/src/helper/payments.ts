@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import axios from "axios";
+// import axios from "axios";
 import { firestore } from "firebase-admin";
-import { RAZORPAY_URL } from "../constants";
-import { RAZORPAY_ACCOUNT, RAZORPAY_KEY, RAZORPAY_SECRET } from "../secrets";
+// import { RAZORPAY_URL } from "../constants";
+// import { RAZORPAY_ACCOUNT, RAZORPAY_KEY, RAZORPAY_SECRET } from "../secrets";
 
 interface PayoutResponse {
   success: boolean;
